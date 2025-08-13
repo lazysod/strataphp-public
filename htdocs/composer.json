@@ -1,0 +1,14 @@
+{
+    "name": "barry/strataphp",
+    "description": "A modular PHP framework with PSR-4 autoloading.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "htdocs/app/",
+            "Modules\\": "htdocs/modules/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.10"
+    }
+}
