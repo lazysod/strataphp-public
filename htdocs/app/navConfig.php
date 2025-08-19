@@ -5,31 +5,36 @@ return [
         'label' => 'Home',
         'show' => true,
         'order' => 1,
+        'new_tab' => false,
         'url' => '/',
     ],
     'About' => [
         'label' => 'About',
         'show' => true,
         'order' => 2,
+        'new_tab' => false,
         'url' => '/about',
     ],
-    'Strata_hoome' => [
-        'label' => 'Strata.com',
+    'strata_home' => [
+        'label' => 'StrataPHP.org',
         'show' => true,
         'order' => 2,
-        'url' => 'https://strata.com',
+        'new_tab' => true,
+        'url' => 'https://strataphp.org',
     ],
     'links' => [
         'label' => 'Links',
         'show' => true,
         'order' => 4,
+        'new_tab' => false,
         'url' => '/links',
     ],
     'Contact' => [
         'label' => 'Contact Us',
         'url' => '/contact',
         'show' => true,
-        'order' => 3
+        'order' => 3,
+        'new_tab' => false
     ]
     // ...other items
 ];

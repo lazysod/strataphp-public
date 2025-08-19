@@ -76,9 +76,10 @@ $navConfig = include __DIR__ . '/../../app/navConfig.php';
                                     }
                                     echo '</ul>';
                                 }else{
+                                    $new_tab = ($config['new_tab']) ? 'target="_blank"' : '';
                                     $active = ($url === $currentPath) ? 'active' : '';
                                     echo '<li class="nav-item ">';
-                                    echo '<a class="nav-link ' . $active . '" href="' . $url . '">' . $label . '</a>';
+                                    echo '<a class="nav-link ' . $active . '" href="' . $url . '" ' . $new_tab . '>' . $label . '</a>';
                                 }
                                 echo '</li>';
                             }
