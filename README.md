@@ -313,6 +313,21 @@ Unmatched routes display a styled, user-friendly 404 page (`/views/system/404.ph
 For more details, see the code comments and explore the `htdocs/` directory.
 
 ## Database Migrations & Seeding
+### Running a Specific Down Migration
+
+To revert a migration or apply a down migration (such as restoring a dropped column), use the provided script:
+
+```sh
+php bin/run_down_migration.php <migration_name>
+```
+
+For example, to re-add the `display_name` column to the `users` table:
+
+```sh
+php bin/run_down_migration.php 003_drop_display_name_from_users
+```
+
+This will execute the corresponding `.down.php` migration file using the framework's DB class.
 ## NSFW Links & Admin Links Management
 
 ### NSFW Links
