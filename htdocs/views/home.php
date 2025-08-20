@@ -13,7 +13,7 @@ require __DIR__ . '/partials/header.php';
                                 <p class="lead fw-normal text-white-50 mb-4">A modern PHP framework for building web applications.</p>
                                 <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
                                     <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#features">Get Started</a>
-                                    <a class="btn btn-outline-light btn-lg px-4" href="#!">Learn More</a>
+                                    <a class="btn btn-outline-light btn-lg px-4" href="https://strataphp.org/documentation/">Learn More</a>
                                 </div>
                             </div>
                         </div>
