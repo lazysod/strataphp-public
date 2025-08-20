@@ -1,4 +1,22 @@
----
+# Documentation Index
+
+  - Quick Start
+  - Features
+  - Structure
+  - Security
+  - User & Admin System
+  - Extending & Modules
+  - Creating Your Own Modules (guidelines)
+  - AJAX Endpoints
+  - Planned Features
+  - Release Notes
+
+  - Directory structure
+  - Example controller, model, view, and asset
+  - Usage notes
+
+  - Template for user configuration (not a doc, but referenced in README)
+
 # Documentation Index
 
 - [Project README (Main)](README.md)
@@ -20,8 +38,6 @@
 
 - [config-example.php](htdocs/app/config-example.php)
   - Template for user configuration (not a doc, but referenced in README)
-
----
 
 ## Creating Your Own Modules
 
