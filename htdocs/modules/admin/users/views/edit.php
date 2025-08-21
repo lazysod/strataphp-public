@@ -3,6 +3,7 @@ if (empty($_SESSION[PREFIX . 'admin'])) {
     header('Location: /admin');
     exit;
 }
+
 include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
 <section class="py-5">
 
@@ -24,14 +25,18 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                     <form method="post" action="">
                         <!-- Display Name removed -->
                         <div class="mb-3">
+                            <label for="display_name" class="form-label">Display Name</label>
+                            <input type="text" class="form-control" id="display_name" name="display_name" value="<?php echo htmlspecialchars($user['display_name'] ?? ''); ?>" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" name="role">
-                                <option value="user" <?php if (($user['role'] ?? '') === 'user') echo 'selected'; ?>>User</option>
-                                <option value="admin" <?php if (($user['role'] ?? '') === 'admin') echo 'selected'; ?>>Admin</option>
+                                <option value="user" <?php if (($user['is_admin'] ?? '') === 0) echo 'selected'; ?>>User</option>
+                                <option value="admin" <?php if (($user['is_admin'] ?? '') === 1) echo 'selected'; ?>>Admin</option>
                             </select>
                         </div>
                         <div class="mb-3">

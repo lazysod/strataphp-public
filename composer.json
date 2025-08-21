@@ -1,5 +1,5 @@
 {
-    "name": "barry/simple-php-framework",
+    "name": "lazysod/strataphp",
     "description": "A modular PHP framework with PSR-4 autoloading.",
     "type": "project",
     "autoload": {

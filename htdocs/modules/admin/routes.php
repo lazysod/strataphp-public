@@ -6,4 +6,5 @@ $router->post('/admin/users/add', ['UserAdminController', 'add']);
 $router->get('/admin/users/edit/{id}', ['UserAdminController', 'edit']);
 $router->post('/admin/users/edit/{id}', ['UserAdminController', 'edit']);
 $router->get('/admin/users/suspend/{id}', ['UserAdminController', 'suspend']);
+$router->get('/admin/users/unsuspend/{id}', ['UserAdminController', 'unsuspend']);
 $router->get('/admin/users/delete/{id}', ['UserAdminController', 'delete']);

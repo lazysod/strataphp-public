@@ -25,7 +25,7 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Username</th>
+                                <th>Display Name</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Email</th>
@@ -39,15 +39,22 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                             <?php foreach ($users as $user): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($user['id']) ?></td>
-                                    <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
-                                    <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
-                                    <td><?php echo htmlspecialchars($user['second_name'] ?? '') ?></td>
+                                    <td><?php echo htmlspecialchars($user['display_name'] ?? '') ?></td>
+                                    <td><?php echo htmlspecialchars($user['first_name']) ?></td>
+                                    <td><?php echo htmlspecialchars($user['second_name']) ?></td>
                                     <td><?php echo htmlspecialchars($user['email']) ?></td>
                                     <td><?php echo isset($user['is_admin']) && $user['is_admin'] ? 'Admin' : 'User' ?></td>
                                     <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
                                     <td>
                                         <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                        <a href="/admin/users/suspend/<?php echo $user['id'] ?>" class="btn btn-sm btn-secondary">Suspend</a>
+                                        <?php 
+                                            if(isset($user['active']) && $user['active']){
+                                                echo '<a href="/admin/users/suspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
+                                                
+                                            }else{
+                                                echo '<a href="/admin/users/unsuspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
+                                            }
+                                        ?>
                                         <a href="/admin/users/delete/<?php echo $user['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</a>
                                     </td>
                                 </tr>

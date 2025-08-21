@@ -72,11 +72,15 @@ class UserAdminController
             }
             $is_admin = ($role === 'admin') ? 1 : 0;
             $active = ($status === 'active') ? 1 : 0;
+            $dead_switch = ($active === 0) ? 1 : 0;
             $updateData = [
                 'email' => $email,
                 'is_admin' => $is_admin,
-                'active' => $active
+                'active' => $active,
+                'display_name' => trim($_POST['display_name'] ?? ''),
+                'dead_switch' => $dead_switch
             ];
+
             $newPassword = trim($_POST['password'] ?? '');
             if ($newPassword !== '') {
                 // Hash password before saving
@@ -99,9 +103,33 @@ class UserAdminController
     // Suspend/unsuspend user
     public function suspend($id)
     {
-        // Handle suspend/unsuspend logic
-        // $user = User::getById($id);
-        // $user->suspend();
+        global $config;
+        $db = new DB($config);
+        $userModel = new User($db, $config);
+        $user = $userModel->getById($id);
+        if (!$user) {
+            http_response_code(404);
+            echo '<h1>User not found</h1>';
+            exit;
+        }
+        $userModel->suspend($id); // Call the suspend method on the model
+        header('Location: /admin/users');
+        exit;
+    }
+
+        // Suspend/unsuspend user
+    public function unsuspend($id)
+    {
+        global $config;
+        $db = new DB($config);
+        $userModel = new User($db, $config);
+        $user = $userModel->getById($id);
+        if (!$user) {
+            http_response_code(404);
+            echo '<h1>User not found</h1>';
+            exit;
+        }
+        $userModel->unsuspend($id); // Call the unsuspend method on the model
         header('Location: /admin/users');
         exit;
     }

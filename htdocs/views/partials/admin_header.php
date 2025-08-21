@@ -19,8 +19,8 @@ $navConfig = include __DIR__ . '/../../app/adminNavConfig.php';
     </title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Font Awesome (required for forum icons)-->
+    <link rel="stylesheet" href="/themes/default/assets/fontawesome/css/all.min.css">
 
     <link rel="stylesheet" href="<?php echo App::config('theme_path'); ?>/css/styles.css">
 </head>

@@ -1,7 +1,10 @@
 <?php
 // htdocs/index.php - new entry point for the fresh framework
 require_once __DIR__ . '/app/start.php'; // config, autoload, etc.
-
+$config = require __DIR__ . '/app/config.php';
+$db = new DB($config);
+$user = new User($db, $config);
+$user->cookie_check();
 $requestPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 if ($requestPath === '//') { $requestPath = '/';
 }

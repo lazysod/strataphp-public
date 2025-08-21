@@ -13,7 +13,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
     <div class="container px-5">
         <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-5">
-                
+
                 <h1 class="fw-bolder"><i class="bi bi-person"></i> User Login</h1>
             </div>
             <div class="row gx-5 justify-content-center">
@@ -39,6 +39,12 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         <div class="form-floating mb-3">
                             <input class="form-control" id="password" name="password" type="password" placeholder="Enter password" required />
                             <label for="password">Password</label>
+                        </div>
+                        <div class="form-group mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember" checked>
+                                <label class="form-check-label" for="remember">Remember me</label>
+                            </div>
                         </div>
                         <div class="d-grid"><button class="btn btn-primary btn-lg " id="submitButton" type="submit">Login</button></div>
                         <div class="mt-3 text-center">

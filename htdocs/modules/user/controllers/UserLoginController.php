@@ -26,6 +26,7 @@ class UserLoginController
                 $loginInfo = [
                     'email' => trim($_POST['email'] ?? ''),
                     'pwd' => $_POST['password'] ?? '',
+                    'remember' => isset($_POST['remember']) ? 1 : 0,
                 ];
                 $result = $user->login($loginInfo);
                 if ($result['status'] === 'success') {
