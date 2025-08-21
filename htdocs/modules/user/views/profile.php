@@ -24,6 +24,10 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                     <?php endif; ?>
                     <form method="post" action="">
                         <div class="form-floating mb-3">
+                            <input class="form-control" id="display_name" name="display_name" type="text" value="<?php echo htmlspecialchars($user['display_name'] ?? '') ?>" required />
+                            <label for="display_name">Display Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
                             <input class="form-control" id="first_name" name="first_name" type="text" value="<?php echo htmlspecialchars($user['first_name'] ?? '') ?>" required />
                             <label for="first_name">First Name</label>
                         </div>

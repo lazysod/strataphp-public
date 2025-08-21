@@ -1,3 +1,12 @@
+### Disable User Registration
+
+To prevent new users from registering (while still allowing existing users to log in), set the following in your `htdocs/app/config.php`:
+
+```php
+'registration_enabled' => false,
+```
+
+When disabled, the registration page will show a message and block new signups.
 # Documentation Index
 
   - Quick Start
@@ -227,6 +236,16 @@ This is the first full release of the Strata Framework, featuring a modular arch
 
 
 ## User & Admin System
+
+### Disable User Registration
+
+To prevent new users from registering (while still allowing existing users to log in), set the following in your `htdocs/app/config.php`:
+
+```php
+'registration_enabled' => false,
+```
+
+When disabled, the registration page will show a message and block new signups.
 
 - Enable or disable user/admin modules in `app/config.php` via the `modules` array
 - User registration, login, profile, password reset, email test page (all modular)

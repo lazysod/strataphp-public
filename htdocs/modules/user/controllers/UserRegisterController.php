@@ -8,6 +8,12 @@ class UserRegisterController
     {
         include_once dirname(__DIR__, 3) . '/app/start.php';
         $config = include dirname(__DIR__, 3) . '/app/config.php';
+        if (isset($config['registration_enabled']) && !$config['registration_enabled']) {
+            $error = 'User registration is currently disabled.';
+            $success = '';
+            include __DIR__ . '/../views/register.php';
+            return;
+        }
         if (empty($config['modules']['user'])) {
             header('Location: /');
             exit;

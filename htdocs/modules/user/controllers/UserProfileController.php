@@ -26,7 +26,7 @@ class UserProfileController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['pwd']) && $_POST['pwd'] != $_POST['pwd2']) {
                 $error = 'Passwords do not match.';
-            } elseif (empty($_POST['first_name']) || empty($_POST['second_name']) || empty($_POST['email'])) {
+            } elseif (empty($_POST['display_name']) || empty($_POST['email'])) {
                 $error = 'Please fill in all required fields.';
             } else {
                 // Proceed with update
@@ -37,8 +37,7 @@ class UserProfileController
             if ($error == '') {
                 $updateInfo = [
                     'id' => $userId,
-                    'first_name' => trim($_POST['first_name'] ?? ''),
-                    'second_name' => trim($_POST['second_name'] ?? ''),
+                    'display_name' => trim($_POST['display_name'] ?? ''),
                     'email' => trim($_POST['email'] ?? ''),
                     'pwd' => $_POST['pwd'] ?? '',
                     'pwd2' => $_POST['pwd2'] ?? '',

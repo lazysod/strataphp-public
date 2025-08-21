@@ -12,6 +12,20 @@ class User
         return $this->db->query($sql, [(int)$id]);
     }
 
+    // suspend
+    public function suspend($id)
+    {
+        $sql = "UPDATE users SET active = 0, dead_switch = 1 WHERE id = ?";
+        return $this->db->query($sql, [(int)$id]);
+    }
+
+    // unsuspend
+    public function unsuspend($id)
+    {
+        $sql = "UPDATE users SET active = 1, dead_switch = 0 WHERE id = ?";
+        return $this->db->query($sql, [(int)$id]);
+    }
+
     // Create user (admin panel)
     public function createUser($data)
     {
@@ -36,7 +50,8 @@ class User
     // Update user by ID (admin panel, flexible fields)
     public function updateUser($id, $data)
     {
-        if (empty($data) || !$id) { return false;
+        if (empty($data) || !$id) {
+            return false;
         }
         $fields = [];
         $params = [];
@@ -160,29 +175,57 @@ class User
                         $loginID = $row['id'];
                         $sql2 = "SELECT * FROM `users` WHERE `id`=?";
                         $users = $this->db->fetchAll($sql2, [$userId]);
+                        // APP::dump($users);
+                        // die();
                         foreach ($users as $row2) {
+                            if ($row2['dead_switch'] > 0) {
+                                return [
+                                    'status' => 'fail',
+                                    'message' => 'Your account was closed or is inaccessible.'
+                                ];
+                            }
+                            $rank = $this->get_rank($row2['id']);
+                            $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
+                            $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
+                            if ($rank['admin'] > 0) {
+                                $_SESSION[PREFIX . 'admin'] = $rank['admin'];
+                            }
+                            $_SESSION[PREFIX . 'display_name'] = $row2['display_name'];
                             $_SESSION[PREFIX . 'email'] = $row2['email'];
                             $_SESSION[PREFIX . 'first_name'] = $row2['first_name'];
                             $_SESSION[PREFIX . 'second_name'] = $row2['second_name'];
                             $_SESSION[PREFIX . 'user_id'] = $userId;
-                            $rank = $this->get_rank($row['id']);
                             $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
                             $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
                             $_SESSION[PREFIX . 'admin'] = $rank['admin'];
                             $_SESSION[PREFIX . 'sec_hash'] = $row2['security_hash'];
                             $_SESSION[PREFIX . 'avatar'] = $this->gravatar($_SESSION[PREFIX . 'email']);
-                            $_SESSION[PREFIX . 'last_log'] = $row['last_access'];
+                            $_SESSION[PREFIX . 'last_log'] = $row2['last_access'];
+                            $_SESSION[PREFIX . 'user'] = [
+                                'id' => $row2['id'],
+                                'display_name' => $row2['display_name'],
+                                // 'first_name' => $row2['first_name'],
+                                // 'second_name' => $row2['second_name'],
+                                'email' => $row2['email'],
+                                'is_admin' => ($rank['admin'] > 0 ? 1 : 0),
+                                'rank_title' => $rank['title'],
+                                'rank_level' => $rank['level'],
+                                'avatar' => $this->gravatar($row2['email'])
+                            ];
                         }
                     }
                     $time = time() + 60 * 60 * 24 * 7;
-                    $hash = sha1(rand(1, 1000) . $this->config['salt']);
+                    $salt = md5(uniqid(rand(), true));
+                    $hash = sha1(rand(1, 1000) . $salt);
                     setcookie(
-                        PREFIX . 'cookie_login', $hash, [
-                        'expires' => $time,
-                        'path' => '/',
-                        'secure' => isset($_SERVER['HTTPS']),
-                        'httponly' => true,
-                        'samesite' => 'Lax'
+                        PREFIX . 'cookie_login',
+                        $hash,
+                        [
+                            'expires' => $time,
+                            'path' => '/',
+                            'secure' => isset($_SERVER['HTTPS']),
+                            'httponly' => true,
+                            'samesite' => 'Lax'
                         ]
                     );
                     $update1 = "UPDATE `cookie_login` SET `cookie_hash`=? WHERE `id`=?";
@@ -247,11 +290,12 @@ class User
             $entryDate = date('Y-m-d H:i:s');
             $expiryDate = date('Y-m-d H:i:s', strtotime('+1 day'));
             $this->log(
-                'User registration activation dates', [
-                'entryDate' => $entryDate,
-                'expiryDate' => $expiryDate,
-                'userId' => $userId,
-                'email' => $email
+                'User registration activation dates',
+                [
+                    'entryDate' => $entryDate,
+                    'expiryDate' => $expiryDate,
+                    'userId' => $userId,
+                    'email' => $email
                 ]
             );
             $this->db->query("INSERT INTO user_activation (user_id, activation_key, entry_date, expiry_date) VALUES (?, ?, ?, ?)", [$userId, $activationKey, $entryDate, $expiryDate]);
@@ -358,11 +402,9 @@ class User
                     $_SESSION[PREFIX . 'last_log'] = $row['last_access'];
                     $_SESSION[PREFIX . 'avatar'] = $this->gravatar($row['email']);
                     // Store a full user array for convenience
-                    $user_name = $row['first_name'] . ' ' . $row['second_name'];
                     $_SESSION[PREFIX . 'user'] = [
                         'id' => $row['id'],
                         'email' => $row['email'],
-                        'username' => $user_name,
                         'is_admin' => ($rank['admin'] > 0 ? 1 : 0),
                         'rank_title' => $rank['title'],
                         'rank_level' => $rank['level'],
@@ -372,7 +414,25 @@ class User
                     $update = "UPDATE users SET last_access = ? WHERE id = ?";
                     $this->db->query($update, [$now, $_SESSION[PREFIX . 'user_id']]);
                     if (isset($user['remember']) && $user['remember'] > 0) {
-                        // Optionally call set_cookie() or similar here
+                        $time = time() + 60 * 60 * 24 * 30;
+                        $hash = sha1(rand(1, 1000) . $this->config['salt']);
+                        $date_set = date('Y-m-d H:i:s');
+                        $date_expire = date('Y-m-d H:i:s', strtotime('+30 days'));
+                        // Use the new DB class for the insert
+                        $sql = "INSERT INTO `cookie_login`(`user_id`, `cookie_hash`, `date_added`, `expiry_date`) VALUES (?, ?, ?, ?)";
+                        $this->db->query($sql, [
+                            $_SESSION[PREFIX . 'user_id'],
+                            $hash,
+                            $date_set,
+                            $date_expire
+                        ]);
+                        setcookie(PREFIX . 'cookie_login', $hash, [
+                            'expires' => $time,
+                            'path' => '/',
+                            'secure' => isset($_SERVER['HTTPS']),
+                            'httponly' => true,
+                            'samesite' => 'Lax'
+                        ]);
                     }
                     $this->generate_session();
                     // Optionally call record_session() if implemented

@@ -24,6 +24,7 @@ if (!empty(App::config('default_module')) && App::config('default_module') === '
     );
 }
 $router->get('/about', [AboutController::class, 'index']);
+$router->get('/leaderboard', [LeaderboardController::class, 'index']);
 $router->get('/admin', [AdminController::class, 'index']);
 $router->post('/admin', [AdminController::class, 'index']);
 $router->get('/admin/dashboard', [AdminController::class, 'dashboard']);

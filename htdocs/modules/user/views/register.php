@@ -12,7 +12,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                
                 <h1 class="fw-bolder"><i class="bi bi-person-plus"></i> User Registration</h1>
             </div>
-            <div class="row gx-5 justify-content-center">
+            <div class="row gx-5  justify-content-center">
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
                         <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
@@ -26,15 +26,11 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
-                    <form id="userRegisterForm" method="post" action="">
+                    <form id="userRegisterForm" method="post" action="" class="">
                         <input type="hidden" name="token" value="<?php echo htmlspecialchars(TokenManager::csrf()); ?>">
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="first_name" name="first_name" type="text" placeholder="First Name" required />
-                            <label for="first_name">First Name</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input class="form-control" id="second_name" name="second_name" type="text" placeholder="Last Name" required />
-                            <label for="second_name">Last Name</label>
+                            <input class="form-control" id="display_name" name="display_name" type="text" placeholder="Display Name" required />
+                            <label for="display_name">Display Name</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" required />
@@ -50,10 +46,10 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         </div>
                         <div class="d-grid"><button class="btn btn-primary btn-lg " id="submitButton" type="submit">Register</button></div>
                     </form>
-                    <p class="text-center mt-4">
+                    <p class="text-center  mt-4">
                         Don't have an account? <a href="/user/register">Register here</a> - or you may <a href="/user/login">login</a> here
                     </p>
-                    <p>
+                    <p class="">
                         By registering, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
                     </p>
                 </div>
