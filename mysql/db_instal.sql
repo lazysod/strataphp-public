@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Aug 13, 2025 at 01:51 PM
+-- Generation Time: Aug 21, 2025 at 09:43 AM
 -- Server version: 5.7.39
 -- PHP Version: 8.2.0
 
@@ -196,12 +196,13 @@ CREATE TABLE `reset` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(255) NOT NULL,
+  `display_name` varchar(100) DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `second_name` varchar(50) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `pwd` varchar(128) NOT NULL,
   `security_hash` varchar(255) NOT NULL,
-  `avatar` varchar(120) DEFAULT 'dist/img/avatar.png',
+  `avatar` varchar(120) DEFAULT 'assets/images/blank-avatar.png',
   `is_admin` int(1) DEFAULT '0',
   `sys_admin` int(1) DEFAULT NULL,
   `rank` int(1) DEFAULT '0',

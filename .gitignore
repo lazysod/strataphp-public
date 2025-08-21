@@ -1,1 +1,31 @@
+# Composer dependencies
+/vendor/
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+storage/logs/
+storage/backups/
+storage/uploads/
+
+# Environment/config files
 htdocs/app/config.php
+
+# Node/npm (if you use JS tooling)
+node_modules/
+npm-debug.log
+
+# IDE/editor files
+*.swp
+*.swo
+*.bak
+
+# Misc
+.env
