@@ -79,4 +79,5 @@ return array (
         'terms' => '/views/terms.php',
     ),
     'default_module' => 'home',
+    'registration_enabled' => true,
 );
