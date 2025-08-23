@@ -39,18 +39,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!$first_name || !$second_name || !$email) {
             $error = 'All fields except password are required.';
         } else {
-            $params = [$first_name, $second_name, $email, $adminId];
+            // Avatar upload
+            $avatarPath = $admin['avatar'] ?? '';
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $allowedTypes = ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/jpg' => 'jpg', 'image/webp' => 'webp'];
+                $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
+                if (isset($allowedTypes[$fileType])) {
+                    $ext = $allowedTypes[$fileType];
+                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/uploads/admin/' . $adminId . '/';
+                    if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
+                    // Remove existing avatar files
+                    foreach (['png', 'jpg', 'jpeg', 'webp'] as $oldExt) {
+                        $oldFile = $uploadDir . 'avatar.' . $oldExt;
+                        if (file_exists($oldFile)) @unlink($oldFile);
+                    }
+                    $fileName = 'avatar.' . $ext;
+                    $destPath = $uploadDir . $fileName;
+                    if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destPath)) {
+                        $avatarPath = '/storage/uploads/admin/' . $adminId . '/' . $fileName;
+                    } else {
+                        $error = 'Failed to save avatar.';
+                    }
+                } else {
+                    $error = 'Invalid avatar file type.';
+                }
+            }
+            $params = [$first_name, $second_name, $email];
             $sql = "UPDATE users SET first_name = ?, second_name = ?, email = ?";
+            if ($avatarPath) {
+                $sql .= ", avatar = ?";
+                $params[] = $avatarPath;
+            }
             if ($pwd) {
                 $hashed = password_hash($pwd, PASSWORD_DEFAULT);
                 $sql .= ", password = ?";
                 $params[] = $hashed;
             }
             $sql .= " WHERE id = ? AND is_admin = 1";
-            if ($pwd) {
-                // Move id to end for param order
-                $params = [$first_name, $second_name, $email, $hashed, $adminId];
-            }
+            $params[] = $adminId;
             $db->query($sql, $params);
             $success = 'Profile updated successfully.';
             // Refresh admin data
@@ -72,7 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-md-6">
                 <h2>Admin Profile</h2>
                 <div class="card" style="max-width: 500px;">
-                    <div class="card-body">
+                    <div class="card-body text-center">
+                        <?php
+                        $avatarPath = $admin['avatar'] ?? '';
+                        $adminAvatarDir = '/storage/uploads/admin/' . $adminId . '/';
+                        $avatarFullPath = $_SERVER['DOCUMENT_ROOT'] . $avatarPath;
+                        if ($avatarPath && file_exists($avatarFullPath)) {
+                            echo '<img src="' . htmlspecialchars($avatarPath) . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+                        } else {
+                            $gravatar = 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($admin['email'] ?? ''))) . '?s=80&r=g&d=mm';
+                            echo '<img src="' . $gravatar . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+                        }
+                        ?>
                         <p><strong>Username:</strong> <?php echo htmlspecialchars($admin['username'] ?? '') ?></p>
                         <p><strong>Email:</strong> <?php echo htmlspecialchars($admin['email'] ?? '') ?></p>
                         <p><strong>Role:</strong> Admin</p>
@@ -80,8 +117,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="col-md-6">
-                <form method="post" action="">
+                <form method="post" action="" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(TokenManager::csrf($config)) ?>" />
+                    <div class="mb-3 text-center">
+                        <label class="form-label">Avatar</label><br>
+                        <input type="file" name="avatar" accept="image/png,image/jpeg,image/jpg,image/webp" class="form-control mt-2" style="max-width:300px;margin:auto;">
+                        <small class="text-muted">Allowed: PNG, JPG, JPEG, WEBP. Max 2MB.</small>
+                    </div>
                     <div class="form-floating mb-3">
                         <input class="form-control" id="first_name" name="first_name" type="text" value="<?php echo htmlspecialchars($admin['first_name'] ?? '') ?>" required />
                         <label for="first_name">First Name</label>
