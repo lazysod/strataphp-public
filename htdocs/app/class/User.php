@@ -330,15 +330,31 @@ class User
 
     public function update($userInfo)
     {
-        $pass = '';
-        $params = [$userInfo['first_name'], $userInfo['second_name'], $userInfo['email']];
-        $sql2 = "UPDATE users SET first_name = ?, second_name = ?, email = ?";
+        $params = [];
+        $sql2 = "UPDATE users SET ";
+        $fields = [];
+        if (isset($userInfo['first_name'])) {
+            $fields[] = "first_name = ?";
+            $params[] = $userInfo['first_name'];
+        }
+        if (isset($userInfo['second_name'])) {
+            $fields[] = "second_name = ?";
+            $params[] = $userInfo['second_name'];
+        }
+        if (isset($userInfo['email'])) {
+            $fields[] = "email = ?";
+            $params[] = $userInfo['email'];
+        }
+        if (isset($userInfo['avatar']) && $userInfo['avatar']) {
+            $fields[] = "avatar = ?";
+            $params[] = $userInfo['avatar'];
+        }
         if (isset($userInfo['pwd']) && isset($userInfo['pwd2']) && $userInfo['pwd'] === $userInfo['pwd2'] && strlen($userInfo['pwd']) > 0) {
             $pwdEncrypted = $this->make_pass($userInfo['pwd']);
-            $sql2 .= ", pwd = ?";
+            $fields[] = "pwd = ?";
             $params[] = $pwdEncrypted;
         }
-        $sql2 .= " WHERE id = ?";
+        $sql2 .= implode(", ", $fields) . " WHERE id = ?";
         $params[] = $userInfo['id'];
         $this->db->query($sql2, $params);
         return [
@@ -400,7 +416,7 @@ class User
                     $_SESSION[PREFIX . 'first_name'] = $row['first_name'];
                     $_SESSION[PREFIX . 'second_name'] = $row['second_name'];
                     $_SESSION[PREFIX . 'last_log'] = $row['last_access'];
-                    $_SESSION[PREFIX . 'avatar'] = $this->gravatar($row['email']);
+                    $_SESSION[PREFIX . 'avatar'] = $row['avatar'];
                     // Store a full user array for convenience
                     $_SESSION[PREFIX . 'user'] = [
                         'id' => $row['id'],

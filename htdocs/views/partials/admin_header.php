@@ -19,6 +19,8 @@ $sessionPrefix = $config['session_prefix'];
         }
         ?>
     </title>
+    <meta name="robots" content="noindex,nofollow,noodp,noydir, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Font Awesome (required for forum icons)-->
