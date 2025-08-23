@@ -5,7 +5,7 @@ return [
         'label' => 'Home',
         'show' => true,
         'order' => 1,
-        'url' => '/',
+        'url' => '/admin/dashboard',
     ],
     'user_management' => [
         'label' => 'User Management',

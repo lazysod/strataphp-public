@@ -1,4 +1,3 @@
-
 <?php
 $startPath = dirname(__DIR__, 2) . '/app/start.php';
 if (file_exists($startPath)) {
@@ -6,13 +5,14 @@ if (file_exists($startPath)) {
     include_once $startPath;
 }
 
-if (!isset($_SESSION[PREFIX . 'admin']) || $_SESSION[PREFIX . 'admin'] < 1) {
-    header('Location: /admin/login');
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+    header('Location: /admin/admin_login.php');
     exit;
 }
 
 $db = class_exists('DB') ? new DB($config) : null;
-$adminId = $_SESSION[PREFIX . 'admin'] ?? null;
+$adminId = $_SESSION[$sessionPrefix . 'admin'] ?? null;
 $admin = null;
 if ($db && $adminId) {
     $admin = $db->fetch("SELECT * FROM users WHERE id = ? AND is_admin = 1", [$adminId]);

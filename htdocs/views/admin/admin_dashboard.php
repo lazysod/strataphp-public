@@ -1,6 +1,9 @@
 <?php
-if (empty($_SESSION[PREFIX . 'admin'])) {
-    header('Location: /admin');
+require_once __DIR__ . '/../../app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
+
+if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+    header('Location: /admin/admin_login.php');
     exit;
 }
 require __DIR__ . '/../partials/admin_header.php'; ?>

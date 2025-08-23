@@ -1,7 +1,18 @@
 <?php
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
+    header('Location: /admin/dashboard');
+    exit;
+}
 $startPath = dirname(__DIR__, 2) . '/app/start.php';
 if (file_exists($startPath)) {
     include_once $startPath;
+}
+// Only allow access if a valid token is present
+$token = $_GET['token'] ?? ($_POST['reset_token'] ?? '');
+if (!$token) {
+    header('Location: /admin/reset-request');
+    exit;
 }
 require __DIR__ . '/../partials/header.php';
 ?>

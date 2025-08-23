@@ -14,7 +14,11 @@ class ModuleManagerController {
             $enabled = $_POST['enabled'] ?? [];
             foreach ($config['modules'] as $modName => $modInfo) {
                 if (is_array($modInfo)) {
-                    $config['modules'][$modName]['enabled'] = in_array($modName, $enabled);
+                    if ($modName === 'admin') {
+                        $config['modules'][$modName]['enabled'] = true; // Always enabled
+                    } else {
+                        $config['modules'][$modName]['enabled'] = in_array($modName, $enabled);
+                    }
                 }
             }
             // Save default module selection

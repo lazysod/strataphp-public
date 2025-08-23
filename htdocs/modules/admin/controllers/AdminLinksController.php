@@ -2,8 +2,18 @@
 // Admin Links Management Controller
 class AdminLinksController
 {
+    private function requireAdmin() {
+        global $config;
+        $sessionPrefix = $config['session_prefix'];
+        if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+            header('Location: /admin/admin_login.php');
+            exit;
+        }
+    }
+
     public function order()
     {
+        $this->requireAdmin();
         global $config;
         $db = new DB($config);
         $linksModel = new Links($db, $config);
@@ -27,6 +37,7 @@ class AdminLinksController
     }
     public function index()
     {
+        $this->requireAdmin();
         global $config;
         $db = new DB($config);
         $linksModel = new Links($db, $config);
@@ -35,6 +46,7 @@ class AdminLinksController
     }
     public function add()
     {
+        $this->requireAdmin();
         global $config;
         $db = new DB($config);
         $linksModel = new Links($db, $config);
@@ -51,6 +63,7 @@ class AdminLinksController
     }
     public function edit($id)
     {
+        $this->requireAdmin();
         global $config;
         $db = new DB($config);
         $linksModel = new Links($db, $config);
@@ -68,6 +81,7 @@ class AdminLinksController
     }
     public function delete($id)
     {
+        $this->requireAdmin();
         global $config;
         $db = new DB($config);
         $linksModel = new Links($db, $config);
