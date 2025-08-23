@@ -4,6 +4,13 @@ if (file_exists($startPath)) {
     include_once $startPath;
 }
 require __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../../app/config.php';
+
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
+    header('Location: /admin/dashboard');
+    exit;
+}
 ?>
 
 <section class="py-5">
@@ -28,7 +35,7 @@ require __DIR__ . '/../partials/header.php';
         <div class="row">
             <div class="col-md-3 offset-md-3">
 
-                <form method="post" action="/admin/reset-password">
+                <form method="post" action="/admin/reset-request">
                     <label for="email">Admin Email:</label>
                     <input type="email" name="email" id="email" required class="form-control"><br>
                     <button type="submit" class="btn btn-primary">Send Reset Link</button>

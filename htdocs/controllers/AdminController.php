@@ -72,7 +72,7 @@ class AdminController
     {
         $email = 'info@example.com';
         // APP::dump($_SESSION);
-        include __DIR__ . '/../views/admin/admin_dashboard.php';
+    include __DIR__ . '/../views/admin/admin_dashboard.php';
     }
 
     public function resetRequest()

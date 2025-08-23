@@ -6,6 +6,15 @@ if (!isset($config)) {
 if (!isset($modules)) {
     $modules = isset($config['modules']) ? $config['modules'] : [];
 }
+
+// Admin session check
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+    header('Location: /admin/admin_login.php');
+    exit;
+}
+
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
 <section class="py-5">
     <div class="container px-5">
@@ -23,7 +32,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                         <tr>
                             <td><?php echo htmlspecialchars($modName); ?></td>
                             <td>
-                                <?php if ($modName === 'home'): ?>
+                                <?php if ($modName === 'admin'): ?>
+                                    <input type="checkbox" checked disabled>
+                                    <input type="hidden" name="enabled[]" value="admin">
+                                <?php elseif ($modName === 'home'): ?>
                                     <input type="checkbox" checked disabled>
                                     <input type="hidden" name="enabled[]" value="home">
                                 <?php else: ?>
