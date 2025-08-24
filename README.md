@@ -432,3 +432,25 @@ The `AboutController` demonstrates how to conditionally render either a Twig tem
 This setup allows you to keep Twig as an optional feature and provides a clear example for other controllers.
 
 See `htdocs/controllers/AboutController.php` for implementation details.
+
+## CSRF Protection
+
+This framework includes built-in CSRF protection:
+
+- A unique CSRF token is generated for each user session.
+- To include the token in your forms, use:
+  ```php
+  <input type="hidden" name="token" value="<?= TokenManager::csrf() ?>">
+  ```
+- To verify the token on form submission in your controller:
+  ```php
+  $tm = new TokenManager();
+  $result = $tm->verify($_POST['token']);
+  if ($result['status'] === 'success') {
+      // Token is valid, process the form
+  } else {
+      // Token is invalid or expired
+  }
+  ```
+
+CSRF protection is enabled by default if `'csrf_token' => true` is set in your config.
