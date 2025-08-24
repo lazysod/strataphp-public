@@ -120,7 +120,11 @@ This is the first full release of the Strata Framework, featuring a modular arch
    composer install
    ```
 4. Set up your web server to use `htdocs` as the document root.
-5. Copy or edit `htdocs/app/config.php` for your environment (database, mail, theme, etc).
+5. Copy `.env.example` to `.env` and fill in your actual database, mail, and other settings:
+  ```sh
+  cp .env.example .env
+  ```
+  Edit `.env` with your real credentials.
 6. Visit your site in the browser!
 
 ---
@@ -254,8 +258,13 @@ When disabled, the registration page will show a message and block new signups.
 
 ## Email
 
-- Configure mail settings in `app/config.php`
+- Configure mail settings in your `.env` file (see `.env.example` for all options)
 - Uses PHPMailer for robust email delivery
+# Environment Variables
+
+- All sensitive and environment-specific settings (DB, mail, debug, etc.) are managed in the `.env` file.
+- See `.env.example` for a template.
+- Never commit your `.env` file; it is ignored by `.gitignore`.
 
 
 ## Extending & Modules
