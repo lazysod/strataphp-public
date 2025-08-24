@@ -116,6 +116,21 @@ if (is_dir($modulesDir)) {
     }
 }
 
+// Dependency Injection Container setup
+require_once __DIR__ . '/class/Container.php';
+global $container;
+$container = new Container();
+
+// Register Logger service
+$container->factory('logger', function($c) use ($config) {
+    return new Logger($config);
+});
+
+// Register DB service
+$container->factory('db', function($c) use ($config) {
+    return new DB($config['db']);
+});
+
 // Example: define app constants
 define('APP_VERSION', '0.1.0');
 // define('BASE_URL', '/htdocs/');
