@@ -49,6 +49,9 @@ spl_autoload_register(
     }
 );
 
+// Set up session prefix for middleware
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+
 // Set up global router
 require_once __DIR__ . '/Router.php';
 global $router;
@@ -70,6 +73,18 @@ $router->post('/admin/dashboard/profile', ['AdminController', 'profile']);
 
 // Register admin links routes
 if (isset($router) && $router instanceof Router) {
+    // Example: Add global middleware for authentication
+        $router->middleware(function($request, $next) use ($sessionPrefix) {
+            $path = $request['path'];
+            $isAdminRoute = strpos($path, '/admin') === 0;
+            $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
+            if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
+                header('Location: /admin');
+                exit;
+            }
+            return $next($request);
+        });
+
     $router->get('/admin/links', ['AdminLinksController', 'index']);
     $router->get('/admin/links/add', ['AdminLinksController', 'add']);
     $router->post('/admin/links/add', ['AdminLinksController', 'add']);
