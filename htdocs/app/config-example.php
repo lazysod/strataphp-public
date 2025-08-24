@@ -5,7 +5,7 @@ if (!defined('BASE_PATH')) {
 
 // Define the log file path
 if (!defined('LOG_PATH')) {
-  define('LOG_PATH', BASE_PATH . '/storage/logs/app.log');
+    define('LOG_PATH', BASE_PATH . '/storage/logs');
 }
 // Example config file for Strata Framework
 require_once __DIR__ . '/theme.php';
