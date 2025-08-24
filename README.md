@@ -405,3 +405,30 @@ php bin/seed.php --down            # Remove all seeded data
 - Use the migration lock to avoid concurrent schema changes in teams/CI.
 
 See the `bin/` and `migrations/` folders for more details and examples.
+# Optional Twig Template Engine Support
+
+This framework supports Twig as an optional template engine. By default, classic PHP views are used. If you want to use Twig:
+
+1. Install Twig via Composer:
+   ```bash
+   composer require twig/twig
+   ```
+2. Set `use_twig` to `true` in `htdocs/app/config.php` or your `.env` file:
+   ```env
+   USE_TWIG=true
+   ```
+3. Create your templates in the `htdocs/views` directory with the `.twig` extension (e.g., `about.twig`).
+4. Use Twig syntax in your templates. You can use template inheritance and includes for headers, footers, etc.
+
+If `use_twig` is set to `false`, the framework will use classic PHP views instead.
+
+## Example: Conditional Twig/PHP Rendering in Controllers
+
+The `AboutController` demonstrates how to conditionally render either a Twig template or a classic PHP view based on the configuration setting (`use_twig`).
+
+- If Twig is enabled in `htdocs/app/config.php` or your `.env` file, the controller will render `about.twig`.
+- If Twig is disabled, it will render `about.php` using standard PHP includes.
+
+This setup allows you to keep Twig as an optional feature and provides a clear example for other controllers.
+
+See `htdocs/controllers/AboutController.php` for implementation details.
