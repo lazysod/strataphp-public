@@ -1,5 +1,8 @@
 <?php
 // Load config early for session prefix
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate(__DIR__ . '/config.php', true);
+}
 $config = isset($config) ? $config : (file_exists(__DIR__ . '/config.php') ? require __DIR__ . '/config.php' : []);
 
 // Set timezone based on config entry
@@ -49,6 +52,9 @@ spl_autoload_register(
     }
 );
 
+// Set up session prefix for middleware
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+
 // Set up global router
 require_once __DIR__ . '/Router.php';
 global $router;
@@ -70,6 +76,18 @@ $router->post('/admin/dashboard/profile', ['AdminController', 'profile']);
 
 // Register admin links routes
 if (isset($router) && $router instanceof Router) {
+    // Example: Add global middleware for authentication
+        $router->middleware(function($request, $next) use ($sessionPrefix) {
+            $path = $request['path'];
+            $isAdminRoute = strpos($path, '/admin') === 0;
+            $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
+            if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
+                header('Location: /admin');
+                exit;
+            }
+            return $next($request);
+        });
+
     $router->get('/admin/links', ['AdminLinksController', 'index']);
     $router->get('/admin/links/add', ['AdminLinksController', 'add']);
     $router->post('/admin/links/add', ['AdminLinksController', 'add']);
@@ -107,14 +125,31 @@ if (is_dir($modulesDir)) {
     }
     // Load routes for enabled modules
     global $router;
-    foreach ($config['modules'] as $modName => $enabled) {
-        if (!$enabled) continue;
+    foreach ($config['modules'] as $modName => $modInfo) {
+        if (is_array($modInfo) && empty($modInfo['enabled'])) {
+            continue;
+        }
         $routeFile = $modulesDir . $modName . '/routes.php';
         if (file_exists($routeFile)) {
             include $routeFile;
         }
     }
 }
+
+// Dependency Injection Container setup
+require_once __DIR__ . '/class/Container.php';
+global $container;
+$container = new Container();
+
+// Register Logger service
+$container->factory('logger', function($c) use ($config) {
+    return new Logger($config);
+});
+
+// Register DB service
+$container->factory('db', function($c) use ($config) {
+    return new DB($config['db']);
+});
 
 // Example: define app constants
 define('APP_VERSION', '0.1.0');

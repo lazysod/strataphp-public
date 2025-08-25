@@ -5,7 +5,7 @@ if (!defined('BASE_PATH')) {
 
 // Define the log file path
 if (!defined('LOG_PATH')) {
-  define('LOG_PATH', BASE_PATH . '/storage/logs/app.log');
+    define('LOG_PATH', BASE_PATH . '/storage/logs');
 }
 // Example config file for Strata Framework
 require_once __DIR__ . '/theme.php';
@@ -14,26 +14,27 @@ require_once __DIR__ . '/theme.php';
 return array(
     'site_name' => 'StrataPHP',
     'site_description' => 'A simple PHP framework',
-    'admin_email' => 'your-admin@example.com',
-    'form_email' => 'your-form@example.com',
+    'admin_email' => getenv('ADMIN_EMAIL') ?: 'your-admin@example.com',
+    'form_email' => getenv('FORM_EMAIL') ?: 'your-form@example.com',
     'base_url' => 'http://localhost:8888',
     'dashboard_url' => '/admin/dashboard',
     'logo_small' => '/assets/images/logo_small.png',
     'db' =>
     array(
-        'host' => '127.0.0.1',
-        'username' => 'your_db_user',
-        'password' => 'your_db_password',
-        'database' => 'your_db_name',
+        'host' => getenv('DB_HOST') ?: '127.0.0.1',
+        'username' => getenv('DB_USERNAME') ?: 'your_db_user',
+        'password' => getenv('DB_PASSWORD') ?: 'your_db_password',
+        'database' => getenv('DB_DATABASE') ?: 'your_db_name',
     ),
     'mail' =>
     array(
-        'host' => 'smtp.example.com',
-        'username' => 'your-smtp-user@example.com',
-        'password' => 'your_smtp_password',
-        'port' => 587,
-        'encryption' => 'tls',
-        'from_email' => 'your-smtp-user@example.com',
+        'host' => getenv('MAIL_HOST') ?: 'smtp.example.com',
+        'port' => getenv('MAIL_PORT') ?: 587,
+        'username' => getenv('MAIL_USERNAME') ?: 'your-smtp-user@example.com',
+        'password' => getenv('MAIL_PASSWORD') ?: 'your_smtp_password',
+        'encryption' => getenv('MAIL_ENCRYPTION') ?: 'tls',
+        'from_email' => getenv('MAIL_FROM_ADDRESS') ?: 'your-smtp-user@example.com',
+        'from_name' => getenv('MAIL_FROM_NAME') ?: 'StrataPHP',
     ),
     'debug' => true,
     'timezone' => 'Europe/London',
