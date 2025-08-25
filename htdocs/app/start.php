@@ -1,5 +1,8 @@
 <?php
 // Load config early for session prefix
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate(__DIR__ . '/config.php', true);
+}
 $config = isset($config) ? $config : (file_exists(__DIR__ . '/config.php') ? require __DIR__ . '/config.php' : []);
 
 // Set timezone based on config entry
@@ -122,8 +125,10 @@ if (is_dir($modulesDir)) {
     }
     // Load routes for enabled modules
     global $router;
-    foreach ($config['modules'] as $modName => $enabled) {
-        if (!$enabled) continue;
+    foreach ($config['modules'] as $modName => $modInfo) {
+        if (is_array($modInfo) && empty($modInfo['enabled'])) {
+            continue;
+        }
         $routeFile = $modulesDir . $modName . '/routes.php';
         if (file_exists($routeFile)) {
             include $routeFile;
