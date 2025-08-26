@@ -1,6 +1,10 @@
 <?php
+namespace App\Modules\User\Controllers;
+use App\TokenManager;
+use App\DB;
+use App\User;
+use App\Token;
 
-// modules/user/controllers/UserRegisterController.php
 // Refactored as a class for router compatibility
 class UserRegisterController
 {
@@ -35,6 +39,9 @@ class UserRegisterController
                     'first_name' => trim($_POST['first_name'] ?? ''),
                     'second_name' => trim($_POST['second_name'] ?? ''),
                 ];
+                if (!empty($_POST['display_name'])) {
+                    $userInfo['display_name'] = trim($_POST['display_name']);
+                }
                 $result = $user->register($userInfo);
                 if ($result['status'] === 'success') {
                     $success = $result['message'];

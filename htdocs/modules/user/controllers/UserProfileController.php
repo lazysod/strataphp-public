@@ -2,6 +2,7 @@
 namespace App\Modules\User\Controllers;
 
 use App\DB;
+use App\App;
 use App\User;
 // User profile controller for updating user details
 class UserProfileController
@@ -74,6 +75,7 @@ class UserProfileController
                     'pwd2' => $_POST['pwd2'] ?? '',
                     'avatar' => $avatarPath,
                 ];
+
                 $result = $userModel->update($updateInfo);
                 if ($result['status'] === 'success') {
                     $success = $result['message'];

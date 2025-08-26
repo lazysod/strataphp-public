@@ -9,7 +9,8 @@
             "App\\Modules\\Admin\\Controllers\\": "htdocs/modules/admin/controllers/",
             "App\\Modules\\Admin\\Models\\": "htdocs/modules/admin/models/",
             "App\\Modules\\Links\\Controllers\\": "htdocs/modules/links/controllers/",
-            "App\\Modules\\User\\Controllers\\": "htdocs/modules/user/controllers/"
+            "App\\Modules\\User\\Controllers\\": "htdocs/modules/user/controllers/",
+            "App\\Modules\\Contact\\Controllers\\": "htdocs/modules/contact/controllers/"
         }
     },
     "require": {

@@ -3,6 +3,7 @@ $title = 'Contact';
 $pageJs = '';
 $showNav = true;
 require __DIR__ . '/../../../views/partials/header.php';
+use App\bserror;
 ?>
 <section class="py-5" id="features">
     <div class="container px-5 my-5">

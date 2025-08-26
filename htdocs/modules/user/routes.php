@@ -19,14 +19,14 @@ if (!empty(App::config('modules')['user'])) {
     }
     $router->get('/user/login', [UserLoginController::class, 'index']);
     $router->post('/user/login', [UserLoginController::class, 'index']);
-    $router->get('/user/register', [UserRegisterController::class, 'index']);
-    $router->post('/user/register', [UserRegisterController::class, 'index']);
+    $router->get('/user/register', [\App\Modules\User\Controllers\UserRegisterController::class, 'index']);
+    $router->post('/user/register', [\App\Modules\User\Controllers\UserRegisterController::class, 'index']);
     $router->get('/user/profile', [UserProfileController::class, 'index']);
     $router->post('/user/profile', [UserProfileController::class, 'index']);
-    $router->get('/user/reset-request', [UserResetRequestController::class, 'index']);
-    $router->post('/user/reset-request', [UserResetRequestController::class, 'index']);
-    $router->get('/user/reset', [UserResetController::class, 'index']);
-    $router->post('/user/reset', [UserResetController::class, 'index']);
+    $router->get('/user/reset-request', [\App\Modules\User\Controllers\UserResetRequestController::class, 'index']);
+    $router->post('/user/reset-request', [\App\Modules\User\Controllers\UserResetRequestController::class, 'index']);
+    $router->get('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
+    $router->post('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
     $router->get('/user/email-test', [EmailTestController::class, 'index']);
     $router->post('/user/email-test', [EmailTestController::class, 'index']);
     $router->get('/user/activate', ['UserActivateController', 'index']);

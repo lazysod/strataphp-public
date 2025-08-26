@@ -11,9 +11,9 @@ global $router;
 if (!empty(App::config('modules')['contact'])) {
     // Register / as root if contact is the default module
     if (!empty(App::config('default_module')) && App::config('default_module') === 'contact') {
-        $router->get('/', [ContactFormController::class, 'index']);
+    $router->get('/', [\App\Modules\Contact\Controllers\ContactFormController::class, 'index']);
     }
-    $router->get('/contact', [ContactFormController::class, 'index']);
-    $router->post('/contact', [ContactFormController::class, 'submit']);
+    $router->get('/contact', [\App\Modules\Contact\Controllers\ContactFormController::class, 'index']);
+    $router->post('/contact', [\App\Modules\Contact\Controllers\ContactFormController::class, 'submit']);
 }
     // Additional context lines can be added here if necessary

@@ -1,6 +1,9 @@
 <?php
+namespace App\Modules\Contact\Controllers;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use App\App;
+use App\Token;
 class ContactFormController
 {
     public function index()

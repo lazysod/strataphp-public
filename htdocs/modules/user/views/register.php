@@ -1,8 +1,4 @@
 <?php
-// DEBUG: Show all errors for troubleshooting
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 <section class="py-5">
@@ -27,7 +23,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         </div>
                     <?php endif; ?>
                     <form id="userRegisterForm" method="post" action="" class="">
-                        <input type="hidden" name="token" value="<?php echo htmlspecialchars(TokenManager::csrf()); ?>">
+                        <input type="hidden" name="token" value="<?php echo htmlspecialchars(\App\TokenManager::csrf()); ?>">
                         <div class="form-floating mb-3">
                             <input class="form-control" id="display_name" name="display_name" type="text" placeholder="Display Name" required />
                             <label for="display_name">Display Name</label>

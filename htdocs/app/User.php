@@ -261,6 +261,7 @@ class User
         $pass2 = $userInfo['confirm_pwd'];
         $fName = $userInfo['first_name'];
         $sName = $userInfo['second_name'];
+        $displayName = isset($userInfo['display_name']) ? $userInfo['display_name'] : null;
         if (empty($fName) || empty($sName) || empty($email) || empty($pass) || empty($pass2)) {
             return [
                 'status' => 'fail',
@@ -284,8 +285,13 @@ class User
             ];
         } else {
             // Insert user with active=0
-            $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, 0)";
-            $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);
+            if ($displayName !== null) {
+                $sql = "INSERT INTO users (id, first_name, second_name, display_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, 0)";
+                $this->db->query($sql, [$fName, $sName, $displayName, $email, $pwdEncrypted, $hash]);
+            } else {
+                $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, 0)";
+                $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);
+            }
             $userId = $this->db->insertId();
             // Generate activation key and expiry (24h) 
             $activationKey = bin2hex(random_bytes(32));
@@ -342,6 +348,10 @@ class User
         if (isset($userInfo['second_name'])) {
             $fields[] = "second_name = ?";
             $params[] = $userInfo['second_name'];
+        }
+        if (isset($userInfo['display_name'])) {
+            $fields[] = "display_name = ?";
+            $params[] = $userInfo['display_name'];
         }
         if (isset($userInfo['email'])) {
             $fields[] = "email = ?";
