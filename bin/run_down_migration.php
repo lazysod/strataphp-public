@@ -5,7 +5,7 @@ require_once __DIR__ . '/../htdocs/app/class/DB.php';
 
 if ($argc < 2) {
     echo "Usage: php bin/run_down_migration.php <migration_name>\n";
-    exit(1);
+    // ...existing code...
 }
 
 $migrationName = $argv[1];
@@ -13,7 +13,7 @@ $migrationFile = __DIR__ . '/../migrations/' . $migrationName . '.down.php';
 
 if (!file_exists($migrationFile)) {
     echo "Down migration file not found: $migrationFile\n";
-    exit(1);
+    // ...existing code...
 }
 
 $config = $config ?? require __DIR__ . '/../htdocs/app/config.php';

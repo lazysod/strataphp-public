@@ -13,7 +13,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) use ($config) {
         echo '<div style="margin:2em auto;max-width:600px;padding:1em;border:1px solid #e74c3c;background:#fff3f3;color:#c0392b;font-family:sans-serif;text-align:center;">';
         echo '<strong>Oops! An error occurred:</strong><br>';
         echo htmlspecialchars($errstr) . '<br><small>(' . htmlspecialchars($errfile) . ' line ' . $errline . ')</small>';
-        echo '<br><br><em>This is a debug message. Please contact support if you see this in production.</em>';
+    // ...existing code...
         echo '</div>';
     } else {
         include $config['system_pages'][500];
@@ -27,7 +27,7 @@ set_exception_handler(function($exception) use ($config) {
         echo '<div style="margin:2em auto;max-width:600px;padding:1em;border:1px solid #e74c3c;background:#fff3f3;color:#c0392b;font-family:sans-serif;text-align:center;">';
         echo '<strong>Oops! An unexpected error occurred:</strong><br>';
         echo htmlspecialchars($exception->getMessage()) . '<br><small>(' . htmlspecialchars($exception->getFile()) . ' line ' . $exception->getLine() . ')</small>';
-        echo '<br><br><em>This is a debug message. Please contact support if you see this in production.</em>';
+    // ...existing code...
         echo '</div>';
     } else {
         include $config['system_pages'][500];

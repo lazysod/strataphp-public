@@ -178,7 +178,7 @@ class User
                         $sql2 = "SELECT * FROM `users` WHERE `id`=?";
                         $users = $this->db->fetchAll($sql2, [$userId]);
                         // APP::dump($users);
-                        // die();
+                        // ...existing code...
                         foreach ($users as $row2) {
                             if ($row2['dead_switch'] > 0) {
                                 return [
