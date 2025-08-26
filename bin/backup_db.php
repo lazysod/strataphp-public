@@ -6,7 +6,7 @@ if (!isset($config)) {
 }
 if (!$config || !isset($config['db'])) {
     echo "Could not load database config.\n";
-    exit(1);
+    // ...existing code...
 }
 
 $dbname = $config['db']['database'];
@@ -18,7 +18,7 @@ $host = $config['db']['host'];
 exec('which mysqldump', $out, $whichRet);
 if ($whichRet !== 0) {
     echo "mysqldump command not found. Please install MySQL client tools.\n";
-    exit(1);
+    // ...existing code...
 }
 
 $date = date('Ymd_His');
@@ -33,5 +33,5 @@ if ($retval === 0) {
     echo "Backup complete: $backupFile\n";
 } else {
     echo "Backup failed.\n";
-    exit(1);
+    // ...existing code...
 }

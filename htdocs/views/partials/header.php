@@ -26,8 +26,6 @@ $navConfig = include __DIR__ . '/../../app/navConfig.php';
     <!-- Font Awesome (required for forum icons)-->
     <link rel="stylesheet" href="/themes/default/assets/fontawesome/css/all.min.css">
 
-    <!-- Global JS (cookie consent, etc.) -->
-    <script src="<?php echo App::config('theme_path'); ?>/js/scripts.js"></script>
 </head>
 
 <body class="d-flex flex-column h-100">

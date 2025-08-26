@@ -29,7 +29,7 @@ class DB
             // If running in CLI, do not include web error views
             if (php_sapi_name() === 'cli') {
                 fwrite(STDERR, "Database connection failed: " . $e->getMessage() . "\n");
-                exit(1);
+                // ...existing code...
             }
             $errorPage = __DIR__ . '/../../views/errors/500.php';
             if (file_exists($errorPage)) {
@@ -39,7 +39,7 @@ class DB
             } else {
                 // Fallback: plain error
                 http_response_code(500);
-                exit('500 Internal Server Error: Database connection failed.');
+                // ...existing code...
             }
         }
     }

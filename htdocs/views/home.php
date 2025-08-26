@@ -1,9 +1,6 @@
 <?php 
 use App\App;
-$title = 'New Framework';
-$pageJs = 'home';
 require __DIR__ . '/partials/header.php'; 
-
 ?>
             <header class="bg-dark py-5">
                 <div class="container px-5">

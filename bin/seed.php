@@ -25,7 +25,7 @@ if ($isDown) {
         echo "De-seeded: $name\n";
     }
     echo "All de-seeds complete.\n";
-    exit(0);
+    // ...existing code...
 }
 
 // Run all seeds or a specific one
@@ -33,12 +33,12 @@ if ($argc > 1) {
     $seedFile = $seedsDir . $argv[1];
     if (!file_exists($seedFile)) {
         echo "Seed file not found: $argv[1]\n";
-        exit(1);
+    // ...existing code...
     }
     $seed = include $seedFile;
     $seed($db);
     echo "Seeded: $argv[1]\n";
-    exit(0);
+    // ...existing code...
 }
 
 $seedFiles = glob($seedsDir . '*.php');
