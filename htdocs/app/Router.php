@@ -138,7 +138,7 @@ class Router
                 // Set default values for the custom 404 page
                 if (!isset($h1)) { $h1 = 'Page Not Found'; }
                 if (!isset($message)) { $message = 'Sorry, the page you requested could not be found.'; }
-                if (!isset($homeLink)) { $homeLink = App::config('base_url') ?? '/'; }
+                if (!isset($homeLink)) { $homeLink = $_ENV['BASE_URL'] ?? '/'; }
                 include $custom404;
             } else {
                 echo '404 Not Found';

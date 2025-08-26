@@ -1,4 +1,9 @@
 <?php
+namespace App\Controllers;
+use App\DB;
+use App\User;
+use PHPMailer\PHPMailer\PHPMailer;
+
 class AdminController
 {
     public function profile()
@@ -13,7 +18,7 @@ class AdminController
         }
         $config = include dirname(__DIR__) . '/app/config.php';
         $userId = $_SESSION[PREFIX . 'user_id'];
-        $db = new DB($config);
+    $db = new DB($config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // CSRF check
             $csrfValid = isset($_POST['csrf_token']) && isset($_SESSION[PREFIX . 'csrf_token']) && hash_equals($_SESSION[PREFIX . 'csrf_token'], $_POST['csrf_token']);
@@ -81,15 +86,14 @@ class AdminController
         $message = '';
         global $config;
         $db = new DB($config);
-        $userModel = new User($db, $config);
+        $userModel = new \App\User($db, $config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             $email = trim($_POST['email']);
             $result = $userModel->requestPasswordReset($email, $config['base_url'], true); // true = admin only
             if ($result['status'] === 'success') {
                 include_once dirname(__DIR__) . '/vendor/autoload.php';
                 $token = $result['token'];
-                $resetLink = $config['base_url'] . "/admin/reset-password/confirm?token=$token";
-                $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+                $mail = new PHPMailer(true);
                 try {
                     $mail->isSMTP();
                     $mail->Host = $config['mail']['host'];
@@ -159,3 +163,4 @@ class AdminController
         include __DIR__ . '/../views/admin/admin_reset_form.php';
     }
 }
+?>

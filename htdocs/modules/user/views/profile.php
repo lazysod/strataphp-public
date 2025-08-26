@@ -39,7 +39,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                             <small class="text-muted">Allowed: PNG, JPG, JPEG, WEBP. Max 2MB.</small>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="display_name" name="display_name" type="text" value="<?php echo htmlspecialchars($user['display_name'] ?? '') ?>" required />
+                            <input class="form-control" id="display_name" name="display_name" type="text" value="<?php echo htmlspecialchars($user['display_name'] ?? '') ?>"  />
                             <label for="display_name">Display Name <span style="color:red">*</span></label>
                         </div>
                         <div class="form-floating mb-3">

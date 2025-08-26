@@ -1,4 +1,7 @@
 <?php
+namespace App\Modules\Admin\Controllers;
+use App\DB;
+use App\User;
 // Admin User Management Controller
 class UserAdminController
 {

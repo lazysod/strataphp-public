@@ -1,4 +1,7 @@
 <?php
+namespace App\Modules\Links\Controllers;
+use App\DB;
+use App\Modules\Admin\Models\Links;
 // Minimal LinksController for Linktree-style module
 class LinksController
 {

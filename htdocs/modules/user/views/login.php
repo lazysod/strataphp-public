@@ -31,7 +31,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         </div>
                     <?php endif; ?>
                     <form id="userLoginForm" method="post" action="">
-                        <input type="hidden" name="token" value="<?php echo htmlspecialchars(TokenManager::csrf()); ?>">
+                        <input type="hidden" name="token" value="<?php echo htmlspecialchars(\App\TokenManager::csrf()); ?>">
                         <div class="form-floating mb-3">
                             <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" required />
                             <label for="email">Email address</label>

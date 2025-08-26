@@ -1,4 +1,13 @@
 <?php
+use App\Modules\User\Controllers\UserLoginController;
+use App\Modules\User\Controllers\UserProfileController;
+use App\App;
+// Ensure Composer autoloader is loaded for App class
+$composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
+if (file_exists($composerAutoload)) {
+    require_once $composerAutoload;
+}
+// ...existing code...
 // modules/user/routes.php
 // Register user module routes using the router and modules['user'] config
 
@@ -23,3 +32,4 @@ if (!empty(App::config('modules')['user'])) {
     $router->get('/user/activate', ['UserActivateController', 'index']);
     // Add more user routes as needed
 }
+    // Additional context lines can be added here if necessary

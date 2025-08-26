@@ -6,7 +6,7 @@ class JokesApiController extends ApiController
 {
     public function index()
     {
-    $this->error('Bad Request', 400);
+        $this->error('Bad Request', 400);
     }
 
     // GET /api/v1/jokes/random
@@ -42,5 +42,28 @@ class JokesApiController extends ApiController
         } else {
             $this->json(ApiHelper::error('Joke not found', 404), 404);
         }
+    }
+
+    // POST /api/v1/jokes/add
+    public function add()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->error('Method Not Allowed', 405);
+            return;
+        }
+
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        if (!is_array($data) || empty($data['joke'])) {
+            $this->error('Missing joke text', 400);
+            return;
+        }
+
+        // In a real app, you'd save to DB. Here, just echo back.
+        $newJoke = [
+            'id' => rand(100, 999),
+            'joke' => $data['joke']
+        ];
+        $this->json(ApiHelper::success($newJoke), 201);
     }
 }

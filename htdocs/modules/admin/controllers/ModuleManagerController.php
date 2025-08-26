@@ -1,4 +1,5 @@
 <?php
+namespace App\Modules\Admin\Controllers;
 // Admin UI for module management
 class ModuleManagerController {
     public function index() {

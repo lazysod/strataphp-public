@@ -1,4 +1,11 @@
 <?php
+use App\App;
+// Ensure Composer autoloader is loaded for App class
+$composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
+if (file_exists($composerAutoload)) {
+    require_once $composerAutoload;
+}
+// ...existing code...
 // Contact module routes
 global $router;
 if (!empty(App::config('modules')['contact'])) {
@@ -9,3 +16,4 @@ if (!empty(App::config('modules')['contact'])) {
     $router->get('/contact', [ContactFormController::class, 'index']);
     $router->post('/contact', [ContactFormController::class, 'submit']);
 }
+    // Additional context lines can be added here if necessary

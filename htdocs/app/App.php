@@ -1,4 +1,6 @@
 <?php
+namespace App;
+
 class App
 {
     // Dump a variable in a readable format

@@ -1,4 +1,5 @@
 <?php
+namespace App\Controllers;
 error_log('DEBUG: HomeController.php loaded');
 class HomeController
 {

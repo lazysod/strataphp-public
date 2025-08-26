@@ -1,4 +1,8 @@
 <?php
+namespace App\Modules\User\Controllers;
+
+use App\DB;
+use App\User;
 // User profile controller for updating user details
 class UserProfileController
 {
@@ -62,8 +66,10 @@ class UserProfileController
             if ($error == '') {
                 $updateInfo = [
                     'id' => $userId,
-                    'display_name' => trim($_POST['display_name'] ?? ''),
-                    'email' => trim($_POST['email'] ?? ''),
+                    'first_name' => trim($_POST['first_name'] ?? ($user['first_name'] ?? '')),
+                    'second_name' => trim($_POST['second_name'] ?? ($user['second_name'] ?? '')),
+                    'display_name' => trim($_POST['display_name'] ?? ($user['display_name'] ?? '')),
+                    'email' => trim($_POST['email'] ?? ($user['email'] ?? '')),
                     'pwd' => $_POST['pwd'] ?? '',
                     'pwd2' => $_POST['pwd2'] ?? '',
                     'avatar' => $avatarPath,
@@ -71,7 +77,7 @@ class UserProfileController
                 $result = $userModel->update($updateInfo);
                 if ($result['status'] === 'success') {
                     $success = $result['message'];
-                    // Refresh user info
+                    // Always refresh user info after update
                     $rows = $db->fetchAll($sql, [$userId]);
                     $user = $rows[0] ?? [];
                 } else {

@@ -1,4 +1,6 @@
 <?php
+use App\App;
+use App\DB;
 $startPath = dirname(__DIR__, 2) . '/app/start.php';
 if (file_exists($startPath)) {
     $config = include dirname(__DIR__, 2) . '/app/config.php';
@@ -11,18 +13,19 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
     exit;
 }
 
-$db = class_exists('DB') ? new DB($config) : null;
+$db = new \App\DB($config);
 $adminId = $_SESSION[$sessionPrefix . 'admin'] ?? null;
 $admin = null;
 if ($db && $adminId) {
     $admin = $db->fetch("SELECT * FROM users WHERE id = ? AND is_admin = 1", [$adminId]);
 }
+
 $success = '';
 $error = '';
 
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tm = new TokenManager($config);
+    $tm = new \App\TokenManager($config);
     $verify = $tm->verify($_POST['csrf_token'] ?? '');
     if (!isset($_POST['csrf_token']) || $verify['status'] !== 'success') {
         $error = 'Invalid CSRF token.';
@@ -64,21 +67,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = 'Invalid avatar file type.';
                 }
             }
-            $params = [$first_name, $second_name, $email];
-            $sql = "UPDATE users SET first_name = ?, second_name = ?, email = ?";
-            if ($avatarPath) {
-                $sql .= ", avatar = ?";
-                $params[] = $avatarPath;
-            }
-            if ($pwd) {
-                $hashed = password_hash($pwd, PASSWORD_DEFAULT);
-                $sql .= ", password = ?";
-                $params[] = $hashed;
-            }
-            $sql .= " WHERE id = ? AND is_admin = 1";
-            $params[] = $adminId;
-            $db->query($sql, $params);
+            $userModel = new \App\User($db, $config);
+            $updateInfo = [
+                'id' => $adminId,
+                'first_name' => $first_name,
+                'second_name' => $second_name,
+                'email' => $email,
+                'avatar' => $avatarPath,
+                'pwd' => $pwd,
+                'pwd2' => $pwd2,
+            ];
+            $result = $userModel->update($updateInfo);
             $success = 'Profile updated successfully.';
+            // Refresh $admin after update to show latest avatar and info
+            $admin = $db->fetch("SELECT * FROM users WHERE id = ? AND is_admin = 1", [$adminId]);
             // Refresh admin data
             $admin = $db->fetch("SELECT * FROM users WHERE id = ? AND is_admin = 1", [$adminId]);
         }
@@ -118,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="col-md-6">
                 <form method="post" action="" enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(TokenManager::csrf($config)) ?>" />
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(\App\TokenManager::csrf($config)) ?>" />
                     <div class="mb-3 text-center">
                         <label class="form-label">Avatar</label><br>
                         <input type="file" name="avatar" accept="image/png,image/jpeg,image/jpg,image/webp" class="form-control mt-2" style="max-width:300px;margin:auto;">
