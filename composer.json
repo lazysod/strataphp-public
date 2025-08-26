@@ -5,7 +5,11 @@
     "autoload": {
         "psr-4": {
             "App\\": "htdocs/app/",
-            "Modules\\": "htdocs/modules/"
+            "App\\Controllers\\": "htdocs/controllers/",
+            "App\\Modules\\Admin\\Controllers\\": "htdocs/modules/admin/controllers/",
+            "App\\Modules\\Admin\\Models\\": "htdocs/modules/admin/models/",
+            "App\\Modules\\Links\\Controllers\\": "htdocs/modules/links/controllers/",
+            "App\\Modules\\User\\Controllers\\": "htdocs/modules/user/controllers/"
         }
     },
     "require": {
