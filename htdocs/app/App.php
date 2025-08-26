@@ -22,11 +22,15 @@ class App
         return $config[$key] ?? $default;
     }
 
-    // Example: log a message (expand as needed)
-    public static function log($message)
+    // Unified log method using Logger class
+    public static function log($message, $level = 'INFO', $context = [])
     {
-        $logFile = __DIR__ . '/../storage/app.log';
-        file_put_contents($logFile, date('Y-m-d H:i:s') . ' ' . $message . "\n", FILE_APPEND);
+        $configFile = __DIR__ . '/config.php';
+        $config = file_exists($configFile) ? include $configFile : [];
+        // Use Logger from app/class/Logger.php
+        require_once __DIR__ . '/class/Logger.php';
+        $logger = new \Logger($config);
+        $logger->log($level, $message, $context);
     }
 
     public static function stripSpaces($string)

@@ -1,4 +1,5 @@
 <?php
+namespace App\Controllers;
 use App\View;
 use App\App;
 class AboutController

@@ -32,7 +32,7 @@ if (!empty(App::config('default_module')) && App::config('default_module') === '
     );
 }
     // Additional context lines can be added here if necessary
-$router->get('/about', [AboutController::class, 'index']);
+$router->get('/about', [\App\Controllers\AboutController::class, 'index']);
 $router->get('/admin', [AdminController::class, 'index']);
 $router->post('/admin', [AdminController::class, 'index']);
 $router->get('/admin/dashboard', [AdminController::class, 'dashboard']);
