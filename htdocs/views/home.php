@@ -1,4 +1,5 @@
 <?php 
+use App\App;
 $title = 'New Framework';
 $pageJs = 'home';
 require __DIR__ . '/partials/header.php'; 

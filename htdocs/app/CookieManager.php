@@ -1,4 +1,6 @@
 <?php
+namespace App;
+use App\User;
 
 class CookieManager extends User
 {

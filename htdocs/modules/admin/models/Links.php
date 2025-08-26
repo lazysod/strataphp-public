@@ -1,4 +1,5 @@
 <?php
+namespace App\Modules\Admin\Models;
 // Links model for admin links management
 class Links
 {

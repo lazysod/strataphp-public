@@ -1,5 +1,7 @@
 <?php
-
+namespace App\Modules\User\Controllers;
+use App\DB;
+use App\TokenManager;
 class UserResetController
 {
     public function index()

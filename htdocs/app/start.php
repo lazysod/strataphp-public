@@ -1,4 +1,10 @@
 <?php
+use App\Token;
+use App\Logger;
+use App\Modules\Admin\Controllers\ModuleManagerController;
+use App\Modules\Admin\Controllers\AdminLinksController;
+use App\Modules\Admin\Controllers\UserAdminController;
+use App\Controllers\AdminController;
 // Load config early for session prefix
 if (function_exists('opcache_invalidate')) {
     opcache_invalidate(__DIR__ . '/config.php', true);
@@ -24,33 +30,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set up autoloading for controllers, models, and app classes
-spl_autoload_register(
-    function ($class) {
-        $paths = [
-        __DIR__ . '/../controllers/' . $class . '.php',
-        __DIR__ . '/../models/' . $class . '.php',
-        __DIR__ . '/' . $class . '.php', // For app/App.php, Token.php, etc.
-        __DIR__ . '/class/' . $class . '.php', // For app/class/TokenManager.php, etc.
-        ];
-        // Add all modules/*/controllers/ and modules/*/models/ paths
-        $modulesDir = __DIR__ . '/../modules/';
-        if (is_dir($modulesDir)) {
-            foreach (glob($modulesDir . '*/controllers/' . $class . '.php') as $modController) {
-                $paths[] = $modController;
-            }
-            foreach (glob($modulesDir . '*/models/' . $class . '.php') as $modModel) {
-                $paths[] = $modModel;
-            }
-        }
-        foreach ($paths as $file) {
-            if (file_exists($file)) {
-                include_once $file;
-                return;
-            }
-        }
-    }
-);
 
 // Set up session prefix for middleware
 $sessionPrefix = $config['session_prefix'] ?? 'app_';
@@ -63,38 +42,56 @@ if (!isset($router)) {
 }
 
 // Register core admin routes
-$router->get('/admin/modules', ['ModuleManagerController', 'index']);
-$router->post('/admin/modules/update', ['ModuleManagerController', 'update']);
-$router->get('/admin/dashboard/profile', ['AdminController', 'profile']);
-$router->get('/admin', ['AdminController', 'index']);
-$router->get('/admin/dashboard', ['AdminController', 'dashboard']);
-$router->get('/admin/reset-password', ['AdminController', 'resetRequest']);
-$router->post('/admin/reset-password', ['AdminController', 'resetRequest']);
-$router->get('/admin/reset-password/confirm', ['AdminController', 'resetPassword']);
-$router->post('/admin/reset-password/confirm', ['AdminController', 'resetPassword']);
-$router->post('/admin/dashboard/profile', ['AdminController', 'profile']);
+$router->get('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules/update', [ModuleManagerController::class, 'update']);
+$router->get('/admin/dashboard/profile', [AdminController::class, 'profile']);
+$router->get('/admin', [AdminController::class, 'index']);
+$router->get('/admin/dashboard', [AdminController::class, 'dashboard']);
+$router->get('/admin/reset-password', [AdminController::class, 'resetRequest']);
+$router->post('/admin/reset-password', [AdminController::class, 'resetRequest']);
+$router->get('/admin/reset-password/confirm', [AdminController::class, 'resetPassword']);
+$router->post('/admin/reset-password/confirm', [AdminController::class, 'resetPassword']);
+$router->post('/admin/dashboard/profile', [AdminController::class, 'profile']);
 
 // Register admin links routes
 if (isset($router) && $router instanceof Router) {
     // Example: Add global middleware for authentication
-        $router->middleware(function($request, $next) use ($sessionPrefix) {
-            $path = $request['path'];
-            $isAdminRoute = strpos($path, '/admin') === 0;
-            $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
-            if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
-                header('Location: /admin');
-                exit;
-            }
-            return $next($request);
-        });
+    $router->middleware(function ($request, $next) use ($sessionPrefix) {
+        $path = $request['path'];
+        $isAdminRoute = strpos($path, '/admin') === 0;
+        $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
+        if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
+            header('Location: /admin');
+            exit;
+        }
+        return $next($request);
+    });
 
-    $router->get('/admin/links', ['AdminLinksController', 'index']);
-    $router->get('/admin/links/add', ['AdminLinksController', 'add']);
-    $router->post('/admin/links/add', ['AdminLinksController', 'add']);
-    $router->get('/admin/links/edit/{id}', ['AdminLinksController', 'edit']);
-    $router->post('/admin/links/edit/{id}', ['AdminLinksController', 'edit']);
-    $router->get('/admin/links/delete/{id}', ['AdminLinksController', 'delete']);
-    $router->post('/admin/links/order', ['AdminLinksController', 'order']);
+    // Register admin links routes with namespaced controller
+    $router->get('/admin/links', [AdminLinksController::class, 'index']);
+    $router->get('/admin/links/add', [AdminLinksController::class, 'add']);
+    $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
+    $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+    $router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+    $router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+    $router->post('/admin/links/order', [AdminLinksController::class, 'order']);
+
+    // Register UserAdminController routes with namespaced controller
+    $router->get('/admin/users', [UserAdminController::class, 'index']);
+    $router->get('/admin/users/add', [UserAdminController::class, 'add']);
+    $router->post('/admin/users/add', [UserAdminController::class, 'add']);
+    $router->get('/admin/users/edit/{id}', [UserAdminController::class, 'edit']);
+    $router->post('/admin/users/edit/{id}', [UserAdminController::class, 'edit']);
+    $router->get('/admin/users/delete/{id}', [UserAdminController::class, 'delete']);
+    $router->get('/admin/users/suspend/{id}', [UserAdminController::class, 'suspend']);
+    $router->get('/admin/users/unsuspend/{id}', [UserAdminController::class, 'unsuspend']);
+    $router->get('/admin/links', [AdminLinksController::class, 'index']);
+    $router->get('/admin/links/add', [AdminLinksController::class, 'add']);
+    $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
+    $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+    $router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+    $router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+    $router->post('/admin/links/order', [AdminLinksController::class, 'order']);
 }
 
 // Modular system loader: load routes for all enabled modules
@@ -137,18 +134,18 @@ if (is_dir($modulesDir)) {
 }
 
 // Dependency Injection Container setup
-require_once __DIR__ . '/class/Container.php';
+require_once __DIR__ . '/Container.php';
 global $container;
 $container = new Container();
 
 // Register Logger service
-$container->factory('logger', function($c) use ($config) {
+$container->factory('logger', function ($c) use ($config) {
     return new Logger($config);
 });
 
 // Register DB service
-$container->factory('db', function($c) use ($config) {
-    return new DB($config['db']);
+$container->factory('db', function ($c) use ($config) {
+    return new App\DB($config['db']);
 });
 
 // Example: define app constants

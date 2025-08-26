@@ -1,4 +1,9 @@
 <?php
+namespace App\Modules\User\Controllers;
+
+use App\TokenManager;
+use App\DB;
+use App\User;
 
 // modules/user/controllers/UserLoginController.php
 // Refactored as a class for router compatibility

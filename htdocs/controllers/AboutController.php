@@ -1,10 +1,12 @@
 <?php
+namespace App\Controllers;
+use App\View;
+use App\App;
 class AboutController
 {
     public function index()
     {
         $config = require __DIR__ . '/../app/config.php';
-        require_once __DIR__ . '/../app/class/View.php';
         $view = new View($config);
         $data = [
             'title' => 'About StrataPHP',

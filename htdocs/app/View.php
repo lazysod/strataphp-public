@@ -1,6 +1,5 @@
 <?php
-// htdocs/app/class/View.php
-// Simple view renderer with optional Twig support
+namespace App;
 class View
 {
     private $twig;

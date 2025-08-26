@@ -1,5 +1,6 @@
-<?php
+<?php 
 $config = include __DIR__ . '/../../app/config.php';
+use App\App;
 $controllersDir = __DIR__ . '/../../controllers/';
 $controllerFiles = glob($controllersDir . '*Controller.php');
 $navConfig = include __DIR__ . '/../../app/adminNavConfig.php';

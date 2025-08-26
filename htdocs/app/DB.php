@@ -1,6 +1,8 @@
 <?php
-// htdocs/app/class/DB.php
-// Minimal PDO-based database connection class for the framework
+namespace App;
+use PDO;
+use PDOException;
+use App\Logger;
 
 class DB
 {

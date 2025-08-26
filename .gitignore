@@ -13,7 +13,9 @@ Thumbs.db
 *.log
 storage/logs/
 storage/backups/
-storage/uploads/
+
+# log files
+htdocs/storage/logs/
 
 # Environment/config files
 htdocs/app/config.php

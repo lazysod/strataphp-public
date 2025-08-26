@@ -1,6 +1,11 @@
 <?php
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+use App\DB;
+use App\User;
+use App\Logger;
 require_once __DIR__ . '/../app/App.php';
-require_once __DIR__ . '/../app/class/TokenManager.php';
+// TokenManager is now autoloaded via Composer
+use App\TokenManager;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

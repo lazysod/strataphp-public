@@ -1,6 +1,9 @@
 <?php
+namespace App\Modules\User\Controllers;
 use PHPMailer\PHPMailer\PHPMailer;
-
+use PHPMailer\PHPMailer\Exception;
+use App\TokenManager;
+use App\DB;
 class UserResetRequestController
 {
     public function index()

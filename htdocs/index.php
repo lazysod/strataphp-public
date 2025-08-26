@@ -1,6 +1,8 @@
 <?php
-// htdocs/index.php - new entry point for the fresh framework
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once __DIR__ . '/app/start.php'; // config, autoload, etc.
+use App\DB;
+use App\User;
 $config = require __DIR__ . '/app/config.php';
 
 // Global error and exception handlers
@@ -34,7 +36,7 @@ set_exception_handler(function($exception) use ($config) {
 });
 
 $db = new DB($config);
-$user = new User($db, $config);
+$user = new App\User($db, $config);
 $user->cookie_check();
 $requestPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 if ($requestPath === '//') { $requestPath = '/';
@@ -66,3 +68,7 @@ set_exception_handler(function($exception) {
     include BASE_PATH . '/htdocs/views/errors/500.php';
     exit;
 });
+
+
+
+
