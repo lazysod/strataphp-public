@@ -1,6 +1,6 @@
 <?php
 namespace App;
-
+use App\Logger;
 class App
 {
     // Dump a variable in a readable format
@@ -28,8 +28,7 @@ class App
         $configFile = __DIR__ . '/config.php';
         $config = file_exists($configFile) ? include $configFile : [];
         // Use Logger from app/class/Logger.php
-        require_once __DIR__ . '/class/Logger.php';
-        $logger = new \Logger($config);
+        $logger = new Logger($config);
         $logger->log($level, $message, $context);
     }
 
