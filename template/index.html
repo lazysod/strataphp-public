@@ -64,31 +64,30 @@
                 </div>
             </header>
             <!-- Features section-->
-            <section class="py-5" id="features">
+            <section class="py-5" id="getting-started">
                 <div class="container px-5 my-5">
                     <div class="row gx-5">
-                        <div class="col-lg-4 mb-5 mb-lg-0"><h2 class="fw-bolder mb-0">A better way to start building.</h2></div>
+                        <div class="col-lg-4 mb-5 mb-lg-0"><h2 class="fw-bolder mb-0">Getting Started with StrataPHP</h2></div>
                         <div class="col-lg-8">
-                            <div class="row gx-5 row-cols-1 row-cols-md-2">
+                            <div class="row gx-5">
                                 <div class="col mb-5 h-100">
-                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-collection"></i></div>
-                                    <h2 class="h5">Featured title</h2>
-                                    <p class="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                    <h5>Install & Onboard</h5>
+                                    <ol>
+                                        <li>Clone or download the repository.</li>
+                                        <li>Install Composer dependencies:<br><code>cd htdocs && composer install</code></li>
+                                        <li>Copy <code>.env.example</code> to <code>.env</code> and update your settings.</li>
+                                        <li>Run the install script:<br><code>php bin/install.php</code></li>
+                                        <li>When prompted, create your admin account:<br><code>php bin/create_admin.php</code></li>
+                                        <li>Log in to the admin panel and start configuring your site!</li>
+                                    </ol>
                                 </div>
                                 <div class="col mb-5 h-100">
-                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-building"></i></div>
-                                    <h2 class="h5">Featured title</h2>
-                                    <p class="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                </div>
-                                <div class="col mb-5 mb-md-0 h-100">
-                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-toggles2"></i></div>
-                                    <h2 class="h5">Featured title</h2>
-                                    <p class="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                </div>
-                                <div class="col h-100">
-                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-toggles2"></i></div>
-                                    <h2 class="h5">Featured title</h2>
-                                    <p class="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                    <h5>Advanced Setup</h5>
+                                    <ul>
+                                        <li>Use <code>php bin/migrate.php</code> for migrations.</li>
+                                        <li>Seed demo data with <code>php bin/seed.php</code>.</li>
+                                        <li>Rollback migrations with <code>php bin/rollback.php</code>.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
