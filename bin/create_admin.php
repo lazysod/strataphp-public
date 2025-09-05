@@ -53,7 +53,8 @@ $userModel->createUser([
     'second_name' => $second,
     'email' => $email,
     'is_admin' => 1,
-    'pwd' => $password
+    'pwd' => $password, 
+    'active' => 1
 ]);
 
 echo "Admin user created successfully!\n";
