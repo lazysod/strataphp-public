@@ -1,17 +1,30 @@
 #!/usr/bin/env php
 <?php
+
 // Initial install script for StrataPHP Framework
 // Usage: php bin/install.php
 
-require_once __DIR__ . '/../htdocs/app/config.php';
-
+$envFile = __DIR__ . '/../.env';
+$configFile = __DIR__ . '/../htdocs/app/config.php';
 $schemaFile = __DIR__ . '/../mysql/db_instal.sql';
+
+if (!file_exists($envFile)) {
+    echo "ERROR: .env file not found. Please copy .env.example to .env and configure your settings.\n";
+    exit(1);
+}
+
+if (!file_exists($configFile)) {
+    echo "ERROR: config.php file not found in htdocs/app/. Please ensure your configuration exists.\n";
+    exit(1);
+}
+
 if (!file_exists($schemaFile)) {
     echo "Schema file not found: $schemaFile\n";
     exit(1);
 }
 
-$config = $config ?? require __DIR__ . '/../htdocs/app/config.php';
+require_once $configFile;
+$config = $config ?? require $configFile;
 $dbConfig = $config['db'];
 
 try {
