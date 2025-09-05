@@ -2,8 +2,8 @@
 <?php
 // Rollback migration tool for Strata Framework
 require_once __DIR__ . '/../htdocs/app/config.php';
-require_once __DIR__ . '/../htdocs/app/class/DB.php';
-
+require_once __DIR__ . '/../htdocs/app/DB.php';
+use App\DB;
 $config = $config ?? require __DIR__ . '/../htdocs/app/config.php';
 $db = new DB($config);
 

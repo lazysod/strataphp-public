@@ -4,9 +4,11 @@
 // Usage: php bin/create_admin.php [--first "First"] [--second "Second"] [--email "email@domain"] [--password "pass"] [--display "Display Name"]
 
 require_once __DIR__ . '/../htdocs/app/config.php';
-require_once __DIR__ . '/../htdocs/app/class/DB.php';
-require_once __DIR__ . '/../htdocs/app/class/User.php';
+require_once __DIR__ . '/../htdocs/app/DB.php';
+require_once __DIR__ . '/../htdocs/app/User.php';
 
+use App\DB;
+use App\User;
 function prompt($prompt, $hidden = false) {
     if ($hidden && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
         // Hide input (UNIX only)

@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 require_once __DIR__ . '/../htdocs/app/config.php';
-require_once __DIR__ . '/../htdocs/app/class/DB.php';
+require_once __DIR__ . '/../htdocs/app/DB.php';
+use App\DB;
 
 if ($argc < 2) {
     echo "Usage: php bin/run_down_migration.php <migration_name>\n";

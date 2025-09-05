@@ -1,8 +1,9 @@
 <?php
 use PHPUnit\Framework\TestCase;
-
-require_once __DIR__ . '/../htdocs/app/class/DB.php';
-require_once __DIR__ . '/../htdocs/app/class/User.php';
+use App\DB;
+use App\User;
+require_once __DIR__ . '/../htdocs/app/DB.php';
+require_once __DIR__ . '/../htdocs/app/User.php';
 if (!defined('PREFIX')) {
     define('PREFIX', 'app_');
 }
