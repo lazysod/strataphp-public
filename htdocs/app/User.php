@@ -135,10 +135,6 @@ class User
             ];
         }
     }
-
-    // htdocs/app/class/User.php
-    // Modernized User class for the new framework (PDO, config injected)
-
     public function generate_session()
     {
         $session_array = array(

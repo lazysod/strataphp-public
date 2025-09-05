@@ -16,7 +16,6 @@ use App\bserror;
             </div>
             <div class="col-lg-8">
                 <?php
-                // require_once __DIR__ . '/../../../app/class/bserror.php';
                 $alert = new bserror();
                 if (!empty($success)) {
                     echo $alert->success('Thank you! Your message has been sent successfully.');
