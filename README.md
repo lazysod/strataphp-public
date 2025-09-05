@@ -14,23 +14,43 @@
 
 ---
 
-## Quick Start
-_Step-by-step instructions to get your project running._
+
+## Installation
+_How to set up StrataPHP for the first time._
 
 1. Clone or download this repository.
 2. Change directory to the project root.
 3. Install Composer dependencies:
-   ```sh
-   cd htdocs
-   composer install
-   ```
+  ```sh
+  cd htdocs
+  composer install
+  ```
 4. Set up your web server to use `htdocs` as the document root.
 5. Copy `.env.example` to `.env` and fill in your actual database, mail, and other settings:
   ```sh
   cp .env.example .env
   ```
   Edit `.env` with your real credentials.
-6. Visit your site in the browser!
+6. Run the initial install script to import the database schema:
+  ```sh
+  php bin/install.php
+  ```
+  If successful, you will be prompted to create your admin account:
+  ```sh
+  php bin/create_admin.php
+  ```
+7. Visit your site in the browser!
+
+**Troubleshooting:**
+- If you see "Schema file not found", check that `mysql/db_instal.sql` exists.
+- If you get a database connection error, verify your `.env` or `app/config.php` settings.
+
+---
+
+## Quick Start
+_Step-by-step instructions to get your project running after installation._
+
+Once installed and the admin account is created, you can log in and begin configuring modules, users, and content from the admin panel.
 
 ---
 
