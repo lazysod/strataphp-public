@@ -1,8 +1,4 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
 -- Generation Time: Aug 21, 2025 at 09:43 AM
 -- Server version: 5.7.39
 -- PHP Version: 8.2.0
@@ -17,29 +13,21 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
 -- Database: `1f_test`
---
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `login_tracker`
---
+  `id` int(11) NOT NULL AUTO_INCREMENT,
 
 DROP TABLE IF EXISTS `login_tracker`;
 CREATE TABLE `login_tracker` (
   `id` int(255) NOT NULL,
   `user_id` int(255) NOT NULL,
-  `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
 --
 -- Table structure for table `migrations`
 --
-
+  `id` int(255) NOT NULL AUTO_INCREMENT,
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` int(11) NOT NULL,
@@ -56,7 +44,6 @@ CREATE TABLE `migrations` (
 
 DROP TABLE IF EXISTS `migration_lock`;
 CREATE TABLE `migration_lock` (
-  `id` int(11) NOT NULL DEFAULT '1',
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `locked_at` timestamp NULL DEFAULT NULL,
   `locked_by` varchar(255) DEFAULT NULL
