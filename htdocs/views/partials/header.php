@@ -95,6 +95,7 @@ $navConfig = include __DIR__ . '/../../app/navConfig.php';
                                         <?php endif; ?>
                                         <?php if (!empty(App::config('modules')['user'])) : ?>
                                         <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                                        <li><a class="dropdown-item" href="/user/sessions">Device & Sessions</a></li>
                                         <?php elseif (isset($_SESSION[PREFIX . 'admin']) && $_SESSION[PREFIX . 'admin'] > 0) : ?>
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
                                         <?php endif; ?>

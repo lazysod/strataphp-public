@@ -295,3 +295,35 @@ This framework includes built-in CSRF protection:
   ```
 
 CSRF protection is enabled by default if `'csrf_token' => true` is set in your config.
+
+---
+
+# Session Management & Device Tracking (2025 Update)
+
+## Overview
+StrataPHP now uses a modern, secure session management system with device-based tracking for both users and admins. Legacy session tables have been removed and all session logic is unified under the `user_sessions` table.
+
+### Key Changes
+- **Device-based session tracking**: Each login creates a session tied to a device, with device name and IP address logged.
+- **Persistent login**: "Remember Me" functionality via secure cookies, with session restoration after browser close.
+- **Session dashboard**: Users and admins can view and manage active sessions/devices, edit device names, and revoke sessions.
+- **Unified session table**: All sessions (user and admin) are stored in `user_sessions`.
+- **IP address logging**: Each session records the IP address for auditing and security.
+- **Legacy tables removed**: Old tables (`ban_ip`, `cookie_login`, `error_log`, `ip_log`, `login_sessions`, `login_tracker`) are no longer used.
+
+## Migration & Install
+- New installs use the trimmed `db_instal.sql` (no legacy tables).
+- Existing installs should drop unused tables (see `docs/db_cleanup_2025-09-12.md`).
+- Migration `009_add_ip_address_to_user_sessions.php` adds IP logging to sessions.
+
+## Usage
+- Users and admins can manage their sessions/devices from their dashboards.
+- Device name can be edited for the current session.
+- Only the latest active session per device is shown.
+
+## References
+- See `docs/db_cleanup_2025-09-12.md` for details on database cleanup.
+- See migration files for schema changes.
+
+---
+For more, see the code in `htdocs/app/SessionManager.php`, `User.php`, and session dashboard controllers/views.

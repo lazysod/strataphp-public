@@ -42,8 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $user = new User($db, $config);
         $loginResult = $user->login(['email' => $email, 'pwd' => $password]);
+        // Only allow admin login if user is admin
         if ($loginResult['status'] === 'success' && !empty($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
+            // Set admin session variable to user_id for consistency
             $_SESSION[$sessionPrefix . 'admin'] = $_SESSION[$sessionPrefix . 'user_id'];
+            // Create session in user_sessions for admin
+            require_once __DIR__ . '/../app/SessionManager.php';
+            $db = new DB($config);
+            $sessionManager = new App\SessionManager($db, $config);
+            $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], false);
             header('Location: /admin/dashboard');
             exit;
         } else {

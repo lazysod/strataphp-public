@@ -45,7 +45,14 @@ try {
         }
         echo "Applying: $name... ";
         $migration = include $file;
-        $migration($db);
+        if (is_array($migration) && isset($migration['up']) && is_callable($migration['up'])) {
+            $migration['up']($db);
+        } elseif (is_callable($migration)) {
+            $migration($db);
+        } else {
+            echo "Invalid migration format for $name\n";
+            continue;
+        }
         $applied_by = get_current_user() . '@' . gethostname();
         $db->query('INSERT INTO migrations (migration, applied_by) VALUES (?, ?)', [$name, $applied_by]);
         echo "done.\n";

@@ -39,6 +39,7 @@ return array(
     'debug' => true,
     'timezone' => 'Europe/London',
     'session_lifetime' => 3600,
+    'session_heartbeat_interval' => 300, // seconds (default 5 minutes)
     'version' => '1.0.0',
     'maintenance_mode' => false,
     'allowed_ips' =>

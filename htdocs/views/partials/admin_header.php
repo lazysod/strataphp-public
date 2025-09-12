@@ -89,6 +89,7 @@ $sessionPrefix = $config['session_prefix'];
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                         <?php $currentPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); ?>
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/sessions">Device & Sessions</a></li>
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/logout.php">Logout</a></li>
                                         <li><hr></li>
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>">Front Page</a></li>

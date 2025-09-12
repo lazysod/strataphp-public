@@ -425,7 +425,6 @@ class User
                     $_SESSION[PREFIX . 'second_name'] = $row['second_name'];
                     $_SESSION[PREFIX . 'last_log'] = $row['last_access'];
                     $_SESSION[PREFIX . 'avatar'] = $row['avatar'];
-                    // Store a full user array for convenience
                     $_SESSION[PREFIX . 'user'] = [
                         'id' => $row['id'],
                         'email' => $row['email'],
@@ -437,29 +436,13 @@ class User
                     $now = date('Y-m-d H:i:s');
                     $update = "UPDATE users SET last_access = ? WHERE id = ?";
                     $this->db->query($update, [$now, $_SESSION[PREFIX . 'user_id']]);
-                    if (isset($user['remember']) && $user['remember'] > 0) {
-                        $time = time() + 60 * 60 * 24 * 30;
-                        $hash = sha1(rand(1, 1000) . $this->config['salt']);
-                        $date_set = date('Y-m-d H:i:s');
-                        $date_expire = date('Y-m-d H:i:s', strtotime('+30 days'));
-                        // Use the new DB class for the insert
-                        $sql = "INSERT INTO `cookie_login`(`user_id`, `cookie_hash`, `date_added`, `expiry_date`) VALUES (?, ?, ?, ?)";
-                        $this->db->query($sql, [
-                            $_SESSION[PREFIX . 'user_id'],
-                            $hash,
-                            $date_set,
-                            $date_expire
-                        ]);
-                        setcookie(PREFIX . 'cookie_login', $hash, [
-                            'expires' => $time,
-                            'path' => '/',
-                            'secure' => isset($_SERVER['HTTPS']),
-                            'httponly' => true,
-                            'samesite' => 'Lax'
-                        ]);
-                    }
-                    $this->generate_session();
-                    // Optionally call record_session() if implemented
+
+                    // New session management
+                    require_once __DIR__ . '/SessionManager.php';
+                    $sessionManager = new SessionManager($this->db, $this->config);
+                    $persistent = (isset($user['remember']) && $user['remember'] > 0) ? true : false;
+                    $sessionManager->createSession($row['id'], $persistent);
+
                     return [
                         'status' => 'success',
                         'message' => 'Login successful',

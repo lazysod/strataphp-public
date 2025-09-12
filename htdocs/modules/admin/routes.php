@@ -14,3 +14,7 @@ $router->get('/admin/reset-password', [AdminController::class, 'resetPassword'])
 $router->post('/admin/reset-password', [AdminController::class, 'resetPassword']);
 $router->get('/admin/reset-request', [AdminController::class, 'resetRequest']);
 $router->post('/admin/reset-request', [AdminController::class, 'resetRequest']);
+
+$router->get('/admin/sessions', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'index']);
+$router->post('/admin/sessions/revoke', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'revoke']);
+$router->post('/admin/sessions/update-device', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'updateDevice']);
