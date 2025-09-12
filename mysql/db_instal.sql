@@ -17,84 +17,60 @@ SET time_zone = "+00:00";
 
 --
 -- Table structure for table `login_tracker`
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-
 DROP TABLE IF EXISTS `login_tracker`;
 CREATE TABLE `login_tracker` (
-  `id` int(255) NOT NULL,
-  `user_id` int(255) NOT NULL,
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
---
--- Table structure for table `migrations`
---
   `id` int(255) NOT NULL AUTO_INCREMENT,
+  `user_id` int(255) NOT NULL,
+  `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table structure for table `migrations`
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `migration` varchar(255) NOT NULL,
   `applied_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `applied_by` varchar(255) NOT NULL
+  `applied_by` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
 -- Table structure for table `migration_lock`
---
-
 DROP TABLE IF EXISTS `migration_lock`;
 CREATE TABLE `migration_lock` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `locked_at` timestamp NULL DEFAULT NULL,
-  `locked_by` varchar(255) DEFAULT NULL
+  `locked_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
 -- Table structure for table `rank`
---
-
 DROP TABLE IF EXISTS `rank`;
 CREATE TABLE `rank` (
-  `id` int(255) NOT NULL,
+  `id` int(255) NOT NULL AUTO_INCREMENT,
   `user_id` int(255) NOT NULL,
   `title` varchar(23) NOT NULL,
   `level` int(3) DEFAULT '0',
-  `admin` int(1) DEFAULT '0'
+  `admin` int(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `rank`
---
-
-INSERT INTO `rank` (`id`, `user_id`, `title`, `level`, `admin`) VALUES
-(1, 1, 'Admin', 100, 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `reset`
---
-
 DROP TABLE IF EXISTS `reset`;
 CREATE TABLE `reset` (
-  `id` int(255) NOT NULL,
+  `id` int(255) NOT NULL AUTO_INCREMENT,
   `user_id` int(255) NOT NULL,
   `key` varchar(255) NOT NULL,
   `created_date` timestamp NULL DEFAULT NULL,
-  `expiry_date` datetime DEFAULT NULL
+  `expiry_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
---
-
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `id` int(255) NOT NULL,
+  `id` int(255) NOT NULL AUTO_INCREMENT,
   `display_name` varchar(100) DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `second_name` varchar(50) DEFAULT NULL,
@@ -108,181 +84,46 @@ CREATE TABLE `users` (
   `last_access` datetime DEFAULT NULL,
   `active` int(1) DEFAULT '0',
   `date` date DEFAULT NULL,
-  `dead_switch` int(1) DEFAULT '0'
+  `dead_switch` int(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
 -- Table structure for table `user_activation`
---
-
 DROP TABLE IF EXISTS `user_activation`;
 CREATE TABLE `user_activation` (
-  `id` int(255) NOT NULL,
+  `id` int(255) NOT NULL AUTO_INCREMENT,
   `user_id` int(255) NOT NULL,
   `activation_key` varchar(255) NOT NULL,
   `entry_date` datetime NOT NULL,
-  `expiry_date` datetime DEFAULT NULL
+  `expiry_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Indexes for dumped tables
---
+-- Table structure for table `user_sessions`
+DROP TABLE IF EXISTS `user_sessions`;
+CREATE TABLE `user_sessions` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `device_id` varchar(128) NOT NULL,
+  `device_type` varchar(32) DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `device_info` varchar(255) DEFAULT NULL,
+  `session_token` varchar(128) NOT NULL,
+  `revoked` tinyint(1) DEFAULT '0',
+  `last_seen` datetime NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Indexes for table `ban_ip`
---
-ALTER TABLE `ban_ip`
-  ADD PRIMARY KEY (`id`);
+-- Indexes for table `user_sessions`
+ALTER TABLE `user_sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `device_id` (`device_id`),
+  ADD KEY `session_token` (`session_token`);
 
---
--- Indexes for table `cookie_login`
---
-ALTER TABLE `cookie_login`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `error_log`
---
-ALTER TABLE `error_log`
-  ADD PRIMARY KEY (`log_id`);
-
---
--- Indexes for table `ip_log`
---
-ALTER TABLE `ip_log`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `links`
---
-ALTER TABLE `links`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `login_sessions`
---
-ALTER TABLE `login_sessions`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `login_tracker`
---
-ALTER TABLE `login_tracker`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `migrations`
---
-ALTER TABLE `migrations`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `migration_lock`
---
-ALTER TABLE `migration_lock`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `rank`
---
-ALTER TABLE `rank`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `reset`
---
-ALTER TABLE `reset`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `user_activation`
---
-ALTER TABLE `user_activation`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `ban_ip`
---
-ALTER TABLE `ban_ip`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `cookie_login`
---
-ALTER TABLE `cookie_login`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `error_log`
---
-ALTER TABLE `error_log`
-  MODIFY `log_id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `ip_log`
---
-ALTER TABLE `ip_log`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `links`
---
-ALTER TABLE `links`
+-- AUTO_INCREMENT for table `user_sessions`
+ALTER TABLE `user_sessions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `login_sessions`
---
-ALTER TABLE `login_sessions`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `login_tracker`
---
-ALTER TABLE `login_tracker`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `migrations`
---
-ALTER TABLE `migrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `rank`
---
-ALTER TABLE `rank`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `reset`
---
-ALTER TABLE `reset`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `user_activation`
---
-ALTER TABLE `user_activation`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
