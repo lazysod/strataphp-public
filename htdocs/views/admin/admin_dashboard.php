@@ -1,11 +1,15 @@
 <?php
+require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../app/config.php';
+use App\App;
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
 
 if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
     header('Location: /admin/admin_login.php');
     exit;
 }
+
+
 require __DIR__ . '/../partials/admin_header.php'; ?>
 <section class="py-5">
     <div class="container px-5">

@@ -35,12 +35,63 @@ set_exception_handler(function($exception) use ($config) {
     exit;
 });
 
+
 $db = new DB($config);
 $user = new App\User($db, $config);
-$user->cookie_check();
+
 $requestPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-if ($requestPath === '//') { $requestPath = '/';
+if ($requestPath === '//') { $requestPath = '/'; }
+
+// Session validation and heartbeat, but skip for login page
+$isLoginPage = ($requestPath === '/user/login' || $requestPath === '/admin/admin_login.php');
+if (!$isLoginPage) {
+    require_once __DIR__ . '/app/SessionManager.php';
+    $sessionManager = new App\SessionManager($db, $config);
+    // Validate session and get current session info
+    if (!isset($_COOKIE[PREFIX . 'session_token']) || !isset($_COOKIE[PREFIX . 'device_id'])) {
+        $loginUrl = isset($config['modules']['user']) ? '/user/login' : '/admin/admin_login.php';
+        header('Location: ' . $loginUrl);
+        exit;
+    }
+    $session_token = $_COOKIE[PREFIX . 'session_token'];
+    $device_id = $_COOKIE[PREFIX . 'device_id'];
+    $sessionRow = $db->fetch("SELECT * FROM user_sessions WHERE session_token = ? AND device_id = ? AND revoked = 0", [$session_token, $device_id]);
+    if (!$sessionRow) {
+        $loginUrl = isset($config['modules']['user']) ? '/user/login' : '/admin/admin_login.php';
+        header('Location: ' . $loginUrl);
+        exit;
+    }
+    $_SESSION[PREFIX . 'session_id'] = $sessionRow['id'];
+    $validated_user_id = $sessionRow['user_id'];
+    // Restore session variables if missing
+    if (!isset($_SESSION[PREFIX . 'user_id'])) {
+        $userData = $db->fetch("SELECT * FROM users WHERE id = ?", [$validated_user_id]);
+        if ($userData) {
+            $rank = (new App\User($db, $config))->get_rank($userData['id']);
+            $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
+            $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
+            if ($rank['admin'] > 0) {
+                $_SESSION[PREFIX . 'admin'] = $rank['admin'];
+            }
+            $_SESSION[PREFIX . 'email'] = $userData['email'];
+            $_SESSION[PREFIX . 'user_id'] = $userData['id'];
+            $_SESSION[PREFIX . 'sec_hash'] = $userData['security_hash'];
+            $_SESSION[PREFIX . 'first_name'] = $userData['first_name'];
+            $_SESSION[PREFIX . 'second_name'] = $userData['second_name'];
+            $_SESSION[PREFIX . 'last_log'] = $userData['last_access'];
+            $_SESSION[PREFIX . 'avatar'] = $userData['avatar'];
+            $_SESSION[PREFIX . 'user'] = [
+                'id' => $userData['id'],
+                'email' => $userData['email'],
+                'is_admin' => ($rank['admin'] > 0 ? 1 : 0),
+                'rank_title' => $rank['title'],
+                'rank_level' => $rank['level'],
+                'avatar' => (new App\User($db, $config))->gravatar($userData['email'])
+            ];
+        }
+    }
 }
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 global $router;

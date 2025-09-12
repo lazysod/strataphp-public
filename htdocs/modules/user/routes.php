@@ -7,7 +7,6 @@ $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
 if (file_exists($composerAutoload)) {
     require_once $composerAutoload;
 }
-// ...existing code...
 // modules/user/routes.php
 // Register user module routes using the router and modules['user'] config
 
@@ -30,6 +29,9 @@ if (!empty(App::config('modules')['user'])) {
     $router->get('/user/email-test', [EmailTestController::class, 'index']);
     $router->post('/user/email-test', [EmailTestController::class, 'index']);
     $router->get('/user/activate', ['UserActivateController', 'index']);
+    $router->get('/user/sessions', [\App\Modules\User\Controllers\UserSessionsController::class, 'index']);
+    $router->post('/user/sessions/revoke', [\App\Modules\User\Controllers\UserSessionsController::class, 'revoke']);
+    $router->post('/user/sessions/update-device', [\App\Modules\User\Controllers\UserSessionsController::class, 'updateDevice']);
     // Add more user routes as needed
 }
     // Additional context lines can be added here if necessary
