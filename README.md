@@ -16,7 +16,8 @@
 
 
 ## Installation
-_How to set up StrataPHP for the first time._
+
+_How to set up StrataPHP for the first time (2025 update)._ 
 
 1. Clone or download this repository.
 2. Change directory to the project root.
@@ -35,11 +36,21 @@ _How to set up StrataPHP for the first time._
   ```sh
   php bin/install.php
   ```
-  If successful, you will be prompted to create your admin account:
+  This will create only essential tables (no users/admins/demo data). Session management is now device-based and legacy tables are not included.
+7. Run migrations to apply any new schema changes:
+  ```sh
+  php bin/migrate.php
+  ```
+  Migrations ensure your database schema is up to date with the latest features and changes. Always run migrations after installing or updating the framework.
+8. Create your admin account:
   ```sh
   php bin/create_admin.php
   ```
-7. Visit your site in the browser!
+9. Visit your site in the browser!
+
+**2025 Session Management Update:**
+- StrataPHP now uses device-based session tracking for users and admins. See `INSTALL.md` and `docs/db_cleanup_2025-09-12.md` for details.
+- Legacy tables (ban_ip, cookie_login, error_log, ip_log, login_sessions, login_tracker) are not included in new installs. For upgrades, see the cleanup doc.
 
 **Troubleshooting:**
 - If you see "Schema file not found", check that `mysql/db_instal.sql` exists.

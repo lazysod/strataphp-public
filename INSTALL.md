@@ -2,17 +2,18 @@
 
 ## Quick Install
 
+
 1. **Create a new MySQL database**  
-   Example: `1f_test`
+   Example: `frame-test`
 
 2. **Import the schema**
    - Use phpMyAdmin, MySQL Workbench, or the command line:
      ```sh
      mysql -u username -p database_name < mysql/db_instal.sql
      ```
-   - This will create all required tables with minimal data (only rank, no users/admins).
+   - This will create only essential tables (no users/admins/demo data). Session management is now device-based and legacy tables are not included.
 
-3. **Run migrations (optional but recommended)**
+3. **Run migrations (recommended)**
    - To apply any new schema changes or updates:
      ```sh
      php bin/migrate.php
@@ -29,6 +30,8 @@
 
 - Only essential tables for a fresh install
 - No user, admin, or demo data—users start with a clean slate
+- Device-based session management (see below)
+- Legacy tables are not included in new installs
 - Ready for migrations and admin creation
 
 ## Next Steps
@@ -38,7 +41,8 @@
 
 # Session Management & Device Tracking (2025 Update)
 
-StrataPHP now uses a unified, device-based session management system for both users and admins. All sessions are tracked in the `user_sessions` table, with device name and IP address logging. Legacy session tables have been removed for database hygiene.
+
+StrataPHP now uses a unified, device-based session management system for both users and admins. All sessions are tracked in the `user_sessions` table, with device name and IP address logging. Legacy session tables have been removed for database hygiene. For upgrades, see `docs/db_cleanup_2025-09-12.md`.
 
 ## Key Features
 - Device-based session tracking for users and admins
