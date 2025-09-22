@@ -19,7 +19,7 @@ class UserSessionsController
     $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$user_id, $user_id]);
         include __DIR__ . '/../views/sessions.php';
     }
-    public function revoke($session_id)
+    public function revoke()
     {
         include_once dirname(__DIR__, 3) . '/app/start.php';
         $config = include dirname(__DIR__, 3) . '/app/config.php';
@@ -29,6 +29,14 @@ class UserSessionsController
             header('Location: /user/login');
             exit;
         }
+        
+        // Get session_id from POST data
+        $session_id = $_POST['session_id'] ?? null;
+        if (!$session_id) {
+            header('Location: /user/sessions');
+            exit;
+        }
+        
         // Revoke session
         $db->query("UPDATE user_sessions SET revoked = 1 WHERE id = ? AND user_id = ?", [$session_id, $user_id]);
         header('Location: /user/sessions');

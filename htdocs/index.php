@@ -80,7 +80,40 @@ if (!$isLoginPage) {
                     ];
                 }
             }
+        } else {
+            // Session not found or revoked - clear session and redirect to login
+            $_SESSION = [];
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(
+                    session_name(), '', time() - 42000,
+                    $params['path'], $params['domain'],
+                    $params['secure'], $params['httponly']
+                );
+            }
+            
+            // Remove session management cookies
+            setcookie(PREFIX . 'session_token', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
+            setcookie(PREFIX . 'device_id', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
+            
+            session_destroy();
+            header('Location: /user/login');
+            exit;
         }
+    } elseif (isset($_SESSION[PREFIX . 'user_id'])) {
+        // User has session variables but no session cookies - session was revoked
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(), '', time() - 42000,
+                $params['path'], $params['domain'],
+                $params['secure'], $params['httponly']
+            );
+        }
+        session_destroy();
+        header('Location: /user/login');
+        exit;
     }
 }
 
