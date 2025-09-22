@@ -144,7 +144,3 @@ set_exception_handler(function($exception) {
     include BASE_PATH . '/htdocs/views/errors/500.php';
     exit;
 });
-
-
-
-
