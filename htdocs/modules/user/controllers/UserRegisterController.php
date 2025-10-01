@@ -6,18 +6,33 @@ use App\User;
 use App\Token;
 
 // Refactored as a class for router compatibility
+/**
+ * User Registration Controller
+ * 
+ * Handles new user registration with validation and security
+ * Includes email verification, password validation, and CSRF protection
+ */
 class UserRegisterController
 {
+    /**
+     * Handle user registration requests
+     * 
+     * Processes both GET (display form) and POST (register user) requests
+     * Validates input data and creates new user accounts
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        if (isset($config['registration_enabled']) && !$config['registration_enabled']) {
-            $error = 'User registration is currently disabled.';
-            $success = '';
-            include __DIR__ . '/../views/register.php';
-            return;
-        }
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            if (isset($config['registration_enabled']) && !$config['registration_enabled']) {
+                $error = 'User registration is currently disabled.';
+                $success = '';
+                include __DIR__ . '/../views/register.php';
+                return;
+            }
         if (empty($config['modules']['user'])) {
             header('Location: /');
             exit;
@@ -51,5 +66,12 @@ class UserRegisterController
             }
         }
         include __DIR__ . '/../views/register.php';
+        } catch (\Exception $e) {
+            error_log('User registration error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred during registration. Please try again.';
+            $success = '';
+            $token = '';
+            include __DIR__ . '/../views/register.php';
+        }
     }
 }

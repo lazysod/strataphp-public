@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StrataPHP Framework Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; color: #222; }
+    h1, h2, h3 { color: #2c3e50; }
+    pre, code { background: #eee; padding: 2px 6px; border-radius: 3px; }
+    section { margin-bottom: 2em; }
+    nav { margin-bottom: 2em; }
+    nav ul { list-style: none; padding: 0; }
+    nav li { display: inline; margin-right: 1em; }
+    .toc { background: #e3e3e3; padding: 1em; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>StrataPHP Framework Documentation</h1>
+  <nav class="toc">
+    <strong>Table of Contents</strong>
+    <ul>
+      <li><a href="#quick-start">Quick Start</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#structure">Structure</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#user-admin-system">User & Admin System</a></li>
+      <li><a href="#extending-modules">Extending & Modules</a></li>
+      <li><a href="#api-module-management">API Module Management</a></li>
+      <li><a href="#planned-features">Planned Features</a></li>
+      <li><a href="#release-notes">Release Notes</a></li>
+      <li><a href="#database-migrations-seeding">Database Migrations & Seeding</a></li>
+      <li><a href="#twig-support">Optional Twig Template Engine Support</a></li>
+      <li><a href="#csrf-protection">CSRF Protection</a></li>
+    </ul>
+  </nav>
+  <section id="quick-start">
+    <h2>Quick Start</h2>
+    <ol>
+      <li>Clone or download this repository.</li>
+      <li>Change directory to the project root.</li>
+      <li>Install Composer dependencies:<br><pre>cd htdocs
+composer install</pre></li>
+      <li>Set up your web server to use <code>htdocs</code> as the document root.</li>
+      <li>Copy <code>.env.example</code> to <code>.env</code> and fill in your actual database, mail, and other settings:<br><pre>cp .env.example .env</pre>Edit <code>.env</code> with your real credentials.</li>
+      <li>Visit your site in the browser!</li>
+    </ol>
+  </section>
+  <section id="features">
+    <h2>Features</h2>
+    <ul>
+      <li>Modular architecture: Easily add or remove modules (user system, forum, etc.)</li>
+      <li>Unified DB class: All database access uses the PDO-based <code>DB</code> class</li>
+      <li>Admin & user systems are independent</li>
+      <li>User authentication: Registration, login, profile, password reset (with token expiry), all via modular, class-based controllers</li>
+      <li>Admin login & profile: Separate admin authentication, dashboard, and profile page, with secure session and logging</li>
+      <li>Email integration: Uses PHPMailer, configure mail settings in <code>app/config.php</code></li>
+      <li>CSRF protection: Automatic for all forms via the <code>TokenManager</code> class</li>
+      <li>Session management: Robust, secure, auto-started in <code>app/start.php</code></li>
+      <li>Logging: Security/auth events logged to <code>storage/logs/</code> via the <code>Logger</code> class</li>
+      <li>Dynamic navigation: Shows login/register/user menu based on config and session</li>
+      <li>Extensible: Add new modules in <code>/htdocs/modules/</code></li>
+      <li>Admin links management: Add, edit, delete, and reorder links in the admin panel, with FontAwesome icon auto-detection and NSFW marking.</li>
+      <li>NSFW support for links: Mark links as NSFW in the admin panel; public users must confirm before visiting NSFW links.</li>
+      <li>Module enable/disable UI: Admin panel allows enabling/disabling modules and selecting the default module for the root page.</li>
+    </ul>
+  </section>
+  <section id="structure">
+    <h2>Structure</h2>
+    <ul>
+      <li><code>htdocs/</code> — All PHP code, configs, and assets live here
+        <ul>
+          <li><code>app/</code> — Config, core classes, utilities</li>
+          <li><code>controllers/</code> — Controllers (one per route)</li>
+          <li><code>models/</code> — Data models</li>
+          <li><code>views/</code> — View templates and partials</li>
+          <li><code>themes/</code> — Theme folders (assets, custom views)</li>
+          <li><code>storage/</code> — Logs, uploads, and other runtime files</li>
+          <li><code>vendor/</code> — Composer dependencies (auto-generated)</li>
+        </ul>
+      </li>
+      <li><code>_framework_old_backup_*</code> — Archived legacy code (safe to delete)</li>
+      <li><code>htdocs/modules/</code> — Modular features (user system, forum, etc.)</li>
+    </ul>
+  </section>
+  <section id="security">
+    <h2>Security</h2>
+    <ul>
+      <li>CSRF tokens are auto-generated and checked for all forms.</li>
+      <li>Session is started automatically in <code>app/start.php</code>.</li>
+      <li>Password reset uses secure tokens and expiry (see user module)</li>
+      <li>Logging for security/auth events</li>
+    </ul>
+  </section>
+  <section id="user-admin-system">
+    <h2>User & Admin System</h2>
+    <p>Managing users, admins, and authentication.</p>
+    <h3>Disable User Registration</h3>
+    <pre><code>'registration_enabled' => false,</code></pre>
+    <ul>
+      <li>Enable or disable user/admin modules in <code>app/config.php</code> via the <code>modules</code> array</li>
+      <li>User registration, login, profile, password reset, email test page (all modular)</li>
+      <li>Admin login and profile are fully independent</li>
+      <li>Navigation adapts to user state and config</li>
+    </ul>
+  </section>
+  <section id="extending-modules">
+    <h2>Extending & Modules</h2>
+    <p><em>How to add, enable, or disable modules, and create your own.</em></p>
+    
+    <h3>Module Structure Requirements</h3>
+    <p>Each module must have specific files and follow certain conventions to pass validation:</p>
+    
+    <h4>Required Files:</h4>
+    <ul>
+      <li><strong><code>index.php</code></strong> - Module metadata and configuration</li>
+      <li><strong><code>routes.php</code></strong> - Module routing definitions</li>
+      <li><strong><code>README.md</code></strong> - Module documentation</li>
+      <li><strong><code>CHANGELOG.md</code></strong> - Version history and changes</li>
+    </ul>
+    
+    <h4>Directory Structure:</h4>
+    <pre><code>your-module/
+├── index.php          # Module metadata (required)
+├── routes.php          # Routes definition (required) 
+├── README.md           # Documentation (required)
+├── CHANGELOG.md        # Change history (required)
+├── controllers/        # Controller classes (if needed)
+├── models/            # Model classes (if needed)
+├── views/             # Template files (if needed)
+└── assets/            # CSS, JS, images (optional)</code></pre>
+    
+    <h4>Module Metadata (<code>index.php</code>)</h4>
+    <p>Your module's <code>index.php</code> must return an array with metadata:</p>
+    <pre><code>&lt;?php
+return [
+    'name' => 'Your Module Name',
+    'slug' => 'your-module',
+    'version' => '1.0.0',
+    'description' => 'Brief description of your module',
+    'author' => 'Your Name',
+    'category' => 'Utility', // See valid categories below
+    'license' => 'MIT',
+    'framework_version' => '1.0.0',
+    'repository' => 'https://github.com/your-repo',
+    'homepage' => 'https://your-homepage.com',
+    'support_url' => 'https://github.com/your-repo/issues',
+    'structure_requirements' => [
+        'controllers' => true,  // Set to false if no controllers needed
+        'views' => true,        // Set to false if no views needed  
+        'models' => false       // Set to false if no models needed
+    ],
+    'enabled' => true
+];
+?&gt;</code></pre>
+    
+    <h4>Valid Categories:</h4>
+    <p><code>Content</code>, <code>E-commerce</code>, <code>Social</code>, <code>Utility</code>, <code>Analytics</code>, <code>Security</code>, <code>SEO</code>, <code>Media</code>, <code>API</code>, <code>Admin</code>, <code>Development</code>, <code>Marketing</code></p>
+    
+    <h3>Module Validation System</h3>
+    <p>StrataPHP includes a comprehensive validation system that ensures modules meet quality and security standards:</p>
+    
+    <h4>Validation Checks:</h4>
+    <ul>
+      <li><strong>Structure Validation:</strong>
+        <ul>
+          <li>✅ Required files exist (index.php, routes.php, README.md)</li>
+          <li>✅ Directory structure matches declared requirements</li>
+          <li>✅ Proper PSR-4 namespace compliance</li>
+        </ul>
+      </li>
+      <li><strong>Security Validation:</strong>
+        <ul>
+          <li>✅ No dangerous functions (eval, exec, system) except in admin modules</li>
+          <li>✅ SQL injection prevention (parameterized queries)</li>
+          <li>✅ XSS protection (proper output escaping)</li>
+          <li>✅ File access safety (path validation)</li>
+        </ul>
+      </li>
+      <li><strong>Code Quality Validation:</strong>
+        <ul>
+          <li>✅ Error handling (try-catch blocks in all methods)</li>
+          <li>✅ Documentation (PHPDoc comments for classes and methods)</li>
+          <li>✅ Convention compliance (naming, structure)</li>
+          <li>✅ Performance optimization (efficient queries, minimal dependencies)</li>
+        </ul>
+      </li>
+    </ul>
+    
+    <h4>Validation Levels:</h4>
+    <ul>
+      <li><strong>✅ Valid (Green)</strong> - Module passes all critical checks
+        <ul>
+          <li>All required files present</li>
+          <li>No security vulnerabilities</li>
+          <li>Proper error handling and documentation</li>
+          <li>Ready for production use</li>
+        </ul>
+      </li>
+      <li><strong>⚠️ Warnings (Yellow)</strong> - Module works but has recommendations
+        <ul>
+          <li>Missing optional files (CHANGELOG.md)</li>
+          <li>Non-standard categories</li>
+          <li>Performance suggestions</li>
+        </ul>
+      </li>
+      <li><strong>❌ Invalid (Red)</strong> - Module has critical issues
+        <ul>
+          <li>Missing required files or structure</li>
+          <li>Security vulnerabilities</li>
+          <li>Missing error handling or documentation</li>
+        </ul>
+      </li>
+    </ul>
+    
+    <h4>Using the Validation System:</h4>
+    <ol>
+      <li><strong>Admin Interface:</strong>
+        <ul>
+          <li>Visit <code>/admin/modules</code> to see validation status</li>
+          <li>Click module names to view detailed validation results</li>
+          <li>Use "Validate" buttons to re-run checks</li>
+        </ul>
+      </li>
+      <li><strong>Command Line:</strong>
+        <pre><code>php -r "
+require_once 'vendor/autoload.php';
+require_once 'htdocs/app/start.php';
+\$validator = new \App\Services\ModuleValidator();
+\$results = \$validator->validateModule('htdocs/modules/your-module');
+echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
+"</code></pre>
+      </li>
+    </ol>
+    
+    <h3>Development Guidelines</h3>
+    <ol>
+      <li><strong>Directory Structure:</strong> Each module should have its own folder under <code>htdocs/modules/yourmodule/</code>. Organize your module with subfolders for <code>controllers/</code>, <code>models/</code>, <code>views/</code>, and <code>assets/</code> as needed.</li>
+      <li><strong>Autoloading:</strong> Place your controllers in <code>controllers/</code>, models in <code>models/</code>, and views in <code>views/</code>. The framework's autoloader will automatically load classes from these locations if you follow the naming conventions.</li>
+      <li><strong>Database Access:</strong> Use the provided <code>DB</code> class for all database operations. Do not use legacy or custom DB connection code.</li>
+      <li><strong>Error Handling:</strong> Wrap all controller methods in try-catch blocks for proper error handling.</li>
+      <li><strong>Documentation:</strong> Add PHPDoc comments to all classes and methods for proper documentation.</li>
+      <li><strong>Configuration:</strong> Add any module-specific config to <code>app/config.php</code> under the <code>'modules'</code> array or as a separate config key.</li>
+      <li><strong>Security:</strong> Use the <code>TokenManager</code> class for CSRF protection in all forms. Validate and sanitize all user input.</li>
+      <li><strong>Session & Auth:</strong> Use the session prefix (<code>PREFIX</code>) for any session variables to avoid conflicts. Check authentication/authorization as needed for your module's routes.</li>
+      <li><strong>Views & Assets:</strong> Place your module's views in the module's <code>views/</code> folder. Store CSS, JS, and images in the module's <code>assets/</code> folder if needed.</li>
+      <li><strong>Logging:</strong> Use the <code>Logger</code> class for logging important events or errors.</li>
+      <li><strong>Enable/Disable Modules:</strong> Control module activation via the <code>'modules'</code> array in <code>app/config.php</code>.</li>
+      <li><strong>Documentation:</strong> Document your module's usage, routes, and configuration in a <code>README.md</code> inside your module folder.</li>
+    </ol>
+  </section>
+  <section id="api-module-management">
+    <h2>API Module Management</h2>
+    <ul>
+      <li>The API module can now be enabled or disabled from the admin interface, just like other modules.</li>
+      <li>When disabled, all API endpoints are inaccessible and their routes are not loaded.</li>
+      <li>Module route loading is now strictly controlled by the config, ensuring only enabled modules are accessible.</li>
+    </ul>
+  </section>
+  <section id="planned-features">
+    <h2>Planned Features</h2>
+    <ul>
+      <li>Forum module (modular, installable)</li>
+      <li>Install script for new modules</li>
+    </ul>
+  </section>
+  <section id="release-notes">
+    <h2>Release Notes</h2>
+    <ul>
+      <li>v1.0.0 (August 2025):
+        <ul>
+          <li>Unified DB class (<code>DB</code>) used everywhere</li>
+          <li>Admin and user systems are fully independent</li>
+          <li>TokenManager and Logger classes autoloaded and used for CSRF and logging</li>
+          <li>Contact model and all modules updated to use new DB class</li>
+          <li>Modular structure and config loading improved</li>
+          <li>First stable release</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+  <section id="database-migrations-seeding">
+    <h2>Database Migrations & Seeding</h2>
+    <h3>Migration Features</h3>
+    <ul>
+      <li>Forward migrations: Apply all new migrations in order with <code>php bin/migrate.php</code>.</li>
+      <li>Rollback: Undo the latest (or multiple) migrations with <code>php bin/rollback.php [steps]</code>.</li>
+      <li>Migration status: See which migrations are applied or pending with <code>php bin/migration_status.php</code>.</li>
+      <li>Migration locking: Prevents concurrent migration runs; shows who/when set the lock.</li>
+      <li>Migration logging: Tracks who ran each migration and when (<code>applied_by</code>, <code>applied_at</code>).</li>
+      <li>Migration generator: Create new migration and rollback templates with <code>php bin/create_migration.php MigrationName</code>.</li>
+      <li>Down migrations: Each migration can have a <code>.down.php</code> file for rollback support.</li>
+    </ul>
+    <h3>Seeding Features</h3>
+    <ul>
+      <li>Seeding: Populate your database with test/demo data using <code>php bin/seed.php</code> (runs all seeds in <code>seeds/</code>).</li>
+      <li>De-seeding: Remove seeded data with <code>php bin/seed.php --down</code> (runs all <code>.down.php</code> seed files in reverse order).</li>
+      <li>Seed generator: Create your own seed and down seed files in the <code>seeds/</code> directory.</li>
+    </ul>
+    <h3>Example Usage</h3>
+    <pre>php bin/migrate.php                # Apply all new migrations
+php bin/rollback.php 2             # Roll back the last 2 migrations
+php bin/migration_status.php       # Show migration status
+php bin/create_migration.php AddUsersTable   # Scaffold new migration and down file
+php bin/seed.php                   # Run all seed files
+php bin/seed.php --down            # Remove all seeded data
+</pre>
+    <h3>Best Practices</h3>
+    <ul>
+      <li>Always create a <code>.down.php</code> file for each migration/seed to support rollback.</li>
+      <li>Never run <code>.down.php</code> files as forward migrations.</li>
+      <li>Use the migration lock to avoid concurrent schema changes in teams/CI.</li>
+    </ul>
+  </section>
+  <section id="twig-support">
+    <h2>Optional Twig Template Engine Support</h2>
+    <ol>
+      <li>Install Twig via Composer:<br><pre>composer require twig/twig</pre></li>
+      <li>Set <code>use_twig</code> to <code>true</code> in <code>htdocs/app/config.php</code> or your <code>.env</code> file:<br><pre>USE_TWIG=true</pre></li>
+      <li>Create your templates in the <code>htdocs/views</code> directory with the <code>.twig</code> extension.</li>
+      <li>Use Twig syntax in your templates. You can use template inheritance and includes for headers, footers, etc.</li>
+    </ol>
+    <p>If <code>use_twig</code> is set to <code>false</code>, the framework will use classic PHP views instead.</p>
+    <h3>Example: Conditional Twig/PHP Rendering in Controllers</h3>
+    <p>The <code>AboutController</code> demonstrates how to conditionally render either a Twig template or a classic PHP view based on the configuration setting (<code>use_twig</code>).</p>
+    <ul>
+      <li>If Twig is enabled, the controller will render <code>about.twig</code>.</li>
+      <li>If Twig is disabled, it will render <code>about.php</code> using standard PHP includes.</li>
+    </ul>
+    <p>This setup allows you to keep Twig as an optional feature and provides a clear example for other controllers.</p>
+    <p>See <code>htdocs/controllers/AboutController.php</code> for implementation details.</p>
+  </section>
+  <section id="csrf-protection">
+    <h2>CSRF Protection</h2>
+    <ul>
+      <li>A unique CSRF token is generated for each user session.</li>
+      <li>To include the token in your forms, use:<br><pre>&lt;input type="hidden" name="token" value="&lt;?= TokenManager::csrf() ?&gt;"&gt;</pre></li>
+      <li>To verify the token on form submission in your controller:<br><pre>$tm = new TokenManager();
+$result = $tm->verify($_POST['token']);
+if ($result['status'] === 'success') {
+    // Token is valid, process the form
+} else {
+    // Token is invalid or expired
+}
+</pre></li>
+      <li>CSRF protection is enabled by default if <code>'csrf_token' => true</code> is set in your config.</li>
+    </ul>
+  </section>
+</body>
+</html>

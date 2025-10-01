@@ -1,9 +1,0 @@
-[2025-08-10 21:35:52] [ERROR] Database connection failed {"error":"SQLSTATE[HY000] [1045] Access denied for user 'root1'@'localhost' (using password: YES)"}
-[2025-08-12 11:45:35] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-13 08:15:15] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-13 08:39:04] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-21 12:42:21] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-21 12:56:18] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-21 13:16:03] [INFO] Token verified {"user_ip":"::1"}
-[2025-08-21 13:19:00] [INFO] Token verified {"user_ip":"::1"}
-[EXCEPTION] Unable to find template "about.twig" (looked into: views).

@@ -2,14 +2,29 @@
 namespace App\Modules\User\Controllers;
 use App\DB;
 use App\TokenManager;
+/**
+ * User Password Reset Controller
+ * 
+ * Handles password reset functionality with token validation
+ * Processes password reset requests and validates reset tokens
+ */
 class UserResetController
 {
+    /**
+     * Handle password reset requests
+     * 
+     * Validates reset tokens and processes password updates
+     * Includes security validation and proper error handling
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        $error = '';
-        $success = '';
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            $error = '';
+            $success = '';
         // Validate token and get user_id
         $db = new DB($config);
         $token = $_GET['token'] ?? '';
@@ -57,5 +72,11 @@ class UserResetController
             }
         }
         include __DIR__ . '/../views/reset.php';
+        } catch (\Exception $e) {
+            error_log('User reset error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            include __DIR__ . '/../views/reset.php';
+        }
     }
 }

@@ -61,8 +61,20 @@ if (isset($router) && $router instanceof Router) {
         $isAdminRoute = strpos($path, '/admin') === 0;
         $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
         if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
-            header('Location: /admin');
-            exit;
+            // Check if this is an AJAX request
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                     strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            $isJsonRequest = isset($_SERVER['CONTENT_TYPE']) && 
+                           strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
+            
+            if ($isAjax || $isJsonRequest || strpos($path, '/admin/modules/validate/') === 0) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Authentication required']);
+                exit;
+            } else {
+                header('Location: /admin');
+                exit;
+            }
         }
         return $next($request);
     });

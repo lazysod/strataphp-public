@@ -4,13 +4,30 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\TokenManager;
 use App\DB;
+
+/**
+ * User Password Reset Request Controller
+ * 
+ * Handles password reset request processing, validates user email,
+ * generates secure reset tokens, and sends password reset emails
+ * 
+ * @package StrataPHP\Modules\User\Controllers
+ * @author StrataPHP Framework
+ * @version 1.0.0
+ */
 class UserResetRequestController
 {
+    /**
+     * Process password reset requests
+     * 
+     * @return void
+     */
     public function index()
     {
-        global $config;
-        $error = '';
-        $success = '';
+        try {
+            global $config;
+            $error = '';
+            $success = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tm = new TokenManager();
             $result = $tm->verify($_POST['token'] ?? '');
@@ -63,5 +80,11 @@ class UserResetRequestController
             }
         }
         include __DIR__ . '/../views/reset_request.php';
+        } catch (\Exception $e) {
+            error_log('User reset request error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            include __DIR__ . '/../views/reset_request.php';
+        }
     }
 }

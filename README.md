@@ -138,6 +138,121 @@ _How to add, enable, or disable modules, and create your own._
 
 To extend the framework, you can create your own modules in the `htdocs/modules/` directory. Here are some guidelines to help you build robust, maintainable modules:
 
+### Module Structure Requirements
+
+Each module must have specific files and follow certain conventions to pass validation:
+
+#### Required Files:
+- **`index.php`** - Module metadata and configuration
+- **`routes.php`** - Module routing definitions  
+- **`README.md`** - Module documentation
+- **`CHANGELOG.md`** - Version history and changes
+
+#### Directory Structure:
+```
+your-module/
+├── index.php          # Module metadata (required)
+├── routes.php          # Routes definition (required) 
+├── README.md           # Documentation (required)
+├── CHANGELOG.md        # Change history (required)
+├── controllers/        # Controller classes (if needed)
+├── models/            # Model classes (if needed)
+├── views/             # Template files (if needed)
+└── assets/            # CSS, JS, images (optional)
+```
+
+#### Module Metadata (`index.php`)
+Your module's `index.php` must return an array with metadata:
+
+```php
+<?php
+return [
+    'name' => 'Your Module Name',
+    'slug' => 'your-module',
+    'version' => '1.0.0',
+    'description' => 'Brief description of your module',
+    'author' => 'Your Name',
+    'category' => 'Utility', // See valid categories below
+    'license' => 'MIT',
+    'framework_version' => '1.0.0',
+    'repository' => 'https://github.com/your-repo',
+    'homepage' => 'https://your-homepage.com',
+    'support_url' => 'https://github.com/your-repo/issues',
+    'structure_requirements' => [
+        'controllers' => true,  // Set to false if no controllers needed
+        'views' => true,        // Set to false if no views needed  
+        'models' => false       // Set to false if no models needed
+    ],
+    'enabled' => true
+];
+?>
+```
+
+#### Valid Categories:
+- `Content`, `E-commerce`, `Social`, `Utility`, `Analytics`
+- `Security`, `SEO`, `Media`, `API`, `Admin`, `Development`, `Marketing`
+
+### Module Validation System
+
+StrataPHP includes a comprehensive validation system that ensures modules meet quality and security standards:
+
+#### Validation Checks:
+
+**Structure Validation:**
+- ✅ Required files exist (index.php, routes.php, README.md)
+- ✅ Directory structure matches declared requirements
+- ✅ Proper PSR-4 namespace compliance
+
+**Security Validation:**
+- ✅ No dangerous functions (eval, exec, system) except in admin modules
+- ✅ SQL injection prevention (parameterized queries)
+- ✅ XSS protection (proper output escaping)
+- ✅ File access safety (path validation)
+
+**Code Quality Validation:**
+- ✅ Error handling (try-catch blocks in all methods)
+- ✅ Documentation (PHPDoc comments for classes and methods)
+- ✅ Convention compliance (naming, structure)
+- ✅ Performance optimization (efficient queries, minimal dependencies)
+
+#### Validation Levels:
+
+**✅ Valid (Green)** - Module passes all critical checks
+- All required files present
+- No security vulnerabilities  
+- Proper error handling and documentation
+- Ready for production use
+
+**⚠️ Warnings (Yellow)** - Module works but has recommendations
+- Missing optional files (CHANGELOG.md)
+- Non-standard categories
+- Performance suggestions
+
+**❌ Invalid (Red)** - Module has critical issues
+- Missing required files or structure
+- Security vulnerabilities
+- Missing error handling or documentation
+
+#### Using the Validation System:
+
+1. **Admin Interface:**
+   - Visit `/admin/modules` to see validation status
+   - Click module names to view detailed validation results
+   - Use "Validate" buttons to re-run checks
+
+2. **Command Line:**
+   ```bash
+   php -r "
+   require_once 'vendor/autoload.php';
+   require_once 'htdocs/app/start.php';
+   \$validator = new \App\Services\ModuleValidator();
+   \$results = \$validator->validateModule('htdocs/modules/your-module');
+   echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
+   "
+   ```
+
+### Development Guidelines
+
 1. **Directory Structure**
   - Each module should have its own folder under `htdocs/modules/yourmodule/`.
   - Organize your module with subfolders for `controllers/`, `models/`, `views/`, and `assets/` as needed.
@@ -154,29 +269,62 @@ To extend the framework, you can create your own modules in the `htdocs/modules/
     $result = $db->fetch("SELECT * FROM mytable WHERE id = ?", [$id]);
     ```
 
-4. **Configuration**
+4. **Error Handling**
+  - Wrap all controller methods in try-catch blocks:
+    ```php
+    public function index() {
+        try {
+            // Your code here
+        } catch (\Exception $e) {
+            error_log("Error in YourController: " . $e->getMessage());
+            // Handle error appropriately
+        }
+    }
+    ```
+
+5. **Documentation**
+  - Add PHPDoc comments to all classes and methods:
+    ```php
+    /**
+     * Your Controller Description
+     * 
+     * Handles functionality for your module
+     */
+    class YourController {
+        /**
+         * Display the main page
+         * 
+         * @return void
+         */
+        public function index() {
+            // Implementation
+        }
+    }
+    ```
+
+6. **Configuration**
   - Add any module-specific config to `app/config.php` under the `'modules'` array or as a separate config key.
   - Access config via the global `$config` array.
 
-5. **Security**
+7. **Security**
   - Use the `TokenManager` class for CSRF protection in all forms.
   - Validate and sanitize all user input.
 
-6. **Session & Auth**
+8. **Session & Auth**
   - Use the session prefix (`PREFIX`) for any session variables to avoid conflicts.
   - Check authentication/authorization as needed for your module's routes.
 
-7. **Views & Assets**
+9. **Views & Assets**
   - Place your module's views in the module's `views/` folder.
   - Store CSS, JS, and images in the module's `assets/` folder if needed.
 
-8. **Logging**
+10. **Logging**
   - Use the `Logger` class for logging important events or errors.
 
-9. **Enable/Disable Modules**
+11. **Enable/Disable Modules**
   - Control module activation via the `'modules'` array in `app/config.php`.
 
-10. **Documentation**
+12. **Documentation**
    - Document your module's usage, routes, and configuration in a `README.md` inside your module folder.
 
 By following these guidelines, your modules will be consistent with the framework and easy for others to use or extend.

@@ -1,24 +1,62 @@
 {
     "name": "lazysod/strataphp",
-    "description": "A modular PHP framework with PSR-4 autoloading.",
+    "description": "A lightweight, modular PHP framework with automatic module discovery, PSR-4 autoloading, and comprehensive CLI tools.",
     "type": "project",
+    "version": "1.0.0",
+    "keywords": ["php", "framework", "modular", "psr-4", "mvc", "cli", "modules"],
+    "homepage": "https://github.com/lazysod/strataphp-dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barry",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lazysod/strataphp-dev/issues",
+        "source": "https://github.com/lazysod/strataphp-dev"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "htdocs/app/",
             "App\\Controllers\\": "htdocs/controllers/",
-            "App\\Modules\\Admin\\Controllers\\": "htdocs/modules/admin/controllers/",
-            "App\\Modules\\Admin\\Models\\": "htdocs/modules/admin/models/",
-            "App\\Modules\\Links\\Controllers\\": "htdocs/modules/links/controllers/",
-            "App\\Modules\\User\\Controllers\\": "htdocs/modules/user/controllers/",
-            "App\\Modules\\Contact\\Controllers\\": "htdocs/modules/contact/controllers/"
+            "App\\Models\\": "htdocs/models/",
+            "App\\Modules\\": "htdocs/modules/"
         }
     },
     "require": {
+        "php": ">=8.0",
         "phpmailer/phpmailer": "^6.10",
         "vlucas/phpdotenv": "^5.6",
         "twig/twig": "^3.21"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.13"
-    }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "*": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"echo 'Autoloader updated successfully.\\n';\""
+        ],
+        "create-module": [
+            "@php bin/create-module.php"
+        ],
+        "install-module": [
+            "@php bin/install-module.php"
+        ],
+        "migrate": [
+            "@php bin/migrate.php"
+        ],
+        "create-admin": [
+            "@php bin/create_admin.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

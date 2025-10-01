@@ -3,22 +3,51 @@ namespace App\Modules\User\Controllers;
 
 use App\DB;
 
+/**
+ * User Sessions Controller
+ * 
+ * Manages user session viewing and revocation functionality
+ * Allows users to see active sessions and revoke access
+ */
 class UserSessionsController
 {
+    /**
+     * Display user sessions
+     * 
+     * Shows active sessions for the current user with device information
+     * Includes session management and revocation capabilities
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        $db = new DB($config);
-        $user_id = $_SESSION[PREFIX . 'user_id'] ?? null;
-        if (!$user_id) {
-            header('Location: /user/login');
-            exit;
-        }
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            $db = new DB($config);
+            $user_id = $_SESSION[PREFIX . 'user_id'] ?? null;
+            if (!$user_id) {
+                header('Location: /user/login');
+                exit;
+            }
     // Only show latest active session per device (not revoked)
     $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$user_id, $user_id]);
         include __DIR__ . '/../views/sessions.php';
+        } catch (\Exception $e) {
+            error_log('User sessions error: ' . $e->getMessage());
+            $sessions = [];
+            include __DIR__ . '/../views/sessions.php';
+        }
     }
+
+    /**
+     * Revoke a user session
+     * 
+     * Allows users to revoke specific sessions for security purposes
+     * Validates session ownership before revocation
+     * 
+     * @return void
+     */
     public function revoke()
     {
         include_once dirname(__DIR__, 3) . '/app/start.php';

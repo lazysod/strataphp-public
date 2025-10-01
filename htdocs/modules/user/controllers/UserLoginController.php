@@ -8,16 +8,31 @@ use App\User;
 // modules/user/controllers/UserLoginController.php
 // Refactored as a class for router compatibility
 
+/**
+ * User Login Controller
+ * 
+ * Handles user authentication and login functionality
+ * Provides secure login with CSRF protection and session management
+ */
 class UserLoginController
 {
+    /**
+     * Handle user login requests
+     * 
+     * Processes both GET (display form) and POST (authenticate) requests
+     * Includes CSRF token validation and proper error handling
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        if (empty($config['modules']['user'])) {
-            header('Location: /');
-            exit;
-        }
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            if (empty($config['modules']['user'])) {
+                header('Location: /');
+                exit;
+            }
         $error = '';
         $success = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,5 +60,10 @@ class UserLoginController
             }
         }
         include __DIR__ . '/../views/login.php';
+        } catch (\Exception $e) {
+            error_log('User login error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            include __DIR__ . '/../views/login.php';
+        }
     }
 }

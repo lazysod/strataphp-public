@@ -1,8 +1,26 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
+namespace App\Modules\User\Controllers;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+/**
+ * Email Test Controller
+ * 
+ * Provides email testing functionality for administrators to verify
+ * SMTP configuration and email delivery
+ * 
+ * @package StrataPHP\Modules\User\Controllers
+ * @author StrataPHP Framework
+ * @version 1.0.0
+ */
 class EmailTestController
 {
+    /**
+     * Display email test form and handle test email sending
+     * 
+     * @return void
+     */
     public function index()
     {
         include_once dirname(__DIR__, 3) . '/vendor/autoload.php';

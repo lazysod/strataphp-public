@@ -1,20 +1,53 @@
 <?php
-// Base API controller for consistent JSON responses and error handling
+namespace App\Modules\Api\Controllers;
+
+/**
+ * Base API Controller
+ * 
+ * Provides common functionality for API endpoints including
+ * JSON response formatting and error handling
+ */
 class ApiController
 {
+    /**
+     * Send JSON response
+     * 
+     * @param mixed $data Data to encode as JSON
+     * @param int $status HTTP status code
+     * @return void
+     */
     protected function json($data, $status = 200)
     {
-        http_response_code($status);
-        header('Content-Type: application/json');
-        echo json_encode($data);
+        try {
+            http_response_code($status);
+            header('Content-Type: application/json');
+            echo json_encode($data);
+        } catch (\Exception $e) {
+            error_log("Error sending JSON response: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Internal server error']);
+        }
     }
 
+    /**
+     * Send error response
+     * 
+     * @param string $message Error message
+     * @param int $status HTTP status code
+     * @return void
+     */
     protected function error($message, $status = 400)
     {
-        $this->json([
-            'error' => true,
-            'code' => $status,
-            'message' => $message
-        ], $status);
+        try {
+            $this->json([
+                'error' => true,
+                'code' => $status,
+                'message' => $message
+            ], $status);
+        } catch (\Exception $e) {
+            error_log("Error sending error response: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => true, 'message' => 'Internal server error']);
+        }
     }
 }
