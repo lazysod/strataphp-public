@@ -1,6 +1,10 @@
 <?php
+// StrataPHP CMS Module Routes
+
 use App\App;
 use App\Modules\Cms\Controllers\CmsController;
+use App\Modules\Cms\Controllers\PageController;
+use App\Modules\Cms\Controllers\AdminController;
 
 // Ensure Composer autoloader is loaded for App class
 $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
@@ -8,25 +12,28 @@ if (file_exists($composerAutoload)) {
     require_once $composerAutoload;
 }
 
-// Cms module routes
 global $router;
 
 if (!empty(App::config('modules')['cms']['enabled'])) {
     
-    // Main routes
-    $router->get('/cms', [CmsController::class, 'index']);
-    $router->get('/cms/create', [CmsController::class, 'create']);
-    $router->post('/cms/create', [CmsController::class, 'store']);
-    $router->get('/cms/{{id}}', [CmsController::class, 'show']);
-    $router->get('/cms/{{id}}/edit', [CmsController::class, 'edit']);
-    $router->post('/cms/{{id}}/edit', [CmsController::class, 'update']);
-    $router->post('/cms/{{id}}/delete', [CmsController::class, 'delete']);
+    // Public page routes - Dynamic routing for CMS pages
+    $router->get('/', [PageController::class, 'home']);
+    $router->get('/page/{slug}', [PageController::class, 'show']);
     
-    // API routes (optional)
-    $router->get('/api/cms', [CmsController::class, 'apiIndex']);
+    // Admin CMS management routes
+    $router->get('/admin/cms', [AdminController::class, 'dashboard']);
+    $router->get('/admin/cms/dashboard', [AdminController::class, 'dashboard']);
+    $router->get('/admin/cms/pages', [AdminController::class, 'pages']);
+    $router->get('/admin/cms/pages/create', [AdminController::class, 'createPage']);
+    $router->post('/admin/cms/pages/create', [AdminController::class, 'storePage']);
+    $router->get('/admin/cms/pages/{id}/edit', [AdminController::class, 'editPage']);
+    $router->post('/admin/cms/pages/{id}/edit', [AdminController::class, 'updatePage']);
+    $router->post('/admin/cms/pages/{id}/delete', [AdminController::class, 'deletePage']);
     
-    // Register as root if this is the default module
-    if (!empty(App::config('default_module')) && App::config('default_module') === 'cms') {
-        $router->get('/', [CmsController::class, 'index']);
-    }
+    // API routes for headless usage
+    $router->get('/api/cms/pages', [CmsController::class, 'apiPages']);
+    $router->get('/api/cms/pages/{slug}', [CmsController::class, 'apiPage']);
+    
+    // Fallback route for dynamic pages (must be last)
+    $router->get('/{slug}', [PageController::class, 'dynamicPage']);
 }

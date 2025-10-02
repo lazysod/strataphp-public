@@ -1,0 +1,202 @@
+<?php
+namespace App\Modules\Cms\Controllers;
+
+use App\DB;
+use App\Modules\Cms\Models\Page;
+use App\Modules\Cms\ThemeManager;
+use App\View;
+
+class PageController
+{
+    private $db;
+    private $config;
+    
+    public function __construct()
+    {
+        $this->config = include dirname(__DIR__, 3) . '/app/config.php';
+        $this->db = new DB($this->config);
+    }
+    
+    /**
+     * Display the home page
+     */
+    public function home()
+    {
+        try {
+            $pageModel = new Page($this->config);
+            
+            // Try to find a page with slug 'home' or the first published page
+            $homePage = $pageModel->findBySlug('home');
+            if (!$homePage) {
+                $homePage = $pageModel->getFirstPublished();
+            }
+            
+            if (!$homePage) {
+                // If no pages exist, show a default welcome message
+                $data = [
+                    'title' => 'Welcome to StrataPHP',
+                    'content' => '<h1>Welcome to StrataPHP</h1><p>Your CMS is ready! Create your first page in the admin panel.</p>',
+                    'meta_description' => 'Welcome to StrataPHP CMS'
+                ];
+            } else {
+                $data = [
+                    'title' => $homePage['title'],
+                    'meta_title' => $homePage['meta_title'] ?? $homePage['title'],
+                    'content' => $homePage['content'],
+                    'excerpt' => $homePage['excerpt'] ?? '',
+                    'meta_description' => $homePage['meta_description'] ?? $homePage['excerpt'] ?? '',
+                    'page' => $homePage
+                ];
+            }
+            
+            $this->renderPage($data);
+        } catch (\Exception $e) {
+            error_log("PageController home error: " . $e->getMessage());
+            $this->showError('Unable to load the home page.');
+        }
+    }
+    
+    /**
+     * Display a specific page by slug
+     */
+    public function show($slug)
+    {
+        try {
+            $pageModel = new Page($this->config);
+            $page = $pageModel->findBySlug($slug);
+            
+            if (!$page || $page['status'] !== 'published') {
+                $this->show404();
+                return;
+            }
+            
+            $data = [
+                'title' => $page['title'],
+                'meta_title' => $page['meta_title'] ?? $page['title'],
+                'content' => $page['content'],
+                'excerpt' => $page['excerpt'] ?? '',
+                'meta_description' => $page['meta_description'] ?? $page['excerpt'] ?? '',
+                'page' => $page
+            ];
+            
+            $this->renderPage($data);
+        } catch (\Exception $e) {
+            error_log("PageController show error: " . $e->getMessage());
+            $this->showError('Unable to load the requested page.');
+        }
+    }
+    
+    /**
+     * Handle dynamic page routing (fallback route)
+     */
+    public function dynamicPage($slug)
+    {
+        // This is the same as show() but used for the fallback route
+        $this->show($slug);
+    }
+    
+    /**
+     * Render a page using the theme system
+     */
+    private function renderPage($data)
+    {
+        // Define the constant to allow access to CMS view files
+        if (!defined('STRPHP_ROOT')) {
+            define('STRPHP_ROOT', dirname(__DIR__, 3));
+        }
+        
+        try {
+            // Use the new theme manager
+            $themeManager = new ThemeManager();
+            
+            // Get page data and template
+            $page = $data['page'] ?? $data;
+            $template = $page['template'] ?? 'default';
+            
+            // Render with theme system
+            echo $themeManager->renderPage($page, $template);
+            
+        } catch (\Exception $e) {
+            error_log("Theme rendering error: " . $e->getMessage());
+            
+            // Fallback to old system
+            $themePath = dirname(__DIR__, 2) . '/themes/' . ($this->config['theme'] ?? 'default');
+            $pageTemplate = $themePath . '/page.php';
+            
+            if (file_exists($pageTemplate)) {
+                // Extract data for template
+                extract($data);
+                include $pageTemplate;
+            } else {
+                // Fallback to CMS module template
+                $fallbackTemplate = dirname(__DIR__) . '/views/page.php';
+                if (file_exists($fallbackTemplate)) {
+                    extract($data);
+                    include $fallbackTemplate;
+                } else {
+                    // Last resort: simple HTML output
+                    echo $this->renderSimplePage($data);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Render a simple HTML page as fallback
+     */
+    private function renderSimplePage($data)
+    {
+        $title = htmlspecialchars($data['title'] ?? 'Page');
+        $content = $data['content'] ?? '';
+        $metaDescription = htmlspecialchars($data['meta_description'] ?? '');
+        
+        return "<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta name=\"description\" content=\"{$metaDescription}\">
+    <title>{$title}</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    {$content}
+</body>
+</html>";
+    }
+    
+    /**
+     * Show 404 error page
+     */
+    private function show404()
+    {
+        http_response_code(404);
+        
+        $data = [
+            'title' => 'Page Not Found',
+            'content' => '<h1>Page Not Found</h1><p>The requested page could not be found.</p>',
+            'meta_description' => 'Page not found'
+        ];
+        
+        $this->renderPage($data);
+    }
+    
+    /**
+     * Show error page
+     */
+    private function showError($message)
+    {
+        http_response_code(500);
+        
+        $data = [
+            'title' => 'Error',
+            'content' => '<h1>Error</h1><p>' . htmlspecialchars($message) . '</p>',
+            'meta_description' => 'An error occurred'
+        ];
+        
+        $this->renderPage($data);
+    }
+}

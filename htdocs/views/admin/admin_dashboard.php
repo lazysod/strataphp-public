@@ -25,6 +25,46 @@ require __DIR__ . '/../partials/admin_header.php'; ?>
                 </div>
             </div>
         </div>
+        
+        <!-- CMS Quick Access Cards -->
+        <?php if (isset($config['modules']['cms']['enabled']) && $config['modules']['cms']['enabled']): ?>
+        <div class="row gx-5 mb-5">
+            <div class="col-lg-12">
+                <h2 class="fw-bolder mb-4">Content Management</h2>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="fs-4 mb-3">📝</div>
+                        <h5 class="card-title">CMS Dashboard</h5>
+                        <p class="card-text">Manage your website content and pages</p>
+                        <a href="/admin/cms" class="btn btn-primary">Open CMS</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="fs-4 mb-3">📄</div>
+                        <h5 class="card-title">Manage Pages</h5>
+                        <p class="card-text">View, edit, and organize your pages</p>
+                        <a href="/admin/cms/pages" class="btn btn-outline-primary">Manage Pages</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="fs-4 mb-3">➕</div>
+                        <h5 class="card-title">Create Page</h5>
+                        <p class="card-text">Add new content to your website</p>
+                        <a href="/admin/cms/pages/create" class="btn btn-success">Create Page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        
         <!-- Contact cards-->
 
     </div>

@@ -51,14 +51,30 @@ class DB
 
     public function query($sql, $params = [])
     {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            if (!$stmt) {
+                error_log("DB: Failed to prepare statement: " . $sql);
+                return null;
+            }
+            $result = $stmt->execute($params);
+            if (!$result) {
+                error_log("DB: Failed to execute statement: " . $sql . " with params: " . json_encode($params));
+                return null;
+            }
+            return $stmt;
+        } catch (PDOException $e) {
+            error_log("DB query error: " . $e->getMessage() . " SQL: " . $sql);
+            return null;
+        }
     }
 
     public function fetchAll($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
+        if (!$stmt) {
+            return [];
+        }
         return $stmt->fetchAll();
     }
 

@@ -1,28 +1,53 @@
 <?php
-// Module metadata for Cms module
+// Module metadata for StrataPHP CMS module
 return [
-    'name' => 'Cms',
+    'name' => 'StrataPHP CMS',
     'slug' => 'cms',
     'version' => '1.0.0',
-    'description' => 'A comprehensive cms management module with CRUD operations, search, and pagination.',
+    'description' => 'Professional Content Management System with pages, posts, menus, and dynamic routing. The flagship CMS module for StrataPHP.',
     'author' => 'StrataPHP Framework',
     'category' => 'Content',
     'license' => 'MIT',
     'homepage' => 'https://github.com/strataphp/cms-module',
     'repository' => 'https://github.com/strataphp/cms-module.git',
     'support_url' => 'https://github.com/strataphp/cms-module/issues',
+    'documentation' => 'https://docs.strataphp.com/modules/cms',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => false,
     'suitable_as_default' => false,
-    'dependencies' => [], // Other modules this depends on
-    'permissions' => ['cms.create', 'cms.read', 'cms.update', 'cms.delete'], // Required permissions
+    'dependencies' => [
+        'user' => '>=1.0.0' // Requires user management for authors
+    ],
+    'permissions' => [
+        'cms.pages.create', 'cms.pages.read', 'cms.pages.update', 'cms.pages.delete',
+        'cms.posts.create', 'cms.posts.read', 'cms.posts.update', 'cms.posts.delete',
+        'cms.menus.create', 'cms.menus.read', 'cms.menus.update', 'cms.menus.delete',
+        'cms.admin', 'cms.settings'
+    ],
     'requirements' => [
         'php' => '>=7.4',
         'mysql' => '>=5.7'
     ],
-    'tags' => ['cms', 'content', 'cms', 'crud'],
+    'features' => [
+        'Page Management',
+        'Blog Posts',
+        'Menu Builder',
+        'Dynamic Routing',
+        'SEO Optimization',
+        'Template System',
+        'Media Library',
+        'Revision History'
+    ],
+    'tags' => ['cms', 'content', 'pages', 'blog', 'seo', 'management'],
     'screenshots' => [
         '/modules/cms/assets/screenshots/dashboard.png',
-        '/modules/cms/assets/screenshots/editor.png'
+        '/modules/cms/assets/screenshots/page-editor.png',
+        '/modules/cms/assets/screenshots/menu-builder.png'
+    ],
+    'database_tables' => [
+        'cms_pages',
+        'cms_posts', 
+        'cms_menus',
+        'cms_content_revisions'
     ]
 ];
