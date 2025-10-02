@@ -1,3 +1,10 @@
+<?php
+use App\Modules\HelloWorld\Models\HelloWorld;
+
+$model = new HelloWorld();
+$mainMessage = htmlspecialchars($model->getMessage());
+$randomMessage = htmlspecialchars($model->getMessage(true));
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,14 +14,9 @@
     <link rel="stylesheet" href="/modules/helloworld/assets/style.css">
 </head>
 <body>
-    <?php
-    use App\Modules\HelloWorld\Models\HelloWorld;
-
-    $model = new HelloWorld();
-    echo '<h1>' . htmlspecialchars($model->getMessage()) . '</h1>';
-    echo '<p>This is a simple demonstration of a StrataPHP module.</p>';
-    echo '<p><strong>Random message:</strong> ' . htmlspecialchars($model->getMessage(true)) . '</p>';
-    echo '<p><a href="/">← Back to Home</a> | <a href="/hello">🔄 Refresh for random message</a></p>';
-    ?>
+    <h1><?= $mainMessage ?></h1>
+    <p>This is a simple demonstration of a StrataPHP module.</p>
+    <p><strong>Random message:</strong> <?= $randomMessage ?></p>
+    <p><a href="/">← Back to Home</a> | <a href="/hello">🔄 Refresh for random message</a></p>
 </body>
 </html>
