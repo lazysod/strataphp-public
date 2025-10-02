@@ -15,13 +15,12 @@ The Links module provides a Linktree-style landing page functionality, displayin
 ## Installation
 The Links module is automatically discovered by StrataPHP. To enable:
 
-1. Run migrations to create the links table
-2. Enable the module in your configuration
-3. Routes are automatically loaded from `routes.php`
+### Via Admin Interface (Recommended)
+1. Navigate to `/admin/modules` 
+2. Find the Links module in the list
+3. Check the enable checkbox and click "Save Changes"
 
-## Configuration
-
-### Module Configuration
+### Via Configuration
 Enable the links module in `config.php`:
 
 ```php
@@ -32,6 +31,22 @@ Enable the links module in `config.php`:
 ]
 ```
 
+### Database Setup
+Run migrations to create the links table:
+
+```bash
+php bin/migrate.php
+```
+
+### Module Validation
+The Links module passes all StrataPHP validation checks:
+- ✅ Required files and structure present
+- ✅ Security best practices implemented  
+- ✅ Proper error handling and documentation
+- ✅ Framework convention compliance
+
+## Configuration
+
 ### Setting as Default Module
 To make this your site's homepage:
 
@@ -39,13 +54,9 @@ To make this your site's homepage:
 'default_module' => 'links'
 ```
 
-### Database Setup
-The module requires the links table. Run migrations:
+Or use the admin interface at `/admin/modules` to select default module.
 
-```bash
-php bin/migrate.php
-```
-
+### Database Schema
 The links table includes:
 - `id` - Primary key
 - `title` - Link display text
@@ -159,12 +170,32 @@ The module uses the default StrataPHP theme. To customize:
 - Include essential contact/social links
 - Maintain consistent link ordering
 
+## Framework Integration
+
+### Module Management
+- **Admin Interface**: Full management available at `/admin/links`
+- **Module Control**: Enable/disable via `/admin/modules` 
+- **Validation**: Meets all StrataPHP security and quality standards
+- **Generator**: Recreate using `php bin/create-module.php links`
+
+### StrataPHP Features Used
+- ✅ Database migrations for schema management
+- ✅ CSRF protection on all forms
+- ✅ Input validation and sanitization
+- ✅ Error handling with try-catch blocks
+- ✅ PHPDoc documentation throughout
+- ✅ Framework routing conventions
+
 ## Troubleshooting
 
 ### Links Not Displaying
 1. Verify database connection
 2. Check if links table exists and has data
 3. Ensure module is enabled in configuration
+
+---
+
+*This module is part of the StrataPHP framework. For more information about module development, admin interface usage, and validation standards, see the main framework documentation.*
 4. Check for PHP errors in logs
 
 ### Admin Panel Access

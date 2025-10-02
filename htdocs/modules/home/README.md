@@ -102,6 +102,20 @@ To add functionality to the home module:
 - Make it responsive for mobile devices
 - Include essential company/site information
 
+## Framework Integration
+
+### Module Management
+- **Admin Interface**: Enable/disable via `/admin/modules`
+- **Validation**: Passes all StrataPHP quality and security checks
+- **Generator**: Can be recreated using `php bin/create-module.php home`
+
+### StrataPHP Features
+- ✅ Automatic route discovery
+- ✅ Framework convention compliance  
+- ✅ CSRF protection ready
+- ✅ Error handling implementation
+- ✅ Documentation standards
+
 ## Customization Examples
 
 ### Simple Static Homepage
@@ -127,3 +141,7 @@ public function index()
     include __DIR__ . '/../views/home.php';
 }
 ```
+
+---
+
+*This module is part of the StrataPHP framework. For more information about module development, validation, and management, see the main framework documentation.*

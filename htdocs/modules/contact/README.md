@@ -15,9 +15,29 @@ The Contact module provides a complete contact form system with email functional
 ## Installation
 The Contact module is automatically discovered by StrataPHP. To enable:
 
-1. Ensure the module is enabled in your configuration
-2. Configure email settings in your `config.php`
-3. Routes are automatically loaded from `routes.php`
+### Via Admin Interface
+1. Navigate to `/admin/modules`
+2. Enable the Contact module using the toggle interface
+3. Configure email settings if needed
+
+### Via Configuration
+Enable the contact module manually:
+
+```php
+'modules' => [
+    'contact' => [
+        'enabled' => true
+    ]
+]
+```
+
+### Module Validation
+This module passes StrataPHP validation requirements:
+- ✅ CSRF protection implemented
+- ✅ Input validation and sanitization 
+- ✅ Error handling with try-catch blocks
+- ✅ PHPDoc documentation throughout
+- ✅ Secure email handling
 
 ## Configuration
 

@@ -18,10 +18,36 @@ The User module provides comprehensive user authentication and management functi
 ## Installation
 The User module is automatically discovered by StrataPHP. To enable:
 
-1. Run migrations to create user tables
-2. Configure email settings for verification/reset
-3. Enable the module in your configuration
-4. Routes are automatically loaded from `routes.php`
+### Via Admin Interface (Recommended)
+1. Navigate to `/admin/modules`
+2. Find the User module and enable it via the interface
+3. Configure email settings if needed
+
+### Via Configuration
+Enable the user module in `config.php`:
+
+```php
+'modules' => [
+    'user' => [
+        'enabled' => true
+    ]
+]
+```
+
+### Database Setup
+Run migrations to create user tables:
+
+```bash
+php bin/migrate.php
+```
+
+### Module Validation
+The User module meets all StrataPHP standards:
+- ✅ Security best practices (password hashing, CSRF protection)
+- ✅ Comprehensive error handling and logging
+- ✅ Input validation and sanitization
+- ✅ Framework convention compliance
+- ✅ Complete documentation and code comments
 
 ## Configuration
 

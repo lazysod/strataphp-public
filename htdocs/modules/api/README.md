@@ -20,11 +20,28 @@ The API module provides REST API endpoints for the StrataPHP framework. Currentl
 ## Installation
 The API module is automatically discovered by StrataPHP. To enable:
 
-1. Ensure the module is enabled in your configuration
-2. Routes are automatically loaded from `routes.php`
+1. **Via Admin Interface**: Navigate to `/admin/modules` and enable the API module
+2. **Via Configuration**: Ensure the module is enabled in `config.php`:
+   ```php
+   'modules' => [
+       'api' => ['enabled' => true]
+   ]
+   ```
+3. **Via CLI**: Use the module generator if creating new API endpoints:
+   ```bash
+   php bin/create-module.php my-api-extension
+   ```
+
+## Module Management
+- **Enable/Disable**: Toggle via admin interface or configuration
+- **Validation**: Module passes all StrataPHP quality and security checks
+- **Integration**: Follows framework conventions for routing and error handling
 
 ## Configuration
-No specific configuration required. Uses standard StrataPHP module loading.
+Uses standard StrataPHP module loading with these features:
+- **Automatic Route Discovery**: Routes loaded from `routes.php`
+- **Security Integration**: CSRF protection and authentication support
+- **Error Handling**: Framework-wide error logging and management
 
 ## Usage
 
@@ -73,6 +90,21 @@ The API uses standard HTTP status codes:
 - 404: Not Found
 - 500: Internal Server Error
 
+## Framework Integration
+
+### Module Management
+- **Admin Control**: Enable/disable via `/admin/modules` interface
+- **Validation**: Passes all StrataPHP security and quality checks
+- **Standards**: Follows framework conventions for API development
+- **Generator**: Extend using `php bin/create-module.php my-api-extension`
+
+### StrataPHP Features
+- ✅ Automatic route loading and discovery
+- ✅ Built-in error handling and logging
+- ✅ Framework-wide security features
+- ✅ Convention-based development
+- ✅ Module validation system
+
 ## Dependencies
 - StrataPHP framework
 - No external dependencies
@@ -81,3 +113,7 @@ The API uses standard HTTP status codes:
 - Always validate input parameters
 - Use proper error handling to avoid exposing sensitive information
 - Consider rate limiting for production deployments
+
+---
+
+*This module is part of the StrataPHP framework. For information about creating new API endpoints, module management, and development standards, see the main framework documentation.*

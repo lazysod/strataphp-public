@@ -7,6 +7,7 @@
 - [Security](#security)
 - [User & Admin System](#user--admin-system)
 - [Extending & Modules](#extending--modules)
+- [Links Management](#links-management)
 - [API Module Management](#api-module-management)
 - [Planned Features](#planned-features)
 - [Release Notes](#release-notes)
@@ -69,6 +70,8 @@ Once installed and the admin account is created, you can log in and begin config
 _A summary of the framework's core capabilities._
 
 - **Modular architecture**: Easily add or remove modules (user system, forum, etc.)
+- **CLI Module Generator**: Create production-ready modules with `php bin/create-module.php`
+- **Advanced Module Management**: Dual-view interface with validation, safe deletion, and bulk operations
 - **Unified DB class**: All database access uses the PDO-based `DB` class (no legacy `dbcon`)
 - **Admin & user systems are independent**: Admin profile and login work even if the user module is disabled
 - **User authentication**: Registration, login, profile, password reset (with token expiry), all via modular, class-based controllers
@@ -79,8 +82,8 @@ _A summary of the framework's core capabilities._
 - **Logging**: Security/auth events logged to `storage/logs/` via the `Logger` class
 - **Dynamic navigation**: Shows login/register/user menu based on config and session
 - **Extensible**: Add new modules in `/htdocs/modules/` (see user module for example)
-- **Admin links management**: Add, edit, delete, and reorder links in the admin panel, with FontAwesome icon auto-detection and NSFW marking.
-- **NSFW support for links**: Mark links as NSFW in the admin panel; public users must confirm before visiting NSFW links.
+- **Links management**: Complete Linktree-style link management with drag & drop ordering
+- **Module validation system**: Comprehensive security and quality checks for all modules
 - **Module enable/disable UI**: Admin panel allows enabling/disabling modules and selecting the default module for the root page.
 
 ---
@@ -159,6 +162,54 @@ your-module/
 ├── models/            # Model classes (if needed)
 ├── views/             # Template files (if needed)
 └── assets/            # CSS, JS, images (optional)
+```
+
+### Module Generator
+
+StrataPHP includes a powerful CLI module generator that creates production-ready modules with proper validation and security features:
+
+```sh
+php bin/create-module.php your-module-name
+```
+
+The generator creates:
+- **Complete directory structure** with all required files
+- **Validation-ready code** with proper error handling and security
+- **Database models** with prepared statements and input validation
+- **Controllers** with try-catch blocks and proper error logging
+- **Template views** with consistent styling and structure
+- **Routing configuration** with proper namespacing
+- **Documentation** with usage examples and API reference
+
+#### Generated Module Features:
+- **Security First**: CSRF protection, prepared statements, input validation
+- **Error Handling**: Comprehensive try-catch blocks and logging
+- **Code Quality**: PHPDoc comments, consistent formatting, best practices
+- **Framework Integration**: Uses StrataPHP DB class, routing, and conventions
+
+### Module Management Interface
+
+Access the module management interface at `/admin/modules` to:
+
+**Dual-View Interface:**
+- **Table View**: Compact list with enable/disable checkboxes
+- **Card View**: Visual cards showing module details and metadata
+- **JavaScript View Switching**: Seamless switching between display modes
+
+**Management Features:**
+- **Enable/Disable Modules**: Toggle module activation with real-time feedback
+- **Module Validation**: Built-in quality and security checks
+- **Safe Module Deletion**: Automatic backups before deletion
+- **Module Details**: View comprehensive information about each module
+- **Installation Status**: See which modules are installed vs. configured
+
+**Bulk Operations:**
+- **Select Multiple**: Use checkboxes to select multiple modules
+- **Batch Enable/Disable**: Change status of multiple modules at once
+- **Save Changes**: Apply all modifications with a single action
+
+#### Directory Structure:
+```
 ```
 
 #### Module Metadata (`index.php`)
@@ -328,6 +379,63 @@ StrataPHP includes a comprehensive validation system that ensures modules meet q
    - Document your module's usage, routes, and configuration in a `README.md` inside your module folder.
 
 By following these guidelines, your modules will be consistent with the framework and easy for others to use or extend.
+
+---
+
+## Links Management
+_Managing Linktree-style links through the admin interface._
+
+StrataPHP includes a comprehensive links management system for creating Linktree-style pages:
+
+### Admin Interface (`/admin/links`)
+
+**Features:**
+- **CRUD Operations**: Create, read, update, and delete links
+- **Drag & Drop Ordering**: Reorder links with intuitive interface
+- **Icon Auto-Detection**: Automatic icon assignment for popular platforms
+- **URL Validation**: Ensures all links are properly formatted
+- **Preview Mode**: See how links appear to visitors
+
+**Link Properties:**
+- **Title**: Display name for the link
+- **URL**: Target destination (with validation)
+- **Description**: Optional subtitle or description
+- **Icon**: Auto-detected or custom icon selection
+- **Order**: Display position (drag to reorder)
+- **Status**: Enable/disable individual links
+
+### Public Display (`/links`)
+
+**User Experience:**
+- **Responsive Design**: Works on all devices and screen sizes
+- **Fast Loading**: Optimized for quick page loads
+- **Analytics Ready**: Easy integration with tracking services
+- **Social Media Optimized**: Proper meta tags and sharing support
+
+**Customization:**
+- **Themes**: Customize appearance through CSS
+- **Branding**: Add logos and custom styling
+- **Adult Content Warning**: Optional age gate for sensitive content
+
+### Database Schema
+
+The links system uses the `links` table with these fields:
+- `id` - Primary key
+- `title` - Link display text
+- `url` - Target URL
+- `description` - Optional subtitle
+- `icon` - Icon identifier
+- `order` - Display order
+- `created_at` - Creation timestamp
+- `updated_at` - Last modification
+
+### Integration
+
+Links can be integrated into other modules or used as:
+- **Homepage**: Set links as the default module
+- **Navigation**: Include in site menus
+- **Sidebar**: Display in widget areas
+- **API Endpoints**: Access via REST API (when API module enabled)
 
 ---
 
