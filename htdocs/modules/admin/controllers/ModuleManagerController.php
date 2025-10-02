@@ -117,10 +117,10 @@ class ModuleManagerController {
         
         foreach ($moduleDirectories as $moduleDir) {
             $moduleName = basename($moduleDir);
-            $moduleJsonPath = $moduleDir . '/module.json';
+            $moduleIndexPath = $moduleDir . '/index.php';
             
-            // Skip if no module.json exists
-            if (!file_exists($moduleJsonPath)) {
+            // Skip if no index.php exists (required for StrataPHP modules)
+            if (!file_exists($moduleIndexPath)) {
                 continue;
             }
             

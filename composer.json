@@ -31,7 +31,17 @@
             "App\\Models\\": "htdocs/models/",
             "App\\Modules\\": "htdocs/modules/",
             "App\\Modules\\Test-module\\Controllers\\": "htdocs/modules/test-module/controllers/",
-            "App\\Modules\\Test-module\\Models\\": "htdocs/modules/test-module/models/"
+            "App\\Modules\\Test-module\\Models\\": "htdocs/modules/test-module/models/",
+            "App\\Modules\\Test-security\\Controllers\\": "htdocs/modules/test-security/controllers/",
+            "App\\Modules\\Test-security\\Models\\": "htdocs/modules/test-security/models/",
+            "App\\Modules\\TestSecurity\\Controllers\\": "htdocs/modules/test_security/controllers/",
+            "App\\Modules\\TestSecurity\\Models\\": "htdocs/modules/test_security/models/",
+            "App\\Modules\\TestModule\\Controllers\\": "htdocs/modules/test_module/controllers/",
+            "App\\Modules\\TestModule\\Models\\": "htdocs/modules/test_module/models/",
+            "App\\Modules\\TestConventions\\Controllers\\": "htdocs/modules/test_conventions/controllers/",
+            "App\\Modules\\TestConventions\\Models\\": "htdocs/modules/test_conventions/models/",
+            "App\\Modules\\CleanupTest\\Controllers\\": "htdocs/modules/cleanup_test/controllers/",
+            "App\\Modules\\CleanupTest\\Models\\": "htdocs/modules/cleanup_test/models/"
         }
     },
     "require": {

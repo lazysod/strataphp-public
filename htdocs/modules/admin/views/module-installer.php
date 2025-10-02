@@ -353,7 +353,22 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             uploadButton.disabled = true;
             logMessage('Starting ZIP file upload and installation...');
 
-            const formData = new FormData(e.target);
+            // Create FormData manually to ensure file is included
+            const formData = new FormData();
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+            
+            // Add the file if selected
+            if (fileInput.files.length > 0) {
+                console.log('File selected:', fileInput.files[0].name, fileInput.files[0].size);
+                formData.append('module_zip', fileInput.files[0]);
+            } else {
+                console.log('No file selected');
+                alert('Please select a file first');
+                currentOperation = null;
+                uploadButton.disabled = false;
+                return;
+            }
+            formData.append('csrf_token', csrfToken);
 
             try {
                 const response = await fetch('/admin/module-installer/upload', {

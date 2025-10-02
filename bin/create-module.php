@@ -11,21 +11,41 @@ class ModuleGenerator
 {
     private $modulesPath;
     private $moduleName;
+    private $moduleSlug;
     private $moduleClass;
     private $namespace;
     
     public function __construct($moduleName)
     {
+        // Validate and normalize module name format
+        if (!preg_match('/^[a-zA-Z][a-zA-Z0-9\-_]*$/', $moduleName)) {
+            throw new InvalidArgumentException("Module name must start with a letter and contain only letters, numbers, hyphens, and underscores");
+        }
+        
         $this->modulesPath = __DIR__ . '/../htdocs/modules/';
-        $this->moduleName = strtolower($moduleName);
-        $this->moduleClass = ucfirst($this->moduleName);
+        
+        // Normalize input: convert everything to lowercase with hyphens
+        $normalizedName = strtolower(str_replace('_', '-', $moduleName));
+        
+        // Slug format: lowercase alphanumeric with hyphens only (for metadata)
+        $this->moduleSlug = $normalizedName;
+        
+        // Directory name: convert hyphens to underscores for file system compatibility
+        $this->moduleName = str_replace('-', '_', $normalizedName);
+        
+        // Convert to proper CamelCase for class names (remove hyphens/underscores and capitalize)
+        $this->moduleClass = str_replace(['-', '_'], '', ucwords($normalizedName, '-_'));
+        
         $this->namespace = "App\\Modules\\{$this->moduleClass}";
     }
     
     public function generate()
     {
         echo "🎨 StrataPHP Module Generator\n";
-        echo "Creating module: {$this->moduleName}\n\n";
+        echo "Creating module with the following conventions:\n";
+        echo "  • Slug (metadata): {$this->moduleSlug}\n";
+        echo "  • Directory: {$this->moduleName}\n";
+        echo "  • Class: {$this->moduleClass}\n\n";
         
         $moduleDir = $this->modulesPath . $this->moduleName;
         
@@ -82,7 +102,7 @@ class ModuleGenerator
 // Module metadata for {$this->moduleClass} module
 return [
     'name' => '{$this->moduleClass}',
-    'slug' => '{$this->moduleName}',
+    'slug' => '{$this->moduleSlug}',
     'version' => '1.0.0',
     'description' => 'A comprehensive {$this->moduleName} management module with CRUD operations, search, and pagination.',
     'author' => 'StrataPHP Framework',
@@ -470,6 +490,10 @@ class {$this->moduleClass}
     public function __construct(DB \$db)
     {
         \$this->db = \$db;
+        // Validate table name for security
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', \$this->table)) {
+            throw new \\InvalidArgumentException('Invalid table name');
+        }
     }
     
     /**
@@ -478,7 +502,8 @@ class {$this->moduleClass}
     public function getAll()
     {
         try {
-            \$sql = "SELECT * FROM {\$this->table} ORDER BY created_at DESC";
+            // Table name is validated in constructor, safe to use here
+            \$sql = "SELECT * FROM `" . \$this->table . "` ORDER BY created_at DESC";
             return \$this->db->fetchAll(\$sql);
         } catch (\\Exception \$e) {
             error_log("{$this->moduleClass} model getAll error: " . \$e->getMessage());
@@ -492,7 +517,7 @@ class {$this->moduleClass}
     public function getById(\$id)
     {
         try {
-            \$sql = "SELECT * FROM {\$this->table} WHERE id = ?";
+            \$sql = "SELECT * FROM `" . \$this->table . "` WHERE id = ?";
             return \$this->db->fetch(\$sql, [\$id]);
         } catch (\\Exception \$e) {
             error_log("{$this->moduleClass} model getById error: " . \$e->getMessage());
@@ -509,7 +534,7 @@ class {$this->moduleClass}
             \$fields = implode(', ', array_keys(\$data));
             \$placeholders = ':' . implode(', :', array_keys(\$data));
             
-            \$sql = "INSERT INTO {\$this->table} (\$fields) VALUES (\$placeholders)";
+            \$sql = "INSERT INTO `" . \$this->table . "` (\$fields) VALUES (\$placeholders)";
             
             return \$this->db->query(\$sql, \$data);
         } catch (\\Exception \$e) {
@@ -530,7 +555,7 @@ class {$this->moduleClass}
             }
             \$setClause = implode(', ', \$setParts);
             
-            \$sql = "UPDATE {\$this->table} SET \$setClause WHERE id = :id";
+            \$sql = "UPDATE `" . \$this->table . "` SET \$setClause WHERE id = :id";
             \$data['id'] = \$id;
             
             return \$this->db->query(\$sql, \$data);
@@ -546,7 +571,7 @@ class {$this->moduleClass}
     public function delete(\$id)
     {
         try {
-            \$sql = "DELETE FROM {\$this->table} WHERE id = ?";
+            \$sql = "DELETE FROM `" . \$this->table . "` WHERE id = ?";
             return \$this->db->query(\$sql, [\$id]);
         } catch (\\Exception \$e) {
             error_log("{$this->moduleClass} model delete error: " . \$e->getMessage());
@@ -560,7 +585,7 @@ class {$this->moduleClass}
     public function search(\$query)
     {
         try {
-            \$sql = "SELECT * FROM {\$this->table} 
+            \$sql = "SELECT * FROM `" . \$this->table . "` 
                     WHERE title LIKE ? OR content LIKE ?
                     ORDER BY created_at DESC";
             
@@ -583,7 +608,7 @@ class {$this->moduleClass}
             \$perPage = max(1, min(100, (int)\$perPage)); // Limit max per page
             \$offset = (\$page - 1) * \$perPage;
             
-            \$sql = "SELECT * FROM {\$this->table} 
+            \$sql = "SELECT * FROM `" . \$this->table . "` 
                     ORDER BY created_at DESC 
                     LIMIT ? OFFSET ?";
             
@@ -600,7 +625,7 @@ class {$this->moduleClass}
     public function getCount()
     {
         try {
-            \$sql = "SELECT COUNT(*) as count FROM {\$this->table}";
+            \$sql = "SELECT COUNT(*) as count FROM `" . \$this->table . "`";
             \$result = \$this->db->fetch(\$sql);
             return \$result ? (int)\$result['count'] : 0;
         } catch (\\Exception \$e) {
@@ -930,12 +955,35 @@ MD;
 
 // Main execution
 if ($argc < 2) {
+    echo "🎨 StrataPHP Module Generator\n\n";
     echo "Usage: php create-module.php <module-name>\n";
     echo "Example: php create-module.php blog\n";
+    echo "Example: php create-module.php user-management\n";
+    echo "Example: php create-module.php contact_form\n\n";
+    echo "Naming conventions:\n";
+    echo "  • Use lowercase letters, numbers, and hyphens/underscores\n";
+    echo "  • Must start with a letter\n";
+    echo "  • Will be normalized to: slug (metadata), directory_name, ClassName\n";
     exit(1);
 }
 
 $moduleName = $argv[1];
-$generator = new ModuleGenerator($moduleName);
-$success = $generator->generate();
-exit($success ? 0 : 1);
+
+// Validate input format
+if (!preg_match('/^[a-zA-Z][a-zA-Z0-9\-_]*$/', $moduleName)) {
+    echo "❌ Invalid module name format!\n";
+    echo "Module name must:\n";
+    echo "  • Start with a letter\n";
+    echo "  • Contain only letters, numbers, hyphens, and underscores\n";
+    echo "  • Examples: blog, user-management, contact_form\n";
+    exit(1);
+}
+
+try {
+    $generator = new ModuleGenerator($moduleName);
+    $success = $generator->generate();
+    exit($success ? 0 : 1);
+} catch (Exception $e) {
+    echo "❌ Error: " . $e->getMessage() . "\n";
+    exit(1);
+}

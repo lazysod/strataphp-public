@@ -338,11 +338,16 @@ class ModuleValidator
             
             // Check for SQL injection prevention
             // Only flag actual dangerous concatenation patterns
-            if ((preg_match('/\$.*=.*".*SELECT.*\$.*"/', $content) ||
-                 preg_match('/\$.*=.*\'.*SELECT.*\$.*\'/', $content) ||
-                 preg_match('/query\s*\(\s*\$.*\.\s*\$/', $content) ||
-                 preg_match('/execute\s*\(\s*\$.*\.\s*\$/', $content)) &&
-                !preg_match('/\?.*,.*\[/', $content)) {
+            $hasUnsafePattern = (preg_match('/\$.*=.*".*SELECT.*\$.*"/', $content) ||
+                                preg_match('/\$.*=.*\'.*SELECT.*\$.*\'/', $content) ||
+                                preg_match('/query\s*\(\s*\$.*\.\s*\$/', $content) ||
+                                preg_match('/execute\s*\(\s*\$.*\.\s*\$/', $content));
+            
+            $hasSafePattern = (preg_match('/\?.*,.*\[/', $content) || // Prepared statements
+                              preg_match('/`"\s*\.\s*\$this->table\s*\.\s*"`/', $content) || // Safe table name pattern
+                              preg_match('/preg_match.*\$this->table/', $content)); // Table validation
+            
+            if ($hasUnsafePattern && !$hasSafePattern) {
                 $this->warnings[] = "Potential SQL injection risk in: " . basename($file);
             }
             

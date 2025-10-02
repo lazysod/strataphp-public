@@ -34,6 +34,7 @@ class ModuleInstallerController
             'modules' => $this->getInstalledModules(),
             'maxFileSize' => $this->getMaxUploadSize(),
             'tempDir' => sys_get_temp_dir(),
+            'tempDirInfo' => $this->getTempDirectoryInfo(),
             'controller' => $this
         ];
         
@@ -61,9 +62,31 @@ class ModuleInstallerController
         }
         
         try {
+            // Debug: Log $_FILES information
+            error_log('Upload attempt - $_FILES: ' . print_r($_FILES, true));
+            
             // Check if file was uploaded
-            if (!isset($_FILES['module_zip']) || $_FILES['module_zip']['error'] !== UPLOAD_ERR_OK) {
-                throw new \Exception('No file uploaded or upload error occurred');
+            if (!isset($_FILES['module_zip'])) {
+                throw new \Exception('No file uploaded: module_zip field not found in request');
+            }
+            
+            $uploadError = $_FILES['module_zip']['error'];
+            if ($uploadError !== UPLOAD_ERR_OK) {
+                $errorMessages = [
+                    UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize directive',
+                    UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE directive',
+                    UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
+                    UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
+                    UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+                    UPLOAD_ERR_EXTENSION => 'File upload stopped by PHP extension'
+                ];
+                
+                $errorMsg = isset($errorMessages[$uploadError]) 
+                    ? $errorMessages[$uploadError] 
+                    : "Unknown upload error code: $uploadError";
+                    
+                throw new \Exception("Upload error: $errorMsg");
             }
             
             $uploadedFile = $_FILES['module_zip'];
@@ -97,8 +120,9 @@ class ModuleInstallerController
             // Install the module using our existing installer
             $result = $this->installModuleFromPath($modulePath);
             
-            // Clean up temporary files
+            // Clean up temporary files (including uploaded ZIP)
             $this->cleanupTempDirectory($tempDir);
+            error_log("Module installation cleanup: removed temporary files from $tempDir");
             
             return $this->jsonResponse([
                 'success' => true,
@@ -107,9 +131,10 @@ class ModuleInstallerController
             ]);
             
         } catch (\Exception $e) {
-            // Clean up on error
+            // Clean up on error (including uploaded ZIP)
             if (isset($tempDir)) {
                 $this->cleanupTempDirectory($tempDir);
+                error_log("Module installation error cleanup: removed temporary files from $tempDir");
             }
             
             return $this->jsonResponse([
@@ -372,11 +397,60 @@ class ModuleInstallerController
      */
     private function createTempDirectory()
     {
+        // Clean up any old temp directories first (older than 1 hour)
+        $this->cleanupOldTempDirectories();
+        
         $tempDir = sys_get_temp_dir() . '/strataphp_module_' . uniqid();
         if (!mkdir($tempDir, 0755, true)) {
             throw new \Exception('Failed to create temporary directory');
         }
+        error_log("Created temporary directory for module installation: $tempDir");
         return $tempDir;
+    }
+    
+    /**
+     * Clean up old temporary directories (older than 1 hour)
+     */
+    private function cleanupOldTempDirectories()
+    {
+        $tempBasePath = sys_get_temp_dir();
+        $pattern = $tempBasePath . '/strataphp_module_*';
+        $oldDirs = glob($pattern);
+        
+        if (!$oldDirs) {
+            return;
+        }
+        
+        $oneHourAgo = time() - 3600;
+        $cleanedCount = 0;
+        
+        foreach ($oldDirs as $dir) {
+            if (is_dir($dir) && filemtime($dir) < $oneHourAgo) {
+                $this->cleanupTempDirectory($dir);
+                $cleanedCount++;
+            }
+        }
+        
+        if ($cleanedCount > 0) {
+            error_log("Cleaned up $cleanedCount old temporary directories");
+        }
+    }
+    
+    /**
+     * Get information about temporary directories
+     */
+    private function getTempDirectoryInfo()
+    {
+        $tempBasePath = sys_get_temp_dir();
+        $pattern = $tempBasePath . '/strataphp_module_*';
+        $tempDirs = glob($pattern);
+        
+        return [
+            'basePath' => $tempBasePath,
+            'activeCount' => $tempDirs ? count($tempDirs) : 0,
+            'freeSpace' => disk_free_space($tempBasePath),
+            'totalSpace' => disk_total_space($tempBasePath)
+        ];
     }
     
     /**
@@ -506,7 +580,7 @@ class ModuleInstallerController
     }
     
     /**
-     * Clean up temporary directory
+     * Clean up temporary directory and all files (including ZIP uploads)
      */
     private function cleanupTempDirectory($tempDir)
     {
@@ -514,6 +588,7 @@ class ModuleInstallerController
             return;
         }
         
+        $fileCount = 0;
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($tempDir, \RecursiveDirectoryIterator::SKIP_DOTS),
             \RecursiveIteratorIterator::CHILD_FIRST
@@ -524,10 +599,12 @@ class ModuleInstallerController
                 rmdir($item);
             } else {
                 unlink($item);
+                $fileCount++;
             }
         }
         
         rmdir($tempDir);
+        error_log("Cleanup completed: removed $fileCount files and directories from $tempDir");
     }
     
     /**
