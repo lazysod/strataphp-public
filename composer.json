@@ -41,7 +41,11 @@
             "App\\Modules\\TestConventions\\Controllers\\": "htdocs/modules/test_conventions/controllers/",
             "App\\Modules\\TestConventions\\Models\\": "htdocs/modules/test_conventions/models/",
             "App\\Modules\\CleanupTest\\Controllers\\": "htdocs/modules/cleanup_test/controllers/",
-            "App\\Modules\\CleanupTest\\Models\\": "htdocs/modules/cleanup_test/models/"
+            "App\\Modules\\CleanupTest\\Models\\": "htdocs/modules/cleanup_test/models/",
+            "App\\Modules\\Cms\\Controllers\\": "htdocs/modules/cms/controllers/",
+            "App\\Modules\\Cms\\Models\\": "htdocs/modules/cms/models/",
+            "App\\Modules\\ModuleDirectory\\Controllers\\": "htdocs/modules/module_directory/controllers/",
+            "App\\Modules\\ModuleDirectory\\Models\\": "htdocs/modules/module_directory/models/"
         }
     },
     "require": {

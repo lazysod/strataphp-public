@@ -114,7 +114,19 @@ class ModuleInstallerController
             // Find module directory in extracted files
             $modulePath = $this->findModuleDirectory($extractDir);
             if (!$modulePath) {
-                throw new \Exception('Invalid module structure. Could not find module directory.');
+                // Provide more detailed error information
+                $allFiles = $this->listExtractedContents($extractDir);
+                $errorMsg = 'Invalid module structure. Could not find a valid module directory.\n\n';
+                $errorMsg .= 'Found contents: ' . implode(', ', array_slice($allFiles, 0, 10));
+                if (count($allFiles) > 10) {
+                    $errorMsg .= '... (and ' . (count($allFiles) - 10) . ' more)';
+                }
+                $errorMsg .= '\n\nTo fix this:\n';
+                $errorMsg .= '1. Ensure your module has an index.php file with valid metadata\n';
+                $errorMsg .= '2. For repositories with multiple modules, add a .strataphp-modules file\n';
+                $errorMsg .= '3. See documentation for proper module structure';
+                
+                throw new \Exception($errorMsg);
             }
             
             // Install the module using our existing installer
@@ -478,26 +490,213 @@ class ModuleInstallerController
     
     /**
      * Find module directory in extracted files
+     * Supports multiple detection strategies for different repository structures
      */
     private function findModuleDirectory($extractDir)
     {
-        // Look for index.php in the root of extracted directory
-        if (file_exists($extractDir . '/index.php')) {
-            return $extractDir;
-        }
-        
-        // Look for index.php in subdirectories (common with GitHub archives)
-        $dirs = scandir($extractDir);
-        foreach ($dirs as $dir) {
-            if ($dir === '.' || $dir === '..') continue;
-            
-            $subDir = $extractDir . '/' . $dir;
-            if (is_dir($subDir) && file_exists($subDir . '/index.php')) {
-                return $subDir;
+        // First, check for a .strataphp-modules file that specifies module locations
+        $moduleSpecFile = $extractDir . '/.strataphp-modules';
+        if (file_exists($moduleSpecFile)) {
+            $specifiedPath = $this->findModuleFromSpec($extractDir, $moduleSpecFile);
+            if ($specifiedPath) {
+                return $specifiedPath;
             }
         }
         
+        $possibleModules = $this->scanForModules($extractDir);
+        
+        // If exactly one module found, return it
+        if (count($possibleModules) === 1) {
+            return $possibleModules[0];
+        }
+        
+        // If multiple modules found, prefer the one with the most complete structure
+        if (count($possibleModules) > 1) {
+            return $this->selectBestModule($possibleModules);
+        }
+        
         return null;
+    }
+    
+    /**
+     * Find module based on .strataphp-modules specification file
+     */
+    private function findModuleFromSpec($extractDir, $specFile)
+    {
+        try {
+            $content = file_get_contents($specFile);
+            $lines = array_filter(array_map('trim', explode("\n", $content)));
+            
+            foreach ($lines as $line) {
+                // Skip comments
+                if (strpos($line, '#') === 0) {
+                    continue;
+                }
+                
+                $modulePath = $extractDir . '/' . ltrim($line, '/');
+                if ($this->isValidModuleDirectory($modulePath)) {
+                    return $modulePath;
+                }
+            }
+        } catch (\Exception $e) {
+            error_log("Error reading .strataphp-modules file: " . $e->getMessage());
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Scan directory tree for potential modules
+     */
+    private function scanForModules($baseDir, $maxDepth = 3, $currentDepth = 0)
+    {
+        $modules = [];
+        
+        if ($currentDepth > $maxDepth) {
+            return $modules;
+        }
+        
+        // Check if current directory is a module
+        if ($this->isValidModuleDirectory($baseDir)) {
+            $modules[] = $baseDir;
+        }
+        
+        // Scan subdirectories
+        if (is_dir($baseDir)) {
+            $dirs = scandir($baseDir);
+            foreach ($dirs as $dir) {
+                if ($dir === '.' || $dir === '..' || !is_dir("$baseDir/$dir")) {
+                    continue;
+                }
+                
+                // Skip common non-module directories
+                if (in_array($dir, ['.git', '.github', 'node_modules', 'vendor', 'tests', 'docs', 'documentation'])) {
+                    continue;
+                }
+                
+                $subModules = $this->scanForModules("$baseDir/$dir", $maxDepth, $currentDepth + 1);
+                $modules = array_merge($modules, $subModules);
+            }
+        }
+        
+        return $modules;
+    }
+    
+    /**
+     * Check if a directory contains a valid module
+     */
+    private function isValidModuleDirectory($dir)
+    {
+        // Must have index.php
+        if (!file_exists("$dir/index.php")) {
+            return false;
+        }
+        
+        // Validate module metadata
+        try {
+            $metadata = include "$dir/index.php";
+            
+            // Must return an array with required fields
+            if (!is_array($metadata)) {
+                return false;
+            }
+            
+            $requiredFields = ['name', 'slug', 'version', 'description'];
+            foreach ($requiredFields as $field) {
+                if (!isset($metadata[$field]) || empty($metadata[$field])) {
+                    return false;
+                }
+            }
+            
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Select the best module from multiple candidates
+     */
+    private function selectBestModule($modules)
+    {
+        $scored = [];
+        
+        foreach ($modules as $modulePath) {
+            $score = $this->scoreModule($modulePath);
+            $scored[$modulePath] = $score;
+        }
+        
+        // Return the highest scored module
+        arsort($scored);
+        return array_key_first($scored);
+    }
+    
+    /**
+     * Score a module based on completeness and structure
+     */
+    private function scoreModule($modulePath)
+    {
+        $score = 0;
+        
+        // Basic structure components
+        $components = [
+            'controllers' => 3,
+            'models' => 3,
+            'views' => 3,
+            'assets' => 2,
+            'routes.php' => 2,
+            'README.md' => 1,
+            'CHANGELOG.md' => 1
+        ];
+        
+        foreach ($components as $component => $points) {
+            if (file_exists("$modulePath/$component")) {
+                $score += $points;
+            }
+        }
+        
+        // Bonus for being in a standard module directory structure
+        if (basename($modulePath) !== basename(dirname($modulePath))) {
+            $score += 2; // Likely in a dedicated module folder
+        }
+        
+        return $score;
+    }
+    
+    /**
+     * List contents of extracted directory for debugging
+     */
+    private function listExtractedContents($dir, $prefix = '', $maxItems = 20)
+    {
+        $contents = [];
+        $count = 0;
+        
+        if (!is_dir($dir)) {
+            return ['[not a directory]'];
+        }
+        
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..' || $count >= $maxItems) {
+                continue;
+            }
+            
+            $path = $prefix . $item;
+            if (is_dir("$dir/$item")) {
+                $contents[] = $path . '/';
+                
+                // Don't recurse too deep
+                if (strlen($prefix) < 20) {
+                    $subContents = $this->listExtractedContents("$dir/$item", "$path/", 5);
+                    $contents = array_merge($contents, array_slice($subContents, 0, 5));
+                }
+            } else {
+                $contents[] = $path;
+            }
+            $count++;
+        }
+        
+        return $contents;
     }
     
     /**
