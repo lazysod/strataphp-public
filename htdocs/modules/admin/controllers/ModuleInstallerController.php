@@ -207,7 +207,10 @@ class ModuleInstallerController
             
             // Use the CLI generator script
             $generatorPath = dirname(__DIR__, 4) . '/bin/create-module.php';
-            $command = "php " . escapeshellarg($generatorPath) . " " . escapeshellarg($moduleName) . " 2>&1";
+            
+            // Try to find PHP executable - works for both MAMP and cPanel
+            $phpPath = $this->findPhpExecutable();
+            $command = $phpPath . " " . escapeshellarg($generatorPath) . " " . escapeshellarg($moduleName) . " 2>&1";
             
             $output = [];
             $returnCode = 0;
@@ -216,6 +219,9 @@ class ModuleInstallerController
             if ($returnCode !== 0) {
                 throw new \Exception('Generation failed: ' . implode("\n", $output));
             }
+            
+            // Add the module to the config file
+            $this->addModuleToConfig($moduleName);
             
             return $this->jsonResponse([
                 'success' => true,
@@ -228,6 +234,47 @@ class ModuleInstallerController
                 'success' => false,
                 'message' => 'Generation failed: ' . $e->getMessage()
             ]);
+        }
+    }
+    
+    /**
+     * Add a newly generated module to the config file
+     */
+    private function addModuleToConfig($moduleName)
+    {
+        $configPath = dirname(__DIR__, 3) . '/app/config.php';
+        
+        if (!file_exists($configPath)) {
+            throw new \Exception('Config file not found');
+        }
+        
+        // Load current config
+        $currentConfig = include $configPath;
+        
+        // Check if module already exists in config
+        if (isset($currentConfig['modules'][$moduleName])) {
+            return; // Already exists, no need to add
+        }
+        
+        // Get module metadata to determine default settings
+        $moduleIndexPath = dirname(__DIR__, 2) . "/{$moduleName}/index.php";
+        $moduleData = [];
+        
+        if (file_exists($moduleIndexPath)) {
+            $moduleData = include $moduleIndexPath;
+        }
+        
+        // Add module to config with sensible defaults
+        $currentConfig['modules'][$moduleName] = [
+            'enabled' => $moduleData['enabled'] ?? false,
+            'suitable_as_default' => $moduleData['suitable_as_default'] ?? false,
+        ];
+        
+        // Write config back to file
+        $configContent = "<?php\nreturn " . var_export($currentConfig, true) . ";\n";
+        
+        if (!file_put_contents($configPath, $configContent)) {
+            throw new \Exception('Failed to update config file');
         }
     }
     
@@ -459,35 +506,6 @@ class ModuleInstallerController
     }
     
     /**
-     * Add module to config
-     */
-    private function addModuleToConfig($moduleName)
-    {
-        $configPath = dirname(__DIR__, 3) . '/app/config.php';
-        
-        if (!file_exists($configPath)) {
-            return;
-        }
-        
-        $config = include $configPath;
-        
-        if (!isset($config['modules'])) {
-            $config['modules'] = [];
-        }
-        
-        if (!isset($config['modules'][$moduleName])) {
-            $config['modules'][$moduleName] = [
-                'enabled' => false,
-                'suitable_as_default' => false
-            ];
-            
-            // Write updated config back to file
-            $configContent = "<?php\nreturn " . var_export($config, true) . ";\n";
-            file_put_contents($configPath, $configContent);
-        }
-    }
-    
-    /**
      * Clean up temporary directory
      */
     private function cleanupTempDirectory($tempDir)
@@ -548,6 +566,43 @@ class ModuleInstallerController
         $unit = array('Bytes', 'KB', 'MB', 'GB', 'TB');
         $i = floor(log($size, 1024));
         return round($size / pow(1024, $i), 2) . ' ' . $unit[$i];
+    }
+    
+    /**
+     * Find the PHP executable path - works for MAMP, cPanel, and standard installations
+     */
+    private function findPhpExecutable()
+    {
+        // Try common PHP paths in order of preference
+        $possiblePaths = [
+            PHP_BINARY, // Current PHP binary (most reliable)
+            '/usr/bin/php', // Standard Linux/cPanel path
+            '/usr/local/bin/php', // Alternative Linux path
+            '/Applications/MAMP/bin/php/php8.2.0/bin/php', // MAMP 8.2
+            '/Applications/MAMP/bin/php/php8.1.0/bin/php', // MAMP 8.1
+            '/Applications/MAMP/bin/php/php8.0.0/bin/php', // MAMP 8.0
+            'php' // Fallback to system PATH
+        ];
+        
+        foreach ($possiblePaths as $path) {
+            if ($path === 'php') {
+                // Test if php command is available in PATH
+                $output = [];
+                $returnCode = 0;
+                exec('which php 2>/dev/null', $output, $returnCode);
+                if ($returnCode === 0 && !empty($output[0])) {
+                    return 'php';
+                }
+            } else {
+                // Test if the specific path exists and is executable
+                if (file_exists($path) && is_executable($path)) {
+                    return $path;
+                }
+            }
+        }
+        
+        // If nothing found, fall back to 'php' and hope for the best
+        return 'php';
     }
     
     /**

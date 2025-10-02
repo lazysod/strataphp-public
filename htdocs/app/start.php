@@ -42,8 +42,6 @@ if (!isset($router)) {
 }
 
 // Register core admin routes
-$router->get('/admin/modules', [ModuleManagerController::class, 'index']);
-$router->post('/admin/modules/update', [ModuleManagerController::class, 'update']);
 $router->get('/admin/dashboard/profile', [AdminController::class, 'profile']);
 $router->get('/admin', [AdminController::class, 'index']);
 $router->get('/admin/dashboard', [AdminController::class, 'dashboard']);
@@ -55,19 +53,21 @@ $router->post('/admin/dashboard/profile', [AdminController::class, 'profile']);
 
 // Register admin links routes
 if (isset($router) && $router instanceof Router) {
-    // Example: Add global middleware for authentication
+    // Admin authentication middleware
     $router->middleware(function ($request, $next) use ($sessionPrefix) {
         $path = $request['path'];
         $isAdminRoute = strpos($path, '/admin') === 0;
         $isLoginPage = $path === '/admin' || $path === '/admin/reset-password';
+        
         if ($isAdminRoute && !$isLoginPage && empty($_SESSION[$sessionPrefix . 'admin'])) {
-            // Check if this is an AJAX request
+            // Check if this is an AJAX request or API call
             $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
             $isJsonRequest = isset($_SERVER['CONTENT_TYPE']) && 
                            strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
+            $isApiCall = strpos($path, '/admin/modules/') === 0;
             
-            if ($isAjax || $isJsonRequest || strpos($path, '/admin/modules/validate/') === 0) {
+            if ($isAjax || $isJsonRequest || $isApiCall) {
                 header('Content-Type: application/json');
                 echo json_encode(['success' => false, 'message' => 'Authentication required']);
                 exit;
@@ -79,31 +79,7 @@ if (isset($router) && $router instanceof Router) {
         return $next($request);
     });
 
-    // Register admin links routes with namespaced controller
-    $router->get('/admin/links', [AdminLinksController::class, 'index']);
-    $router->get('/admin/links/add', [AdminLinksController::class, 'add']);
-    $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
-    $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
-    $router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
-    $router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
-    $router->post('/admin/links/order', [AdminLinksController::class, 'order']);
-
-    // Register UserAdminController routes with namespaced controller
-    $router->get('/admin/users', [UserAdminController::class, 'index']);
-    $router->get('/admin/users/add', [UserAdminController::class, 'add']);
-    $router->post('/admin/users/add', [UserAdminController::class, 'add']);
-    $router->get('/admin/users/edit/{id}', [UserAdminController::class, 'edit']);
-    $router->post('/admin/users/edit/{id}', [UserAdminController::class, 'edit']);
-    $router->get('/admin/users/delete/{id}', [UserAdminController::class, 'delete']);
-    $router->get('/admin/users/suspend/{id}', [UserAdminController::class, 'suspend']);
-    $router->get('/admin/users/unsuspend/{id}', [UserAdminController::class, 'unsuspend']);
-    $router->get('/admin/links', [AdminLinksController::class, 'index']);
-    $router->get('/admin/links/add', [AdminLinksController::class, 'add']);
-    $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
-    $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
-    $router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
-    $router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
-    $router->post('/admin/links/order', [AdminLinksController::class, 'order']);
+    // Admin routes are now loaded from modules/admin/routes.php
 }
 
 // Modular system loader: load routes for all enabled modules
@@ -134,8 +110,19 @@ if (is_dir($modulesDir)) {
     }
     // Load routes for enabled modules
     global $router;
+    
+    // Always load admin routes (core functionality)
+    $adminRouteFile = $modulesDir . 'admin/routes.php';
+    if (file_exists($adminRouteFile)) {
+        include $adminRouteFile;
+    }
+    
     foreach ($config['modules'] as $modName => $modInfo) {
-        if (is_array($modInfo) && empty($modInfo['enabled'])) {
+        // Skip admin since we already loaded it
+        if ($modName === 'admin') {
+            continue;
+        }
+        if (is_array($modInfo) && !$modInfo['enabled']) {
             continue;
         }
         $routeFile = $modulesDir . $modName . '/routes.php';

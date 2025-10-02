@@ -2,6 +2,7 @@
 use App\Controllers\AdminController;
 use App\Modules\Admin\Controllers\ModuleInstallerController;
 use App\Modules\Admin\Controllers\ModuleDetailsController;
+use App\Modules\Admin\Controllers\ModuleManagerController;
 
 // Module Installer Routes
 $router->get('/admin/module-installer', [ModuleInstallerController::class, 'index']);
@@ -13,6 +14,11 @@ $router->post('/admin/module-installer/generate', [ModuleInstallerController::cl
 $router->get('/admin/modules/details/{module}', [ModuleDetailsController::class, 'show']);
 $router->post('/admin/modules/validate/{module}', [ModuleDetailsController::class, 'validate']);
 $router->get('/admin/modules/validate-all', [ModuleDetailsController::class, 'validateAll']);
+
+// Module Manager Routes
+$router->get('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules/delete/{module}', [ModuleManagerController::class, 'delete']);
 
 // Admin User Management Routes
 $router->get('/admin/users', [\App\Modules\Admin\Controllers\UserAdminController::class, 'index']);

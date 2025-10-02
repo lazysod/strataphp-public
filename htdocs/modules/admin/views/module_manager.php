@@ -10,7 +10,7 @@ if (!isset($modules)) {
 // Admin session check
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
-if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin/admin_login.php');
     exit;
 }
@@ -156,7 +156,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
         </div>
         <?php endif; ?>
         
-        <form method="post" action="/admin/modules/update">
+        <form method="post" action="/admin/modules">
             <!-- Table View -->
             <div id="tableViewContainer">
                 <table class="table table-bordered" id="modulesTable">
@@ -273,14 +273,14 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                     <td>
                                         <?php if ($modName === 'admin'): ?>
                                             <input type="checkbox" checked disabled>
-                                            <input type="hidden" name="enabled[]" value="admin">
+                                            <input type="hidden" class="table-view-input" name="enabled[]" value="admin">
                                             <small class="text-muted ms-2">Required</small>
                                         <?php elseif ($modName === 'home'): ?>
                                             <input type="checkbox" checked disabled>
-                                            <input type="hidden" name="enabled[]" value="home">
+                                            <input type="hidden" class="table-view-input" name="enabled[]" value="home">
                                             <small class="text-muted ms-2">Required</small>
                                         <?php else: ?>
-                                            <input type="checkbox" name="enabled[]" value="<?php echo htmlspecialchars($modName); ?>" <?php if ($isEnabled) echo 'checked'; ?>>
+                                            <input type="checkbox" class="table-view-checkbox" name="enabled[]" value="<?php echo htmlspecialchars($modName); ?>" <?php if ($isEnabled) echo 'checked'; ?>>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -322,6 +322,14 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                                         onclick="validateModule('<?php echo htmlspecialchars($modName); ?>')"
                                                         title="Validate Module">
                                                     <i class="fas fa-check"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if (!$isCore && $modName !== 'admin' && $modName !== 'home'): ?>
+                                                <button type="button" 
+                                                        class="btn btn-outline-danger btn-sm" 
+                                                        onclick="confirmDeleteModule('<?php echo htmlspecialchars($modName); ?>')"
+                                                        title="Delete Module">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -420,10 +428,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         </div>
                                         <div class="form-check">
                                             <?php if ($modName === 'admin' || $modName === 'home'): ?>
-                                                <input class="form-check-input" type="checkbox" checked disabled>
-                                                <input type="hidden" name="enabled[]" value="<?= htmlspecialchars($modName) ?>">
+                                                <input class="form-check-input card-view-checkbox" type="checkbox" checked disabled>
+                                                <input type="hidden" class="card-view-input" name="enabled[]" value="<?= htmlspecialchars($modName) ?>">
                                             <?php else: ?>
-                                                <input class="form-check-input" type="checkbox" name="enabled[]" value="<?= htmlspecialchars($modName) ?>" <?= $isEnabled ? 'checked' : '' ?>>
+                                                <input class="form-check-input card-view-checkbox" type="checkbox" name="enabled[]" value="<?= htmlspecialchars($modName) ?>" <?= $isEnabled ? 'checked' : '' ?>>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -475,17 +483,25 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         </div>
                                     </div>
                                     <div class="card-footer">
-                                        <div class="d-flex justify-content-between">
+                                        <div class="btn-group btn-group-sm w-100" role="group">
                                             <a href="/admin/modules/details/<?= urlencode($modName) ?>" 
-                                               class="btn btn-outline-primary btn-sm">
+                                               class="btn btn-outline-primary">
                                                 <i class="fas fa-info-circle me-1"></i>Details
                                             </a>
                                             <?php if ($moduleValidator): ?>
                                                 <button type="button" 
-                                                        class="btn btn-outline-secondary btn-sm" 
+                                                        class="btn btn-outline-secondary" 
                                                         onclick="validateModuleCard('<?= htmlspecialchars($modName) ?>', this)"
                                                         title="Validate Module">
                                                     <i class="fas fa-check me-1"></i>Validate
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if (!$isCore && $modName !== 'admin' && $modName !== 'home'): ?>
+                                                <button type="button" 
+                                                        class="btn btn-outline-danger" 
+                                                        onclick="confirmDeleteModule('<?= htmlspecialchars($modName) ?>')"
+                                                        title="Delete Module">
+                                                    <i class="fas fa-trash me-1"></i>Delete
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -797,6 +813,182 @@ function validateModuleCard(moduleName, buttonElement) {
         alert('Error validating module: ' + error.message);
     });
 }
+
+// Module deletion functions
+function confirmDeleteModule(moduleName) {
+    // Show the confirmation modal
+    const modal = document.getElementById('deleteConfirmModal');
+    const moduleNameSpan = document.getElementById('deleteModuleName');
+    const confirmInput = document.getElementById('deleteConfirmInput');
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    
+    moduleNameSpan.textContent = moduleName;
+    confirmInput.value = '';
+    deleteBtn.disabled = true;
+    
+    // Store module name for deletion
+    modal.dataset.moduleName = moduleName;
+    
+    // Show modal
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+}
+
+function validateDeleteInput() {
+    const modal = document.getElementById('deleteConfirmModal');
+    const moduleName = modal.dataset.moduleName;
+    const confirmInput = document.getElementById('deleteConfirmInput');
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    
+    deleteBtn.disabled = confirmInput.value !== moduleName;
+}
+
+function executeModuleDeletion() {
+    const modal = document.getElementById('deleteConfirmModal');
+    const moduleName = modal.dataset.moduleName;
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    
+    // Show loading state
+    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+    deleteBtn.disabled = true;
+    
+    fetch(`/admin/modules/delete/${moduleName}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Close modal
+            const bootstrapModal = bootstrap.Modal.getInstance(modal);
+            bootstrapModal.hide();
+            
+            // Show success message
+            alert('Module deleted successfully!');
+            
+            // Reload the page to update the module list
+            window.location.reload();
+        } else {
+            // Show error message
+            alert('Error deleting module: ' + (data.message || 'Unknown error'));
+            
+            // Reset button
+            deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Delete Module';
+            deleteBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('Error deleting module: ' + error.message);
+        
+        // Reset button
+        deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Delete Module';
+        deleteBtn.disabled = false;
+    });
+}
+</script>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Module Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                    <h6><i class="fas fa-warning me-2"></i>Warning: This action cannot be undone!</h6>
+                    <p class="mb-0">
+                        You are about to permanently delete the module <strong><span id="deleteModuleName"></span></strong>.
+                        This will remove all module files, database tables, and associated data.
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <label for="deleteConfirmInput" class="form-label">
+                        To confirm deletion, type the module name <strong><span id="deleteModuleName2"></span></strong>:
+                    </label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="deleteConfirmInput" 
+                           placeholder="Enter module name" 
+                           oninput="validateDeleteInput()">
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    A backup will be created before deletion and stored in the storage/backups directory.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" 
+                        class="btn btn-danger" 
+                        id="confirmDeleteBtn" 
+                        onclick="executeModuleDeletion()"
+                        disabled>
+                    <i class="fas fa-trash me-1"></i>Delete Module
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update the second module name span when modal is shown
+document.getElementById('deleteConfirmModal').addEventListener('show.bs.modal', function () {
+    const moduleName = this.dataset.moduleName;
+    document.getElementById('deleteModuleName2').textContent = moduleName;
+});
+
+// View switching logic - only enable checkboxes for active view
+function switchActiveView(viewType) {
+    const tableCheckboxes = document.querySelectorAll('.table-view-checkbox');
+    const tableInputs = document.querySelectorAll('.table-view-input');
+    const cardCheckboxes = document.querySelectorAll('.card-view-checkbox');
+    const cardInputs = document.querySelectorAll('.card-view-input');
+    
+    if (viewType === 'table') {
+        // Enable table view checkboxes
+        tableCheckboxes.forEach(cb => cb.disabled = false);
+        tableInputs.forEach(input => input.disabled = false);
+        
+        // Disable card view checkboxes
+        cardCheckboxes.forEach(cb => cb.disabled = true);
+        cardInputs.forEach(input => input.disabled = true);
+    } else {
+        // Enable card view checkboxes
+        cardCheckboxes.forEach(cb => cb.disabled = false);
+        cardInputs.forEach(input => input.disabled = false);
+        
+        // Disable table view checkboxes
+        tableCheckboxes.forEach(cb => cb.disabled = true);
+        tableInputs.forEach(input => input.disabled = true);
+    }
+}
+
+// Listen for view mode changes
+document.getElementById('tableView').addEventListener('change', function() {
+    if (this.checked) {
+        switchActiveView('table');
+    }
+});
+
+document.getElementById('cardView').addEventListener('change', function() {
+    if (this.checked) {
+        switchActiveView('card');
+    }
+});
+
+// Initialize with table view active (default)
+document.addEventListener('DOMContentLoaded', function() {
+    switchActiveView('table');
+});
 </script>
 
 <?php require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>

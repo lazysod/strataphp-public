@@ -73,7 +73,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="zipUploadForm" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">>
+                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
                             
                             <div class="upload-area" id="uploadArea">
                                 <div class="upload-content">
@@ -107,7 +107,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="urlInstallForm">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">>
+                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
                             
                             <div class="mb-3">
                                 <label for="sourceUrl" class="form-label">Source URL</label>
@@ -152,7 +152,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="generateForm">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">>
+                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
                             
                             <div class="mb-3">
                                 <label for="moduleName" class="form-label">Module Name</label>
@@ -265,10 +265,11 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
         </div>
 
     <script>
-        // Global variables
-        let currentOperation = null;
-        const log = document.getElementById('installLog');
-        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global variables
+            let currentOperation = null;
+            const log = document.getElementById('installLog');
+            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
 
         // Utility functions
         function logMessage(message, type = 'info') {
@@ -472,7 +473,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
 
         // Initialize
         logMessage('Module installer ready. Choose an installation method above.');
+        }); // End DOMContentLoaded
     </script>
-    </div>
-</section>
+
 <?php require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>

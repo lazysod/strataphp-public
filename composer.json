@@ -3,7 +3,15 @@
     "description": "A lightweight, modular PHP framework with automatic module discovery, PSR-4 autoloading, and comprehensive CLI tools.",
     "type": "project",
     "version": "1.0.0",
-    "keywords": ["php", "framework", "modular", "psr-4", "mvc", "cli", "modules"],
+    "keywords": [
+        "php",
+        "framework",
+        "modular",
+        "psr-4",
+        "mvc",
+        "cli",
+        "modules"
+    ],
     "homepage": "https://github.com/lazysod/strataphp-dev",
     "license": "MIT",
     "authors": [
@@ -21,7 +29,9 @@
             "App\\": "htdocs/app/",
             "App\\Controllers\\": "htdocs/controllers/",
             "App\\Models\\": "htdocs/models/",
-            "App\\Modules\\": "htdocs/modules/"
+            "App\\Modules\\": "htdocs/modules/",
+            "App\\Modules\\Test-module\\Controllers\\": "htdocs/modules/test-module/controllers/",
+            "App\\Modules\\Test-module\\Models\\": "htdocs/modules/test-module/models/"
         }
     },
     "require": {

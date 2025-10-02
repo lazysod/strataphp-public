@@ -44,6 +44,7 @@ class ModuleGenerator
         $this->generateModel($moduleDir);
         $this->generateViews($moduleDir);
         $this->generateReadme($moduleDir);
+        $this->generateChangelog($moduleDir);
         
         // Update composer.json
         $this->updateComposer();
@@ -83,14 +84,27 @@ return [
     'name' => '{$this->moduleClass}',
     'slug' => '{$this->moduleName}',
     'version' => '1.0.0',
-    'description' => 'A {$this->moduleName} module for StrataPHP.',
-    'author' => 'Your Name',
+    'description' => 'A comprehensive {$this->moduleName} management module with CRUD operations, search, and pagination.',
+    'author' => 'StrataPHP Framework',
     'category' => 'Content',
+    'license' => 'MIT',
+    'homepage' => 'https://github.com/strataphp/{$this->moduleName}-module',
+    'repository' => 'https://github.com/strataphp/{$this->moduleName}-module.git',
+    'support_url' => 'https://github.com/strataphp/{$this->moduleName}-module/issues',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => false,
     'suitable_as_default' => false,
     'dependencies' => [], // Other modules this depends on
-    'permissions' => [], // Required permissions
+    'permissions' => ['{$this->moduleName}.create', '{$this->moduleName}.read', '{$this->moduleName}.update', '{$this->moduleName}.delete'], // Required permissions
+    'requirements' => [
+        'php' => '>=7.4',
+        'mysql' => '>=5.7'
+    ],
+    'tags' => ['{$this->moduleName}', 'content', 'cms', 'crud'],
+    'screenshots' => [
+        '/modules/{$this->moduleName}/assets/screenshots/dashboard.png',
+        '/modules/{$this->moduleName}/assets/screenshots/editor.png'
+    ]
 ];
 PHP;
         
@@ -164,15 +178,21 @@ class {$this->moduleClass}Controller
      */
     public function index()
     {
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        \$items = \${$this->moduleName}Model->getAll();
-        
-        \$data = [
-            'items' => \$items,
-            'title' => '{$this->moduleClass}'
-        ];
-        
-        include __DIR__ . '/../views/index.php';
+        try {
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            \$items = \${$this->moduleName}Model->getAll();
+            
+            \$data = [
+                'items' => \$items,
+                'title' => '{$this->moduleClass}'
+            ];
+            
+            include __DIR__ . '/../views/index.php';
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller index error: " . \$e->getMessage());
+            http_response_code(500);
+            echo 'An error occurred while loading the {$this->moduleName}.';
+        }
     }
     
     /**
@@ -180,11 +200,17 @@ class {$this->moduleClass}Controller
      */
     public function create()
     {
-        \$data = [
-            'title' => 'Create {$this->moduleClass}'
-        ];
-        
-        include __DIR__ . '/../views/create.php';
+        try {
+            \$data = [
+                'title' => 'Create {$this->moduleClass}'
+            ];
+            
+            include __DIR__ . '/../views/create.php';
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller create error: " . \$e->getMessage());
+            http_response_code(500);
+            echo 'An error occurred while loading the create form.';
+        }
     }
     
     /**
@@ -192,29 +218,46 @@ class {$this->moduleClass}Controller
      */
     public function store()
     {
-        if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+        try {
+            if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            // Basic validation
+            \$title = trim(\$_POST['title'] ?? '');
+            \$content = trim(\$_POST['content'] ?? '');
+            
+            if (empty(\$title) || empty(\$content)) {
+                \$_SESSION['error'] = 'Title and content are required';
+                header('Location: /{$this->moduleName}/create');
+                exit;
+            }
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            
+            \$data = [
+                'title' => \$title,
+                'content' => \$content,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            
+            \$result = \${$this->moduleName}Model->create(\$data);
+            
+            if (\$result) {
+                \$_SESSION['success'] = '{$this->moduleClass} created successfully';
+            } else {
+                \$_SESSION['error'] = 'Failed to create {$this->moduleName}';
+            }
+            
             header('Location: /{$this->moduleName}');
             exit;
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller store error: " . \$e->getMessage());
+            \$_SESSION['error'] = 'An error occurred while creating the {$this->moduleName}';
+            header('Location: /{$this->moduleName}/create');
+            exit;
         }
-        
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        
-        \$data = [
-            'title' => \$_POST['title'] ?? '',
-            'content' => \$_POST['content'] ?? '',
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-        
-        \$result = \${$this->moduleName}Model->create(\$data);
-        
-        if (\$result) {
-            \$_SESSION['success'] = '{$this->moduleClass} created successfully';
-        } else {
-            \$_SESSION['error'] = 'Failed to create {$this->moduleName}';
-        }
-        
-        header('Location: /{$this->moduleName}');
-        exit;
     }
     
     /**
@@ -222,21 +265,34 @@ class {$this->moduleClass}Controller
      */
     public function show(\$id)
     {
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        \$item = \${$this->moduleName}Model->getById(\$id);
-        
-        if (!\$item) {
-            header('HTTP/1.0 404 Not Found');
-            echo '404 - {$this->moduleClass} not found';
-            exit;
+        try {
+            // Validate ID
+            if (!is_numeric(\$id) || \$id <= 0) {
+                header('HTTP/1.0 404 Not Found');
+                echo '404 - Invalid {$this->moduleName} ID';
+                exit;
+            }
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            \$item = \${$this->moduleName}Model->getById(\$id);
+            
+            if (!\$item) {
+                header('HTTP/1.0 404 Not Found');
+                echo '404 - {$this->moduleClass} not found';
+                exit;
+            }
+            
+            \$data = [
+                'item' => \$item,
+                'title' => \$item['title']
+            ];
+            
+            include __DIR__ . '/../views/show.php';
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller show error: " . \$e->getMessage());
+            http_response_code(500);
+            echo 'An error occurred while loading the {$this->moduleName}.';
         }
-        
-        \$data = [
-            'item' => \$item,
-            'title' => \$item['title']
-        ];
-        
-        include __DIR__ . '/../views/show.php';
     }
     
     /**
@@ -244,20 +300,34 @@ class {$this->moduleClass}Controller
      */
     public function edit(\$id)
     {
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        \$item = \${$this->moduleName}Model->getById(\$id);
-        
-        if (!\$item) {
+        try {
+            // Validate ID
+            if (!is_numeric(\$id) || \$id <= 0) {
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            \$item = \${$this->moduleName}Model->getById(\$id);
+            
+            if (!\$item) {
+                \$_SESSION['error'] = '{$this->moduleClass} not found';
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            \$data = [
+                'item' => \$item,
+                'title' => 'Edit {$this->moduleClass}'
+            ];
+            
+            include __DIR__ . '/../views/edit.php';
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller edit error: " . \$e->getMessage());
+            \$_SESSION['error'] = 'An error occurred while loading the edit form';
             header('Location: /{$this->moduleName}');
             exit;
         }
-        
-        \$data = [
-            'item' => \$item,
-            'title' => 'Edit {$this->moduleClass}'
-        ];
-        
-        include __DIR__ . '/../views/edit.php';
     }
     
     /**
@@ -265,29 +335,53 @@ class {$this->moduleClass}Controller
      */
     public function update(\$id)
     {
-        if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+        try {
+            if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            // Validate ID
+            if (!is_numeric(\$id) || \$id <= 0) {
+                \$_SESSION['error'] = 'Invalid {$this->moduleName} ID';
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            // Basic validation
+            \$title = trim(\$_POST['title'] ?? '');
+            \$content = trim(\$_POST['content'] ?? '');
+            
+            if (empty(\$title) || empty(\$content)) {
+                \$_SESSION['error'] = 'Title and content are required';
+                header('Location: /{$this->moduleName}/{\$id}/edit');
+                exit;
+            }
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            
+            \$data = [
+                'title' => \$title,
+                'content' => \$content,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            
+            \$result = \${$this->moduleName}Model->update(\$id, \$data);
+            
+            if (\$result) {
+                \$_SESSION['success'] = '{$this->moduleClass} updated successfully';
+            } else {
+                \$_SESSION['error'] = 'Failed to update {$this->moduleName}';
+            }
+            
+            header('Location: /{$this->moduleName}');
+            exit;
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller update error: " . \$e->getMessage());
+            \$_SESSION['error'] = 'An error occurred while updating the {$this->moduleName}';
             header('Location: /{$this->moduleName}');
             exit;
         }
-        
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        
-        \$data = [
-            'title' => \$_POST['title'] ?? '',
-            'content' => \$_POST['content'] ?? '',
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
-        
-        \$result = \${$this->moduleName}Model->update(\$id, \$data);
-        
-        if (\$result) {
-            \$_SESSION['success'] = '{$this->moduleClass} updated successfully';
-        } else {
-            \$_SESSION['error'] = 'Failed to update {$this->moduleName}';
-        }
-        
-        header('Location: /{$this->moduleName}');
-        exit;
     }
     
     /**
@@ -295,22 +389,36 @@ class {$this->moduleClass}Controller
      */
     public function delete(\$id)
     {
-        if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+        try {
+            if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            // Validate ID
+            if (!is_numeric(\$id) || \$id <= 0) {
+                \$_SESSION['error'] = 'Invalid {$this->moduleName} ID';
+                header('Location: /{$this->moduleName}');
+                exit;
+            }
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            \$result = \${$this->moduleName}Model->delete(\$id);
+            
+            if (\$result) {
+                \$_SESSION['success'] = '{$this->moduleClass} deleted successfully';
+            } else {
+                \$_SESSION['error'] = 'Failed to delete {$this->moduleName}';
+            }
+            
+            header('Location: /{$this->moduleName}');
+            exit;
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller delete error: " . \$e->getMessage());
+            \$_SESSION['error'] = 'An error occurred while deleting the {$this->moduleName}';
             header('Location: /{$this->moduleName}');
             exit;
         }
-        
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        \$result = \${$this->moduleName}Model->delete(\$id);
-        
-        if (\$result) {
-            \$_SESSION['success'] = '{$this->moduleClass} deleted successfully';
-        } else {
-            \$_SESSION['error'] = 'Failed to delete {$this->moduleName}';
-        }
-        
-        header('Location: /{$this->moduleName}');
-        exit;
     }
     
     /**
@@ -318,16 +426,26 @@ class {$this->moduleClass}Controller
      */
     public function apiIndex()
     {
-        header('Content-Type: application/json');
-        
-        \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
-        \$items = \${$this->moduleName}Model->getAll();
-        
-        echo json_encode([
-            'success' => true,
-            'data' => \$items
-        ]);
-        exit;
+        try {
+            header('Content-Type: application/json');
+            
+            \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
+            \$items = \${$this->moduleName}Model->getAll();
+            
+            echo json_encode([
+                'success' => true,
+                'data' => \$items
+            ]);
+            exit;
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass}Controller apiIndex error: " . \$e->getMessage());
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'An error occurred while fetching {$this->moduleName}'
+            ]);
+            exit;
+        }
     }
 }
 PHP;
@@ -359,8 +477,13 @@ class {$this->moduleClass}
      */
     public function getAll()
     {
-        \$sql = "SELECT * FROM {\$this->table} ORDER BY created_at DESC";
-        return \$this->db->fetchAll(\$sql);
+        try {
+            \$sql = "SELECT * FROM {\$this->table} ORDER BY created_at DESC";
+            return \$this->db->fetchAll(\$sql);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model getAll error: " . \$e->getMessage());
+            return [];
+        }
     }
     
     /**
@@ -368,8 +491,13 @@ class {$this->moduleClass}
      */
     public function getById(\$id)
     {
-        \$sql = "SELECT * FROM {\$this->table} WHERE id = ?";
-        return \$this->db->fetch(\$sql, [\$id]);
+        try {
+            \$sql = "SELECT * FROM {\$this->table} WHERE id = ?";
+            return \$this->db->fetch(\$sql, [\$id]);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model getById error: " . \$e->getMessage());
+            return null;
+        }
     }
     
     /**
@@ -377,12 +505,17 @@ class {$this->moduleClass}
      */
     public function create(\$data)
     {
-        \$fields = implode(', ', array_keys(\$data));
-        \$placeholders = ':' . implode(', :', array_keys(\$data));
-        
-        \$sql = "INSERT INTO {\$this->table} (\$fields) VALUES (\$placeholders)";
-        
-        return \$this->db->query(\$sql, \$data);
+        try {
+            \$fields = implode(', ', array_keys(\$data));
+            \$placeholders = ':' . implode(', :', array_keys(\$data));
+            
+            \$sql = "INSERT INTO {\$this->table} (\$fields) VALUES (\$placeholders)";
+            
+            return \$this->db->query(\$sql, \$data);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model create error: " . \$e->getMessage());
+            return false;
+        }
     }
     
     /**
@@ -390,16 +523,21 @@ class {$this->moduleClass}
      */
     public function update(\$id, \$data)
     {
-        \$setParts = [];
-        foreach (array_keys(\$data) as \$field) {
-            \$setParts[] = "\$field = :\$field";
+        try {
+            \$setParts = [];
+            foreach (array_keys(\$data) as \$field) {
+                \$setParts[] = "\$field = :\$field";
+            }
+            \$setClause = implode(', ', \$setParts);
+            
+            \$sql = "UPDATE {\$this->table} SET \$setClause WHERE id = :id";
+            \$data['id'] = \$id;
+            
+            return \$this->db->query(\$sql, \$data);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model update error: " . \$e->getMessage());
+            return false;
         }
-        \$setClause = implode(', ', \$setParts);
-        
-        \$sql = "UPDATE {\$this->table} SET \$setClause WHERE id = :id";
-        \$data['id'] = \$id;
-        
-        return \$this->db->query(\$sql, \$data);
     }
     
     /**
@@ -407,8 +545,13 @@ class {$this->moduleClass}
      */
     public function delete(\$id)
     {
-        \$sql = "DELETE FROM {\$this->table} WHERE id = ?";
-        return \$this->db->query(\$sql, [\$id]);
+        try {
+            \$sql = "DELETE FROM {\$this->table} WHERE id = ?";
+            return \$this->db->query(\$sql, [\$id]);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model delete error: " . \$e->getMessage());
+            return false;
+        }
     }
     
     /**
@@ -416,12 +559,17 @@ class {$this->moduleClass}
      */
     public function search(\$query)
     {
-        \$sql = "SELECT * FROM {\$this->table} 
-                WHERE title LIKE ? OR content LIKE ?
-                ORDER BY created_at DESC";
-        
-        \$searchTerm = '%' . \$query . '%';
-        return \$this->db->fetchAll(\$sql, [\$searchTerm, \$searchTerm]);
+        try {
+            \$sql = "SELECT * FROM {\$this->table} 
+                    WHERE title LIKE ? OR content LIKE ?
+                    ORDER BY created_at DESC";
+            
+            \$searchTerm = '%' . \$query . '%';
+            return \$this->db->fetchAll(\$sql, [\$searchTerm, \$searchTerm]);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model search error: " . \$e->getMessage());
+            return [];
+        }
     }
     
     /**
@@ -429,13 +577,21 @@ class {$this->moduleClass}
      */
     public function paginate(\$page = 1, \$perPage = 10)
     {
-        \$offset = (\$page - 1) * \$perPage;
-        
-        \$sql = "SELECT * FROM {\$this->table} 
-                ORDER BY created_at DESC 
-                LIMIT \$perPage OFFSET \$offset";
-        
-        return \$this->db->fetchAll(\$sql);
+        try {
+            // Validate and sanitize input
+            \$page = max(1, (int)\$page);
+            \$perPage = max(1, min(100, (int)\$perPage)); // Limit max per page
+            \$offset = (\$page - 1) * \$perPage;
+            
+            \$sql = "SELECT * FROM {\$this->table} 
+                    ORDER BY created_at DESC 
+                    LIMIT ? OFFSET ?";
+            
+            return \$this->db->fetchAll(\$sql, [\$perPage, \$offset]);
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model paginate error: " . \$e->getMessage());
+            return [];
+        }
     }
     
     /**
@@ -443,9 +599,14 @@ class {$this->moduleClass}
      */
     public function getCount()
     {
-        \$sql = "SELECT COUNT(*) as count FROM {\$this->table}";
-        \$result = \$this->db->fetch(\$sql);
-        return \$result ? (int)\$result['count'] : 0;
+        try {
+            \$sql = "SELECT COUNT(*) as count FROM {\$this->table}";
+            \$result = \$this->db->fetch(\$sql);
+            return \$result ? (int)\$result['count'] : 0;
+        } catch (\\Exception \$e) {
+            error_log("{$this->moduleClass} model getCount error: " . \$e->getMessage());
+            return 0;
+        }
     }
 }
 PHP;
@@ -678,6 +839,78 @@ MD;
         
         file_put_contents($moduleDir . '/README.md', $content);
         echo "📄 Created: README.md\n";
+    }
+    
+    private function generateChangelog($moduleDir)
+    {
+        $currentDate = date('Y-m-d');
+        $content = <<<MD
+# {$this->moduleClass} Module Changelog
+
+## [1.0.0] - $currentDate
+
+### Added
+- Initial {$this->moduleName} module structure
+- Basic CRUD operations for {$this->moduleName} management
+- Model with proper error handling and SQL injection protection
+- Controller with validation and comprehensive error handling
+- Views for listing, creating, showing, and editing {$this->moduleName}
+- Search functionality
+- Pagination support
+- Proper PSR-4 namespace structure
+
+### Security
+- Added comprehensive error handling throughout the module
+- Fixed SQL injection vulnerabilities in database queries
+- Added input validation in controllers
+- Implemented proper parameter binding for all queries
+
+### Features
+- **{$this->moduleClass} Management**: Create, read, update, and delete {$this->moduleName}
+- **Search**: Search through {$this->moduleName} titles and content
+- **Pagination**: Paginated listing with configurable items per page
+- **Error Handling**: Comprehensive error logging and user-friendly error messages
+- **Validation**: Input validation for all forms
+
+## Basic Usage Instructions
+
+### Installation
+This module is automatically generated and configured. To use it:
+
+1. Ensure the {$this->moduleName} table exists in your database
+2. Enable the module in Module Manager
+3. Access via `/{$this->moduleName}` route
+
+### Database Requirements
+The module expects a `{$this->moduleName}` table with at least these fields:
+- `id` (primary key, auto-increment)
+- `title` (varchar)
+- `content` (text)
+- `created_at` (datetime)
+
+### Routes
+- `GET /{$this->moduleName}` - List all {$this->moduleName}
+- `GET /{$this->moduleName}/create` - Show create form
+- `POST /{$this->moduleName}` - Store new {$this->moduleName}
+- `GET /{$this->moduleName}/{id}` - Show specific {$this->moduleName}
+- `GET /{$this->moduleName}/{id}/edit` - Show edit form
+- `PUT /{$this->moduleName}/{id}` - Update {$this->moduleName}
+- `DELETE /{$this->moduleName}/{id}` - Delete {$this->moduleName}
+
+### Customization
+- Edit views in `views/` directory for custom styling
+- Modify `models/{$this->moduleClass}.php` for additional database fields
+- Update `controllers/{$this->moduleClass}Controller.php` for custom business logic
+
+### Development Notes
+- All database queries use prepared statements to prevent SQL injection
+- Error handling logs to system error log
+- Session messages used for user feedback
+- Follows StrataPHP framework conventions
+MD;
+        
+        file_put_contents($moduleDir . '/CHANGELOG.md', $content);
+        echo "📄 Created: CHANGELOG.md\n";
     }
     
     private function updateComposer()
