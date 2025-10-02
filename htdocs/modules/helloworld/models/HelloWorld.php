@@ -8,18 +8,40 @@ namespace App\Modules\HelloWorld\Models;
  */
 class HelloWorld
 {
+    private $messages = [
+        "Hello, world!",
+        "Welcome to StrataPHP!",
+        "Greetings from your first module!",
+        "Hello there, developer!",
+        "StrataPHP says hello!"
+    ];
+
     /**
      * Get a hello world message
      * 
+     * @param bool $random Whether to return a random message
      * @return string The hello world message
      */
-    public function getMessage()
+    public function getMessage($random = false)
     {
         try {
-            return "Hello, world!";
+            if ($random) {
+                return $this->messages[array_rand($this->messages)];
+            }
+            return $this->messages[0];
         } catch (\Exception $e) {
             error_log("Error getting hello world message: " . $e->getMessage());
             return "Error loading message";
         }
+    }
+
+    /**
+     * Get all available messages
+     * 
+     * @return array All messages
+     */
+    public function getAllMessages()
+    {
+        return $this->messages;
     }
 }
