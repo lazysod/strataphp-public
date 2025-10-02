@@ -3,6 +3,17 @@ use App\Controllers\AdminController;
 use App\Modules\Admin\Controllers\ModuleInstallerController;
 use App\Modules\Admin\Controllers\ModuleDetailsController;
 use App\Modules\Admin\Controllers\ModuleManagerController;
+use App\Modules\Admin\Controllers\AdminLinksController;
+
+// Links Admin Routes
+$router->get('/admin/links', [AdminLinksController::class, 'index']);
+$router->post('/admin/links', [AdminLinksController::class, 'index']);
+$router->get('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->post('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+$router->post('/admin/links/order', [AdminLinksController::class, 'order']);
 
 // Module Installer Routes
 $router->get('/admin/module-installer', [ModuleInstallerController::class, 'index']);
