@@ -639,3 +639,26 @@ StrataPHP now uses a modern, secure session management system with device-based 
 
 ---
 For more, see the code in `htdocs/app/SessionManager.php`, `User.php`, and session dashboard controllers/views.
+
+---
+
+## 📚 Documentation
+
+### **Complete Guides**
+- **[Migration System Guide](docs/MIGRATION_SYSTEM_GUIDE.md)** - Complete migration and rollback documentation
+- **[Theme System Guide](docs/THEME_SYSTEM_GUIDE.md)** - Framework and CMS theme architecture
+- **[Template Customization](docs/TEMPLATE_CUSTOMIZATION.md)** - Quick start for customizing themes
+- **[Module Development](MODULE_SYSTEM.md)** - Creating and managing modules
+- **[Module Standards](MODULE_STANDARDS.md)** - Module development best practices
+
+### **Setup & Installation**
+- **[Installation Guide](INSTALL.md)** - Database setup and configuration
+- **[CMS Toggle System](CHANGELOG_CMS_TOGGLE.md)** - CMS enable/disable functionality
+- **[Database Cleanup](docs/db_cleanup_2025-09-12.md)** - Legacy table removal guide
+
+### **Framework Reference**
+- **[Changelog](CHANGELOG.md)** - Version history and feature updates
+- **[Migration Status](bin/migration_status.php)** - Check applied migrations
+- **[Test Migrations](bin/test_migrations.php)** - Validate migration system
+
+**StrataPHP Framework** - Professional PHP development made simple. 🚀
