@@ -17,7 +17,19 @@ require __DIR__ . '/../../../views/partials/header.php';
                 </div>
                 
                 <div class="content">
-                    <?= nl2br(htmlspecialchars($data['item']['content'])) ?>
+                    <?php
+                    // Process content to handle line breaks and paragraphs properly
+                    $content = $data['item']['content'] ?? '';
+                    
+                    // If content contains HTML tags, preserve them; otherwise convert line breaks
+                    if (strip_tags($content) === $content) {
+                        // No HTML tags found, process as plain text with proper paragraphs
+                        echo \App\HtmlSanitizer::plainTextToHtml($content);
+                    } else {
+                        // Content already contains HTML, just output it
+                        echo $content;
+                    }
+                    ?>
                 </div>
                 
                 <div class="mt-4 text-muted">

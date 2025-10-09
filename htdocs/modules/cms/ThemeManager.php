@@ -1,6 +1,8 @@
 <?php
 namespace App\Modules\Cms;
 
+use App\HtmlSanitizer;
+
 /**
  * CMS Theme Manager
  * 
@@ -118,10 +120,34 @@ class ThemeManager
         // Get navigation pages
         $navigation = $this->getNavigationPages();
         
+        // Process content for proper line break and paragraph handling
+        if (isset($page['content'])) {
+            $page['content'] = $this->processContent($page['content']);
+        }
+        
         // Include the template
         ob_start();
         include $templateFile;
         return ob_get_clean();
+    }
+    
+    /**
+     * Process content to handle line breaks and paragraphs properly
+     */
+    private function processContent($content)
+    {
+        if (empty($content)) {
+            return '';
+        }
+        
+        // If content contains HTML tags, preserve them; otherwise convert line breaks
+        if (strip_tags($content) === $content) {
+            // No HTML tags found, process as plain text
+            return HtmlSanitizer::plainTextToHtml($content);
+        }
+        
+        // Content already contains HTML, just return it as-is
+        return $content;
     }
     
     /**
