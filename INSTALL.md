@@ -18,6 +18,10 @@
      ```sh
      php bin/migrate.php
      ```
+   - To test migration system integrity:
+     ```sh
+     php bin/test_migrations.php
+     ```
 
 4. **Create your first admin user**
    - Use the CLI tool:

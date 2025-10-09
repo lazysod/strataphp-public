@@ -27,21 +27,46 @@ if (count($applied) === 0) {
 $rolledBack = 0;
 foreach ($applied as $i => $last) {
     if ($rolledBack >= $steps) break;
+    
     $rollbackFile = $migrationsDir . $last;
     if (!file_exists($rollbackFile)) {
         echo "Migration file not found: $last\n";
         continue;
     }
-    // Look for a corresponding down migration: e.g. 003_drop_display_name_from_users.down.php
-    $downFile = preg_replace('/\.php$/', '.down.php', $rollbackFile);
-    if (!file_exists($downFile)) {
-        echo "No rollback (down) migration found for $last.\n";
+    
+    // Load the migration to check its format
+    $migration = include $rollbackFile;
+    $downExecuted = false;
+    
+    // Check for array format with 'down' function
+    if (is_array($migration) && isset($migration['down']) && is_callable($migration['down'])) {
+        echo "Rolling back (array format): $last... ";
+        $migration['down']($db);
+        $downExecuted = true;
+    } else {
+        // Look for a corresponding down migration: e.g. 003_drop_display_name_from_users.down.php
+        $downFile = preg_replace('/\.php$/', '.down.php', $rollbackFile);
+        if (file_exists($downFile)) {
+            echo "Rolling back (separate file): $last... ";
+            $down = include $downFile;
+            if (is_callable($down)) {
+                $down($db);
+                $downExecuted = true;
+            } else {
+                echo "Invalid down migration format in $downFile\n";
+                continue;
+            }
+        }
+    }
+    
+    if (!$downExecuted) {
+        echo "No rollback migration found for $last (checked both array format and .down.php file)\n";
         continue;
     }
-    $down = include $downFile;
-    $down($db);
+    
+    // Remove from migrations table
     $db->query('DELETE FROM migrations WHERE migration = ?', [$last]);
-    echo "Rolled back: $last\n";
+    echo "done.\n";
     $rolledBack++;
 }
 if ($rolledBack === 0) {

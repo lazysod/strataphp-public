@@ -522,10 +522,12 @@ The Strata Framework includes a robust migration and seeding system for managing
 - **Forward migrations**: Apply all new migrations in order with `php bin/migrate.php`.
 - **Rollback**: Undo the latest (or multiple) migrations with `php bin/rollback.php [steps]`.
 - **Migration status**: See which migrations are applied or pending with `php bin/migration_status.php`.
+- **Migration testing**: Validate all migrations and test rollback capability with `php bin/test_migrations.php`.
 - **Migration locking**: Prevents concurrent migration runs; shows who/when set the lock.
 - **Migration logging**: Tracks who ran each migration and when (`applied_by`, `applied_at`).
 - **Migration generator**: Create new migration and rollback templates with `php bin/create_migration.php MigrationName`.
 - **Down migrations**: Each migration can have a `.down.php` file for rollback support.
+- **Dual format support**: Supports both array format and separate `.down.php` files with automatic detection.
 
 ### Seeding Features
 - **Seeding**: Populate your database with test/demo data using `php bin/seed.php` (runs all seeds in `seeds/`).
@@ -537,6 +539,7 @@ The Strata Framework includes a robust migration and seeding system for managing
 php bin/migrate.php                # Apply all new migrations
 php bin/rollback.php 2             # Roll back the last 2 migrations
 php bin/migration_status.php       # Show migration status
+php bin/test_migrations.php        # Test all migrations and rollback capability
 php bin/create_migration.php AddUsersTable   # Scaffold new migration and down file
 php bin/seed.php                   # Run all seed files
 php bin/seed.php --down            # Remove all seeded data
@@ -546,8 +549,10 @@ php bin/seed.php --down            # Remove all seeded data
 - Always create a `.down.php` file for each migration/seed to support rollback.
 - Never run `.down.php` files as forward migrations.
 - Use the migration lock to avoid concurrent schema changes in teams/CI.
+- Test migrations with `php bin/test_migrations.php` before deploying to production.
+- Both array format and separate `.down.php` files are supported for maximum flexibility.
 
-See the `bin/` and `migrations/` folders for more details and examples.
+See the `bin/` and `migrations/` folders for more details and examples. For comprehensive migration documentation, see `docs/MIGRATION_SYSTEM_GUIDE.md`.
 
 ---
 
