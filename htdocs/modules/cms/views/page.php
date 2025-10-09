@@ -11,6 +11,46 @@ if (!defined('STRPHP_ROOT')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
     <title><?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?></title>
+    
+    <?php if (!empty($canonical_url)): ?>
+    <link rel="canonical" href="<?= htmlspecialchars($canonical_url) ?>">
+    <?php endif; ?>
+    
+    <?php if (!empty($noindex)): ?>
+    <meta name="robots" content="noindex, nofollow">
+    <?php endif; ?>
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
+    <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'article') ?>">
+    <?php 
+    // Debug: Check og_image value
+    // echo '<!-- DEBUG: og_image = "' . ($og_image ?? 'NOT SET') . '" -->' . PHP_EOL;
+    ?>
+    <?php if (!empty($og_image)): ?>
+    <meta property="og:image" content="<?= htmlspecialchars($og_image) ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <?php 
+    // Generate thumbnail URL for additional meta tag
+    $thumbnailUrl = str_replace('/storage/uploads/cms/', '/storage/uploads/cms/thumbs/', $og_image);
+    ?>
+    <meta property="og:image:thumbnail" content="<?= htmlspecialchars($thumbnailUrl) ?>">
+    <?php endif; ?>
+    <meta property="og:url" content="<?= htmlspecialchars($canonical_url ?? $_SERVER['REQUEST_URI'] ?? '') ?>">
+    <meta property="og:site_name" content="<?= htmlspecialchars($site_name ?? 'StrataPHP CMS') ?>">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="<?= htmlspecialchars($twitter_card ?? 'summary_large_image') ?>">
+    <meta name="twitter:title" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
+    <?php if (!empty($og_image)): ?>
+    <meta name="twitter:image" content="<?= htmlspecialchars($og_image) ?>">
+    <meta name="twitter:image:alt" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page image') ?>">
+    <?php endif; ?>
+    
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;

@@ -418,6 +418,43 @@ h1, h2, h3, h4, h5, h6 {
                 ];
             }
             
+            // Add user management links if user module is enabled
+            if (!empty($config['modules']['user'])) {
+                // Check if user is logged in
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $isLoggedIn = !empty($_SESSION['user_id']);
+                
+                if ($isLoggedIn) {
+                    $navigation[] = [
+                        'title' => 'Profile',
+                        'url' => '/user/profile',
+                        'slug' => 'profile',
+                        'is_home' => false
+                    ];
+                    $navigation[] = [
+                        'title' => 'Logout',
+                        'url' => '/logout.php',
+                        'slug' => 'logout',
+                        'is_home' => false
+                    ];
+                } else {
+                    $navigation[] = [
+                        'title' => 'Login',
+                        'url' => '/user/login',
+                        'slug' => 'login',
+                        'is_home' => false
+                    ];
+                    $navigation[] = [
+                        'title' => 'Register',
+                        'url' => '/user/register',
+                        'slug' => 'register',
+                        'is_home' => false
+                    ];
+                }
+            }
+            
             return $navigation;
             
         } catch (\Exception $e) {

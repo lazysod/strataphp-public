@@ -389,4 +389,46 @@ class AdminController
             echo json_encode(['available' => false, 'message' => 'Error checking slug']);
         }
     }
+    
+    /**
+     * Media Library - manage uploaded images
+     */
+    public function mediaLibrary()
+    {
+        $this->requireAuth();
+        
+        try {
+            $uploadDir = __DIR__ . '/../../../../storage/uploads/cms/';
+            $thumbDir = $uploadDir . 'thumbs/';
+            $images = [];
+            
+            if (is_dir($uploadDir)) {
+                $files = array_diff(scandir($uploadDir), ['.', '..', 'thumbs']);
+                
+                foreach ($files as $file) {
+                    $filePath = $uploadDir . $file;
+                    if (is_file($filePath) && preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
+                        $images[] = [
+                            'filename' => $file,
+                            'url' => '/storage/uploads/cms/' . $file,
+                            'thumbnail' => file_exists($thumbDir . $file) ? '/storage/uploads/cms/thumbs/' . $file : '/storage/uploads/cms/' . $file,
+                            'size' => filesize($filePath),
+                            'uploaded' => date('Y-m-d H:i:s', filemtime($filePath))
+                        ];
+                    }
+                }
+                
+                // Sort by upload date (newest first)
+                usort($images, function($a, $b) {
+                    return strtotime($b['uploaded']) - strtotime($a['uploaded']);
+                });
+            }
+            
+            $this->renderAdminView('media_library', ['images' => $images]);
+            
+        } catch (\Exception $e) {
+            error_log("Media library error: " . $e->getMessage());
+            $this->renderAdminView('error', ['message' => 'Failed to load media library']);
+        }
+    }
 }

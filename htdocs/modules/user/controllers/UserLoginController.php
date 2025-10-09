@@ -4,6 +4,7 @@ namespace App\Modules\User\Controllers;
 use App\TokenManager;
 use App\DB;
 use App\User;
+use App\Modules\User\Helpers\CmsHelper;
 
 // modules/user/controllers/UserLoginController.php
 // Refactored as a class for router compatibility
@@ -33,6 +34,16 @@ class UserLoginController
                 header('Location: /');
                 exit;
             }
+            
+            // Check if user is already logged in
+            $prefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$prefix . 'user_id'])) {
+                // Use CmsHelper for smart redirect based on CMS availability
+                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
+                header('Location: ' . $redirect);
+                exit;
+            }
         $error = '';
         $success = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,8 +61,10 @@ class UserLoginController
                 ];
                 $result = $user->login($loginInfo);
                 if ($result['status'] === 'success') {
-                    // Redirect to configured page after successful login
-                    $redirect = $config['login_redirect'] ?? '/';
+                    // Use CmsHelper for smart redirect based on role and CMS availability
+                    $prefix = $config['session_prefix'] ?? 'app_';
+                    $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                    $redirect = CmsHelper::getPostLoginRedirect($isAdmin);
                     header('Location: ' . $redirect);
                     exit;
                 } else {
@@ -59,11 +72,15 @@ class UserLoginController
                 }
             }
         }
-        include __DIR__ . '/../views/login.php';
+        // Use CmsHelper to get appropriate view with fallback
+        $viewPath = CmsHelper::getViewPath('user/login.php', __DIR__ . '/../views/login.php');
+        include $viewPath;
         } catch (\Exception $e) {
             error_log('User login error: ' . $e->getMessage());
             $error = 'An unexpected error occurred. Please try again.';
-            include __DIR__ . '/../views/login.php';
+            // Use CmsHelper for error view as well
+            $viewPath = CmsHelper::getViewPath('user/login.php', __DIR__ . '/../views/login.php');
+            include $viewPath;
         }
     }
 }

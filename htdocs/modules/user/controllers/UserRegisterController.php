@@ -27,10 +27,26 @@ class UserRegisterController
         try {
             include_once dirname(__DIR__, 3) . '/app/start.php';
             $config = include dirname(__DIR__, 3) . '/app/config.php';
+            
+            // Check if user is already logged in
+            $prefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$prefix . 'user_id'])) {
+                // Use CmsHelper for smart redirect based on CMS availability
+                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
+                header('Location: ' . $redirect);
+                exit;
+            }
             if (isset($config['registration_enabled']) && !$config['registration_enabled']) {
                 $error = 'User registration is currently disabled.';
                 $success = '';
-                include __DIR__ . '/../views/register.php';
+                // Use CMS-themed registration page
+                $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
+                if (file_exists($cmsRegisterView)) {
+                    include $cmsRegisterView;
+                } else {
+                    include __DIR__ . '/../views/register.php';
+                }
                 return;
             }
         if (empty($config['modules']['user'])) {
@@ -65,13 +81,25 @@ class UserRegisterController
                 }
             }
         }
-        include __DIR__ . '/../views/register.php';
+        // Use CMS-themed registration page
+        $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
+        if (file_exists($cmsRegisterView)) {
+            include $cmsRegisterView;
+        } else {
+            include __DIR__ . '/../views/register.php';
+        }
         } catch (\Exception $e) {
             error_log('User registration error: ' . $e->getMessage());
             $error = 'An unexpected error occurred during registration. Please try again.';
             $success = '';
             $token = '';
-            include __DIR__ . '/../views/register.php';
+            // Use CMS-themed registration page
+            $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
+            if (file_exists($cmsRegisterView)) {
+                include $cmsRegisterView;
+            } else {
+                include __DIR__ . '/../views/register.php';
+            }
         }
     }
 }

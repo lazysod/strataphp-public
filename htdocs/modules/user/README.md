@@ -3,6 +3,8 @@
 ## Overview
 The User module provides comprehensive user authentication and management functionality for the StrataPHP framework. It includes user registration, login, profile management, password reset, email verification, and session management.
 
+**NEW**: The User module now features **adaptive theming** that automatically switches between CMS-enhanced themes and default StrataPHP themes based on CMS module availability.
+
 ## Features
 - User registration with email verification
 - Secure login/logout functionality
@@ -14,6 +16,25 @@ The User module provides comprehensive user authentication and management functi
 - CSRF protection
 - Input validation and sanitization
 - Secure password hashing
+- **Adaptive theming system** - CMS-enhanced or default themes
+- **Smart redirects** - Admin users to appropriate dashboards
+- **Graceful fallbacks** - Works with or without CMS module
+
+## Theming System
+
+### **When CMS Module is Enabled**
+- ✅ Modern CMS themes for all user pages (login, register, password reset)
+- ✅ Professional styling with gradient backgrounds and responsive design
+- ✅ Integrated navigation and branding
+- ✅ Admin users redirect to `/admin/cms`
+- ✅ Regular users redirect to `/user/profile`
+
+### **When CMS Module is Disabled**  
+- ✅ Automatic fallback to default StrataPHP themes
+- ✅ Basic styling maintains functionality
+- ✅ Admin users redirect to `/admin`
+- ✅ Regular users redirect to `/user/profile`
+- ✅ Zero configuration required
 
 ## Installation
 The User module is automatically discovered by StrataPHP. To enable:

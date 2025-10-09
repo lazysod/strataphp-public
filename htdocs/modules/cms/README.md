@@ -1,6 +1,25 @@
 # StrataPHP CMS Module
 
-A professional Content Management System module for StrataPHP framework, providing comprehensive page and content management capabilities.
+A professional Content Management System module for StrataPHP framework, providing comprehensive page and content management capabilities with **seamless toggle functionality**.
+
+## 🔄 CMS Toggle Feature
+
+**NEW**: The CMS module can be safely enabled/disabled without breaking your site!
+
+### **When CMS is Enabled** (`'enabled' => true`)
+- ✅ Modern CMS themes for user authentication pages
+- ✅ Professional admin dashboard at `/admin/cms`  
+- ✅ Dynamic page routing and content management
+- ✅ Image uploads with social media optimization
+- ✅ Rich text editing and SEO tools
+
+### **When CMS is Disabled** (`'enabled' => false`)
+- ✅ **Graceful fallback** to default StrataPHP themes
+- ✅ Site continues working with basic admin panel
+- ✅ **Zero data loss** - all content preserved
+- ✅ Easy re-enabling without configuration
+
+**Perfect for:** Testing, gradual adoption, or switching between CMS and basic modes.
 
 ## 🚀 Quick Start
 
@@ -41,16 +60,21 @@ A professional Content Management System module for StrataPHP framework, providi
 ## 🔧 Installation & Setup
 
 ### 1. **Enable the Module**
-The CMS module should already be enabled in your config. Verify in `/app/config.php`:
+Configure the CMS module in `/app/config.php`:
 
 ```php
 'modules' => [
     'cms' => [
-        'enabled' => true,
+        'enabled' => true,  // Set to false to disable CMS gracefully
         'suitable_as_default' => false,
     ],
 ]
 ```
+
+**Toggle Benefits:**
+- **Enable**: Get modern CMS themes, professional admin interface, dynamic routing
+- **Disable**: Automatic fallback to default StrataPHP themes with zero breaking changes
+- **Switch anytime**: No data loss, instant revert capability
 
 ### 2. **Run Database Migration**
 ```bash

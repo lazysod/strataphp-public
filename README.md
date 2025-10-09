@@ -69,9 +69,13 @@ Once installed and the admin account is created, you can log in and begin config
 ## Features
 _A summary of the framework's core capabilities._
 
-- **Modular architecture**: Easily add or remove modules (user system, forum, etc.)
+- **Modular architecture**: Easily add or remove modules (user system, CMS, forum, etc.)
+- **CMS Toggle System**: Enable/disable the CMS module without breaking site functionality
 - **CLI Module Generator**: Create production-ready modules with `php bin/create-module.php`
 - **Advanced Module Management**: Dual-view interface with validation, safe deletion, and bulk operations
+- **Professional CMS**: Content management with image uploads, SEO optimization, and modern theming
+- **Graceful Fallbacks**: Automatic fallback to default themes when CMS is disabled
+- **Smart Redirects**: Context-aware user redirects based on module availability and user roles
 - **Unified DB class**: All database access uses the PDO-based `DB` class (no legacy `dbcon`)
 - **Admin & user systems are independent**: Admin profile and login work even if the user module is disabled
 - **User authentication**: Registration, login, profile, password reset (with token expiry), all via modular, class-based controllers
@@ -118,6 +122,42 @@ _Important security features and best practices._
 
 ## User & Admin System
 _Managing users, admins, and authentication._
+
+### CMS Toggle Feature
+
+StrataPHP includes a revolutionary **CMS Toggle System** that allows you to enable/disable the CMS module without breaking your site:
+
+#### **When CMS Module is Enabled** (`'enabled' => true`)
+- Modern CMS themes for all user authentication pages (login, register, password reset)
+- Admin users redirect to `/admin/cms` (professional CMS dashboard)
+- Regular users redirect to `/user/profile` after login
+- Dynamic page routing and rich content management interface
+- All CMS features available (page management, image uploads, SEO tools)
+
+#### **When CMS Module is Disabled** (`'enabled' => false`)  
+- **Graceful fallback** to default StrataPHP themes
+- Admin users redirect to `/admin` (basic admin panel)
+- Regular users redirect to `/user/profile` after login
+- Standard framework routing with no CMS dependencies
+- **Zero data loss** - all CMS content safely preserved
+- All core StrataPHP functionality maintained
+
+#### **Toggle Configuration**
+```php
+// In htdocs/app/config.php
+'modules' => [
+    'cms' => [
+        'enabled' => true,  // Change to false to disable CMS
+        'suitable_as_default' => false,
+    ],
+]
+```
+
+#### **Benefits**
+- ✅ **Risk-free adoption** - try CMS features without commitment
+- ✅ **Developer confidence** - easy testing between modes  
+- ✅ **Professional degradation** - site never breaks
+- ✅ **Zero breaking changes** - instant revert capability
 
 ### Disable User Registration
 

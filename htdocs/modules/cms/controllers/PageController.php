@@ -45,6 +45,12 @@ class PageController
                     'content' => $homePage['content'],
                     'excerpt' => $homePage['excerpt'] ?? '',
                     'meta_description' => $homePage['meta_description'] ?? $homePage['excerpt'] ?? '',
+                    'og_image' => $homePage['og_image'] ?? '',
+                    'og_type' => $homePage['og_type'] ?? 'article',
+                    'twitter_card' => $homePage['twitter_card'] ?? 'summary_large_image',
+                    'canonical_url' => $homePage['canonical_url'] ?? '',
+                    'noindex' => $homePage['noindex'] ?? false,
+                    'site_name' => $this->config['site_name'] ?? 'StrataPHP CMS',
                     'page' => $homePage
                 ];
             }
@@ -76,6 +82,12 @@ class PageController
                 'content' => $page['content'],
                 'excerpt' => $page['excerpt'] ?? '',
                 'meta_description' => $page['meta_description'] ?? $page['excerpt'] ?? '',
+                'og_image' => $page['og_image'] ?? '',
+                'og_type' => $page['og_type'] ?? 'article',
+                'twitter_card' => $page['twitter_card'] ?? 'summary_large_image',
+                'canonical_url' => $page['canonical_url'] ?? '',
+                'noindex' => $page['noindex'] ?? false,
+                'site_name' => $this->config['site_name'] ?? 'StrataPHP CMS',
                 'page' => $page
             ];
             
@@ -175,6 +187,14 @@ class PageController
     {
         http_response_code(404);
         
+        // Use CMS-styled 404 page
+        $cms404Template = dirname(__DIR__) . '/views/404.php';
+        if (file_exists($cms404Template)) {
+            include $cms404Template;
+            return;
+        }
+        
+        // Fallback to basic 404 if CMS template doesn't exist
         $data = [
             'title' => 'Page Not Found',
             'content' => '<h1>Page Not Found</h1><p>The requested page could not be found.</p>',

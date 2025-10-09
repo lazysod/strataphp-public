@@ -254,6 +254,51 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             background: #f8f9fa;
         }
         
+        /* Image Upload Styles */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .upload-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .upload-controls button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .upload-controls button:hover {
+            background: #005a87;
+        }
+        .upload-controls button:last-child {
+            background: #dc3545;
+        }
+        .upload-controls button:last-child:hover {
+            background: #c82333;
+        }
+        .image-preview {
+            margin-top: 10px;
+            max-width: 300px;
+        }
+        .image-preview img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .upload-progress {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
         /* Form Actions */
         .form-actions {
             border-top: 1px solid #ddd;
@@ -544,10 +589,22 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
 
                                     <div class="form-group">
                                         <label for="og_image">Open Graph Image</label>
-                                        <input type="url" id="og_image" name="og_image" 
-                                               value="<?= isset($page) ? htmlspecialchars($page['og_image'] ?? '') : '' ?>" 
-                                               placeholder="https://example.com/image.jpg">
-                                        <div class="form-text">Recommended: 1200x630px</div>
+                                        <div class="image-upload-container">
+                                            <input type="url" id="og_image" name="og_image" 
+                                                   value="<?= isset($page) ? htmlspecialchars($page['og_image'] ?? '') : '' ?>" 
+                                                   placeholder="https://example.com/image.jpg">
+                                            <div class="upload-controls">
+                                                <input type="file" id="og_image_file" accept="image/*" style="display: none;">
+                                                <button type="button" onclick="uploadOgImageButtonClick(); return false;">Upload Image</button>
+                                                <button type="button" onclick="clearOgImage()">Clear</button>
+                                            </div>
+                                            <div id="og_image_preview" class="image-preview">
+                                                <?php if (!empty($page['og_image'])): ?>
+                                                <img src="<?= htmlspecialchars($page['og_image']) ?>" alt="OG Image Preview">
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="form-text">Recommended: 1200x630px. You can upload an image or enter a URL manually.</div>
                                     </div>
 
                                     <div class="form-group">
@@ -663,6 +720,7 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 <button type="button" onclick="execCmd('insertUnorderedList')" title="Bullet List">• List</button>
                 <button type="button" onclick="execCmd('insertOrderedList')" title="Numbered List">1. List</button>
                 <button type="button" onclick="execCmd('createLink')" title="Link">🔗</button>
+                <button type="button" onclick="insertImage()" title="Insert Image">📷</button>
                 <button type="button" onclick="execCmd('removeFormat')" title="Clear Format">Clear</button>
                 <button type="button" onclick="toggleSource()" title="HTML Source">&lt;&gt;</button>
             `;
@@ -729,8 +787,12 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
         
         // Editor command functions
         function execCmd(cmd, value = null) {
+            console.log('execCmd called with:', cmd, 'value:', value);
+            console.trace(); // This will show us the call stack
+            
             if (window.richEditor && !window.richEditor.sourceMode) {
                 if (cmd === 'createLink') {
+                    console.log('createLink command detected - this is what causes the URL prompt');
                     value = prompt('Enter URL:');
                     if (!value) return;
                 }
@@ -744,6 +806,111 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 // Update textarea
                 window.richEditor.textarea.value = window.richEditor.element.innerHTML;
             }
+        }
+        
+        function insertImage() {
+            if (!window.richEditor || window.richEditor.sourceMode) return;
+            
+            // Create file input
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB.');
+                    return;
+                }
+                
+                // Save current selection
+                const selection = window.getSelection();
+                const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+                
+                // Upload image
+                uploadImageForEditor(file, range);
+            });
+            
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        }
+        
+        function uploadImageForEditor(file, range) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            // Show loading in editor
+            if (range) {
+                const loadingSpan = document.createElement('span');
+                loadingSpan.textContent = 'Uploading image...';
+                loadingSpan.style.color = '#666';
+                loadingSpan.style.fontStyle = 'italic';
+                
+                range.deleteContents();
+                range.insertNode(loadingSpan);
+                
+                window.getSelection().removeAllRanges();
+            }
+            
+            fetch('/admin/cms/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create image element
+                    const img = document.createElement('img');
+                    img.src = data.url;
+                    img.alt = 'Uploaded image';
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
+                    
+                    // Replace loading text with image
+                    if (range) {
+                        const loadingSpan = window.richEditor.element.querySelector('span');
+                        if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
+                            loadingSpan.replaceWith(img);
+                        } else {
+                            // Fallback: append to end
+                            window.richEditor.element.appendChild(img);
+                        }
+                    } else {
+                        window.richEditor.element.appendChild(img);
+                    }
+                    
+                    // Update textarea
+                    window.richEditor.textarea.value = window.richEditor.element.innerHTML;
+                    
+                    console.log('Image inserted successfully:', data);
+                } else {
+                    // Remove loading text
+                    const loadingSpan = window.richEditor.element.querySelector('span');
+                    if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
+                        loadingSpan.remove();
+                    }
+                    alert('Upload failed: ' + data.error);
+                }
+            })
+            .catch(error => {
+                // Remove loading text
+                const loadingSpan = window.richEditor.element.querySelector('span');
+                if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
+                    loadingSpan.remove();
+                }
+                alert('Upload failed: ' + error.message);
+                console.error('Upload error:', error);
+            });
         }
         
         function toggleSource() {
@@ -897,6 +1064,103 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 console.log(key + ':', value);
             }
         });
+
+        // Simple OG image upload handler
+        function uploadOgImageButtonClick() {
+            console.log('uploadOgImageButtonClick called - this should NOT show URL prompt');
+            
+            // Prevent any default action or event bubbling
+            if (window.event) {
+                window.event.preventDefault();
+                window.event.stopPropagation();
+            }
+            
+            const fileInput = document.getElementById('og_image_file');
+            if (fileInput) {
+                console.log('File input found, triggering click');
+                fileInput.click();
+            } else {
+                console.error('File input not found');
+            }
+            
+            return false; // Prevent any form submission or other actions
+        }
+
+        // Image Upload Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const ogImageFileInput = document.getElementById('og_image_file');
+            if (ogImageFileInput) {
+                ogImageFileInput.addEventListener('change', function(e) {
+                    console.log('OG Image file selected:', e.target.files[0]);
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    uploadOgImage(file);
+                });
+            } else {
+                console.error('og_image_file input not found');
+            }
+        });
+        
+        function uploadOgImage(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            // Show upload progress
+            const preview = document.getElementById('og_image_preview');
+            preview.innerHTML = '<div class="upload-progress">Uploading...</div>';
+            
+            fetch('/admin/cms/upload/image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                return response.text();
+            })
+            .then(text => {
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        // Update the URL field with the full-size image
+                        document.getElementById('og_image').value = data.url;
+                        
+                        // Show preview using thumbnail (better for admin UI)
+                        preview.innerHTML = '<img src="' + data.thumbnail + '" alt="OG Image Preview">';
+                    } else {
+                        preview.innerHTML = '';
+                        alert('Upload failed: ' + data.error);
+                    }
+                } catch (e) {
+                    preview.innerHTML = '';
+                    console.error('JSON parse error:', e);
+                    console.error('Server returned:', text);
+                    alert('Upload failed: Server returned invalid response. Check console for details.');
+                }
+            })
+            .catch(error => {
+                preview.innerHTML = '';
+                alert('Upload failed: ' + error.message);
+                console.error('OG Upload error:', error);
+            });
+        }
+        
+        function clearOgImage() {
+            document.getElementById('og_image').value = '';
+            document.getElementById('og_image_preview').innerHTML = '';
+            document.getElementById('og_image_file').value = '';
+        }
     </script>
 </body>
 </html>
