@@ -2,7 +2,7 @@
     "name": "lazysod/strataphp",
     "description": "A lightweight, modular PHP framework with automatic module discovery, PSR-4 autoloading, and comprehensive CLI tools.",
     "type": "project",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "keywords": [
         "php",
         "framework",

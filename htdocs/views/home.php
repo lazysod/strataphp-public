@@ -20,7 +20,7 @@ require __DIR__ . '/partials/header.php';
                             <div class="card-body">
                                 <ul class="list-unstyled lead">
                                     <li><b>Site Name:</b> <?php echo App::config('site_name'); ?></li>
-                                    <li><b>Version:</b> <?php echo App::config('version'); ?></li>
+                                    <li><b>Version:</b> <?php echo Version::get(); ?></li>
                                     <li><b>Admin Email:</b> <?php echo App::config('admin_email'); ?></li>
                                     <li><b>PHP Version:</b> <?php echo phpversion();  ?></li>
                                     <li><b>Database Host:</b> <?php echo App::config('db')['host']; ?></li>
