@@ -36,10 +36,10 @@ class UserLoginController
             }
             
             // Check if user is already logged in
-            $prefix = $config['session_prefix'] ?? 'app_';
-            if (isset($_SESSION[$prefix . 'user_id'])) {
+            $sessionPrefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$sessionPrefix . 'user_id'])) {
                 // Use CmsHelper for smart redirect based on CMS availability
-                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $isAdmin = isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0;
                 $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
                 header('Location: ' . $redirect);
                 exit;
@@ -62,8 +62,8 @@ class UserLoginController
                 $result = $user->login($loginInfo);
                 if ($result['status'] === 'success') {
                     // Use CmsHelper for smart redirect based on role and CMS availability
-                    $prefix = $config['session_prefix'] ?? 'app_';
-                    $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                    $sessionPrefix = $config['session_prefix'] ?? 'app_';
+                    $isAdmin = isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0;
                     $redirect = CmsHelper::getPostLoginRedirect($isAdmin);
                     header('Location: ' . $redirect);
                     exit;

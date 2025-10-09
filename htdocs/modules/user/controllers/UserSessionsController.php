@@ -25,7 +25,9 @@ class UserSessionsController
             include_once dirname(__DIR__, 3) . '/app/start.php';
             $config = include dirname(__DIR__, 3) . '/app/config.php';
             $db = new DB($config);
-            $user_id = $_SESSION[PREFIX . 'user_id'] ?? null;
+            
+            $sessionPrefix = $config['session_prefix'] ?? 'app_';
+            $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
             if (!$user_id) {
                 header('Location: /user/login');
                 exit;
@@ -53,7 +55,9 @@ class UserSessionsController
         include_once dirname(__DIR__, 3) . '/app/start.php';
         $config = include dirname(__DIR__, 3) . '/app/config.php';
         $db = new DB($config);
-        $user_id = $_SESSION[PREFIX . 'user_id'] ?? null;
+        
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
         if (!$user_id) {
             header('Location: /user/login');
             exit;
@@ -78,7 +82,9 @@ class UserSessionsController
         include_once dirname(__DIR__, 3) . '/app/start.php';
         $config = include dirname(__DIR__, 3) . '/app/config.php';
         $db = new DB($config);
-        $user_id = $_SESSION[PREFIX . 'user_id'] ?? null;
+        
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
         $session_id = $_POST['session_id'] ?? null;
         $device_info = trim($_POST['device_info'] ?? '');
         if (!$user_id || !$session_id || $device_info === '') {
@@ -86,7 +92,7 @@ class UserSessionsController
             exit;
         }
         // Only allow update for current session
-        if ($session_id == ($_SESSION[PREFIX . 'session_id'] ?? null)) {
+        if ($session_id == ($_SESSION[$sessionPrefix . 'session_id'] ?? null)) {
             $db->query("UPDATE user_sessions SET device_info = ? WHERE id = ? AND user_id = ?", [$device_info, $session_id, $user_id]);
         }
         header('Location: /user/sessions');

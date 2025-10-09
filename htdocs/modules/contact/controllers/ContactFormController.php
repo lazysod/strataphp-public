@@ -27,11 +27,13 @@ class ContactFormController
      */
     public function index()
     {
+        $config = include dirname(__DIR__, 3) . '/app/config.php';
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $page_title = 'Contact Us';
-        if (empty($_SESSION[PREFIX . 'csrf_token'])) {
-            $_SESSION[PREFIX . 'csrf_token'] = Token::generate(32);
+        if (empty($_SESSION[$sessionPrefix . 'csrf_token'])) {
+            $_SESSION[$sessionPrefix . 'csrf_token'] = Token::generate(32);
         }
-        $csrf_token = $_SESSION[PREFIX . 'csrf_token'];
+        $csrf_token = $_SESSION[$sessionPrefix . 'csrf_token'];
         include __DIR__ . '/../views/contact_form.php';
     }
     
@@ -45,11 +47,13 @@ class ContactFormController
      */
     public function submit()
     {
+        $config = include dirname(__DIR__, 3) . '/app/config.php';
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $page_title = 'Contact Us';
         $success = false;
         $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $tokenValid = isset($_POST['csrf_token']) && isset($_SESSION[PREFIX . 'csrf_token']) && hash_equals($_SESSION[PREFIX . 'csrf_token'], $_POST['csrf_token']);
+            $tokenValid = isset($_POST['csrf_token']) && isset($_SESSION[$sessionPrefix . 'csrf_token']) && hash_equals($_SESSION[$sessionPrefix . 'csrf_token'], $_POST['csrf_token']);
             if (!$tokenValid) {
                 $error = 'Invalid CSRF token.';
             } else {

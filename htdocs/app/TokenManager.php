@@ -16,8 +16,9 @@ class TokenManager
 
     public function renew()
     {
-        if (!empty($_SESSION[PREFIX . 'token'])) {
-            unset($_SESSION[PREFIX . 'token']);
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        if (!empty($_SESSION[$sessionPrefix . 'token'])) {
+            unset($_SESSION[$sessionPrefix . 'token']);
             if ($this->logger) {
                 $this->logger->info('Token renewed', ['user_ip' => $_SERVER['REMOTE_ADDR'] ?? null]);
             }
@@ -27,7 +28,8 @@ class TokenManager
 
     public function generate()
     {
-        if (empty($_SESSION[PREFIX . 'token'])) {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        if (empty($_SESSION[$sessionPrefix . 'token'])) {
             if (function_exists('random_bytes')) {
                 $token_id = bin2hex(random_bytes(32));
             } else {
@@ -38,9 +40,9 @@ class TokenManager
                 'token_expire' => date('Y-m-d H:i:s', time() + $expiry),
                 'token_id' => $token_id,
             ];
-            $_SESSION[PREFIX . 'token'] = $token_array;
+            $_SESSION[$sessionPrefix . 'token'] = $token_array;
         }
-        return $_SESSION[PREFIX . 'token']['token_id'] ?? null;
+        return $_SESSION[$sessionPrefix . 'token']['token_id'] ?? null;
     }
 
     /**
@@ -48,11 +50,12 @@ class TokenManager
      */
     public static function csrf($config = null)
     {
-        if (empty($_SESSION[PREFIX . 'token']['token_id'])) {
+        $sessionPrefix = ($config ?? [])['session_prefix'] ?? 'app_';
+        if (empty($_SESSION[$sessionPrefix . 'token']['token_id'])) {
             $tm = new self($config);
             $tm->generate();
         }
-        return $_SESSION[PREFIX . 'token']['token_id'] ?? '';
+        return $_SESSION[$sessionPrefix . 'token']['token_id'] ?? '';
     }
 
     /**
@@ -66,11 +69,12 @@ class TokenManager
      */
     public function verify($token)
     {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
         $success = false;
-        if (isset($_SESSION[PREFIX . 'token']['token_id'], $_SESSION[PREFIX . 'token']['token_expire']) 
-            && strtotime($_SESSION[PREFIX . 'token']['token_expire']) > time()
+        if (isset($_SESSION[$sessionPrefix . 'token']['token_id'], $_SESSION[$sessionPrefix . 'token']['token_expire']) 
+            && strtotime($_SESSION[$sessionPrefix . 'token']['token_expire']) > time()
         ) {
-            if (hash_equals($_SESSION[PREFIX . 'token']['token_id'], $token)) {
+            if (hash_equals($_SESSION[$sessionPrefix . 'token']['token_id'], $token)) {
                 $success = true;
                 if ($this->logger) {
                     $this->logger->info('Token verified', ['user_ip' => $_SERVER['REMOTE_ADDR'] ?? null]);
@@ -78,7 +82,7 @@ class TokenManager
                 return [
                     'status' => 'success',
                     'token' => $token,
-                    'session_token' => $_SESSION[PREFIX . 'token']['token_id']
+                    'session_token' => $_SESSION[$sessionPrefix . 'token']['token_id']
                 ];
             }
         }
@@ -87,14 +91,14 @@ class TokenManager
                 'Token verification failed', [
                 'user_ip' => $_SERVER['REMOTE_ADDR'] ?? null,
                 'provided_token' => $token,
-                'session_token' => $_SESSION[PREFIX . 'token']['token_id'] ?? null
+                'session_token' => $_SESSION[$sessionPrefix . 'token']['token_id'] ?? null
                 ]
             );
         }
         return [
             'status' => 'fail',
             'token' => $token,
-            'session_token' => $_SESSION[PREFIX . 'token']['token_id'] ?? null
+            'session_token' => $_SESSION[$sessionPrefix . 'token']['token_id'] ?? null
         ];
     }
 
@@ -111,7 +115,8 @@ class TokenManager
             - True = token is ok 
             - false token not set or expired
         */
-        if (isset($_SESSION[PREFIX . 'token']['token_expire'])) {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        if (isset($_SESSION[$sessionPrefix . 'token']['token_expire'])) {
             $this->generate();
         }
     }

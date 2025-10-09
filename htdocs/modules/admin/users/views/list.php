@@ -1,5 +1,7 @@
 <?php
-if (empty($_SESSION[PREFIX . 'admin'])) {
+$config = include dirname(__DIR__, 4) . '/app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin');
     exit;
 }

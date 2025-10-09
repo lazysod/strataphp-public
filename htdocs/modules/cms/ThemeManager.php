@@ -420,11 +420,13 @@ h1, h2, h3, h4, h5, h6 {
             
             // Add user management links if user module is enabled
             if (!empty($config['modules']['user'])) {
-                // Check if user is logged in
+                // Check if user is logged in (using proper session prefix)
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
                 }
-                $isLoggedIn = !empty($_SESSION['user_id']);
+                
+                $sessionPrefix = $config['session_prefix'] ?? 'app_';
+                $isLoggedIn = !empty($_SESSION[$sessionPrefix . 'user_id']);
                 
                 if ($isLoggedIn) {
                     $navigation[] = [

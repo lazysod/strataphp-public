@@ -2,6 +2,8 @@
 $controllersDir = __DIR__ . '/../../controllers/';
 $controllerFiles = glob($controllersDir . '*Controller.php');
 $navConfig = include __DIR__ . '/../../app/navConfig.php';
+$config = include __DIR__ . '/../../app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,19 +86,19 @@ $navConfig = include __DIR__ . '/../../app/navConfig.php';
                             }
                             ?>
                             <?php if (!empty(App::config('modules')['user'])) : ?>
-                                <?php if (!empty($_SESSION[PREFIX . 'user_id'])) : ?>
+                                <?php if (!empty($_SESSION[$sessionPrefix . 'user_id'])) : ?>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[PREFIX . 'first_name'] ?? 'User'); ?>
+                                        <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[$sessionPrefix . 'first_name'] ?? 'User'); ?>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        <?php if(isset($_SESSION[PREFIX . 'admin']) && $_SESSION[PREFIX . 'admin'] > 0 ) : ?>
+                                        <?php if(isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0 ) : ?>
                                         <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
                                         <?php endif; ?>
                                         <?php if (!empty(App::config('modules')['user'])) : ?>
                                         <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
                                         <li><a class="dropdown-item" href="/user/sessions">Device & Sessions</a></li>
-                                        <?php elseif (isset($_SESSION[PREFIX . 'admin']) && $_SESSION[PREFIX . 'admin'] > 0) : ?>
+                                        <?php elseif (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) : ?>
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
                                         <?php endif; ?>
                                         <li><a class="dropdown-item" href="/logout.php">Logout</a></li>

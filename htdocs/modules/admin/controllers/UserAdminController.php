@@ -204,15 +204,16 @@ class UserAdminController
     public function delete($id)
     {
         try {
+            global $config;
+            $sessionPrefix = $config['session_prefix'] ?? 'app_';
             // Prevent user from deleting themselves
-            $currentUserId = $_SESSION[PREFIX . 'admin']['id'] ?? null;
+            $currentUserId = $_SESSION[$sessionPrefix . 'admin']['id'] ?? null;
             if ($currentUserId && $currentUserId == $id) {
                 // Optionally set a flash message or error
                 $_SESSION['error'] = 'You cannot delete your own account.';
                 header('Location: /admin/users');
                 exit;
             }
-            global $config;
             $db = new DB($config);
             $userModel = new User($db, $config);
             $userModel->deleteUser($id);

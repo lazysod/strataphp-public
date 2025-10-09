@@ -167,13 +167,15 @@ The module provides comprehensive authentication:
 
 ```php
 // Check if user is logged in
-if (isset($_SESSION[PREFIX . 'user_id'])) {
+$config = include __DIR__ . '/../../app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (isset($_SESSION[$sessionPrefix . 'user_id'])) {
     // User is authenticated
 }
 
 // Login user
-$_SESSION[PREFIX . 'user_id'] = $user['id'];
-$_SESSION[PREFIX . 'username'] = $user['username'];
+$_SESSION[$sessionPrefix . 'user_id'] = $user['id'];
+$_SESSION[$sessionPrefix . 'username'] = $user['username'];
 ```
 
 ### Session Management

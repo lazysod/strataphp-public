@@ -152,6 +152,7 @@ define('APP_VERSION', '0.1.0');
 // define('BASE_URL', '/htdocs/');
 
 // Auto-generate a CSRF token for every user session
-if (empty($_SESSION[PREFIX . 'csrf_token'])) {
-    $_SESSION[PREFIX . 'csrf_token'] = Token::generate();
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (empty($_SESSION[$sessionPrefix . 'csrf_token'])) {
+    $_SESSION[$sessionPrefix . 'csrf_token'] = Token::generate();
 }

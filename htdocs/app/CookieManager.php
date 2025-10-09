@@ -23,7 +23,8 @@ class CookieManager extends User
             'expires' => date('m/d/Y', $expire_time)
         );
         setcookie(PREFIX . "login_cookie", json_encode($cookie_data), $expire_time, '/');
-        $user_id = $_SESSION[PREFIX . 'user_id'];
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        $user_id = $_SESSION[$sessionPrefix . 'user_id'];
         $expire_date = date('Y-m-d', $expire_time);
         $today = date('Y-m-d');
         $sql = "INSERT INTO `cookie_login`(`id`, `user_id`, `cookie_hash`, `date_added`, `expiry_date`) VALUES (NULL, ?, ?, ?, ?)";
@@ -76,20 +77,21 @@ class CookieManager extends User
                 'message' => 'Unable to login, please try later or contact support.'
             ];
         } else {
+            $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
             foreach ($rows as $row) {
                 $email = $row['email'];
                 $name = $row['username'];
                 $hash = sha1($this->config['salt'] . rand(1, 1000) . date("Y-m-d H:i:s"));
 
-                $_SESSION[PREFIX . 'user_id'] = $row['id'];
+                $_SESSION[$sessionPrefix . 'user_id'] = $row['id'];
 
                 $now = date('Y-m-d H:i:s');
                 $sql3 = "UPDATE users SET last_access = ? WHERE email = ?";
                 $this->db->query($sql3, [$now, $email]);
-                $_SESSION[PREFIX . 'email'] = $row['email'];
-                $_SESSION[PREFIX . 'sec_hash'] = $hash;
-                $_SESSION[PREFIX . 'username'] = $name;
-                $_SESSION[PREFIX . 'verified'] = 1;
+                $_SESSION[$sessionPrefix . 'email'] = $row['email'];
+                $_SESSION[$sessionPrefix . 'sec_hash'] = $hash;
+                $_SESSION[$sessionPrefix . 'username'] = $name;
+                $_SESSION[$sessionPrefix . 'verified'] = 1;
             }
             return [
                 'status' => 'success',

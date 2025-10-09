@@ -28,7 +28,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             </thead>
             <tbody>
                 <?php foreach ($sessions as $session): ?>
-                    <?php $isCurrent = ($session['id'] ?? null) == ($_SESSION[PREFIX . 'session_id'] ?? null); ?>
+                    <?php $isCurrent = ($session['id'] ?? null) == ($_SESSION[$sessionPrefix . 'session_id'] ?? null); ?>
                     <tr<?= $isCurrent ? ' style="background:#e0ffe0;font-weight:bold;"' : '' ?>>
                         <td>
                             <?php

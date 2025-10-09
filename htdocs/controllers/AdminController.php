@@ -8,20 +8,21 @@ class AdminController
 {
     public function profile()
     {
+        $config = include dirname(__DIR__) . '/app/config.php';
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $showNav = true;
-        $admin = $_SESSION[PREFIX . 'user'] ?? null;
+        $admin = $_SESSION[$sessionPrefix . 'user'] ?? null;
         $success = '';
         $error = '';
         if (!$admin || empty($admin['is_admin'])) {
             header('Location: /admin/login');
             exit;
         }
-        $config = include dirname(__DIR__) . '/app/config.php';
-        $userId = $_SESSION[PREFIX . 'user_id'];
+        $userId = $_SESSION[$sessionPrefix . 'user_id'];
     $db = new DB($config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // CSRF check
-            $csrfValid = isset($_POST['csrf_token']) && isset($_SESSION[PREFIX . 'csrf_token']) && hash_equals($_SESSION[PREFIX . 'csrf_token'], $_POST['csrf_token']);
+            $csrfValid = isset($_POST['csrf_token']) && isset($_SESSION[$sessionPrefix . 'csrf_token']) && hash_equals($_SESSION[$sessionPrefix . 'csrf_token'], $_POST['csrf_token']);
             if (!$csrfValid) {
                 $error = 'Invalid CSRF token.';
             } else {
@@ -50,9 +51,9 @@ class AdminController
                     $sql = "SELECT * FROM users WHERE id = ?";
                     $rows = $db->fetchAll($sql, [$userId]);
                     $user = $rows[0] ?? [];
-                    $_SESSION[PREFIX . 'user']['first_name'] = $user['first_name'] ?? '';
-                    $_SESSION[PREFIX . 'user']['second_name'] = $user['second_name'] ?? '';
-                    $_SESSION[PREFIX . 'user']['email'] = $user['email'] ?? '';
+                    $_SESSION[$sessionPrefix . 'user']['first_name'] = $user['first_name'] ?? '';
+                    $_SESSION[$sessionPrefix . 'user']['second_name'] = $user['second_name'] ?? '';
+                    $_SESSION[$sessionPrefix . 'user']['email'] = $user['email'] ?? '';
                     $success = 'Profile updated successfully.';
                 }
             }

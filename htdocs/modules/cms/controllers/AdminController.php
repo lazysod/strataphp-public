@@ -127,7 +127,9 @@ class AdminController
                 'canonical_url' => $_POST['canonical_url'] ?? '',
                 'noindex' => isset($_POST['noindex']) ? 1 : 0,
                 'status' => $_POST['status'] ?? 'draft',
-                'template' => $_POST['template'] ?? 'default'
+                'template' => $_POST['template'] ?? 'default',
+                'menu_order' => $_POST['menu_order'] ?? 0,
+                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1
             ];
             
             // Validate required fields
@@ -199,7 +201,7 @@ class AdminController
                 'status' => $_POST['status'] ?? 'draft',
                 'template' => $_POST['template'] ?? 'default',
                 'menu_order' => $_POST['menu_order'] ?? 0,
-                'author_id' => $_SESSION['user_id'] ?? 1
+                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1
             ];
             
             // Validate required fields

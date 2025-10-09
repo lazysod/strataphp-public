@@ -30,7 +30,9 @@ class UserProfileController
                 header('Location: /');
                 exit;
             }
-        if (empty($_SESSION[PREFIX . 'user_id'])) {
+            
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
             header('Location: /user/login');
             exit;
         }
@@ -38,7 +40,7 @@ class UserProfileController
         $success = '';
         $db = new DB($config);
         $userModel = new User($db, $config);
-        $userId = $_SESSION[PREFIX . 'user_id'];
+        $userId = $_SESSION[$sessionPrefix . 'user_id'];
         // Fetch current user info
         $sql = "SELECT * FROM users WHERE id = ?";
         $rows = $db->fetchAll($sql, [$userId]);

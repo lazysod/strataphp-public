@@ -4,6 +4,7 @@ use App\TokenManager;
 use App\DB;
 use App\User;
 use App\Token;
+use App\Modules\User\Helpers\CmsHelper;
 
 // Refactored as a class for router compatibility
 /**
@@ -29,10 +30,10 @@ class UserRegisterController
             $config = include dirname(__DIR__, 3) . '/app/config.php';
             
             // Check if user is already logged in
-            $prefix = $config['session_prefix'] ?? 'app_';
-            if (isset($_SESSION[$prefix . 'user_id'])) {
+            $sessionPrefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$sessionPrefix . 'user_id'])) {
                 // Use CmsHelper for smart redirect based on CMS availability
-                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $isAdmin = isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0;
                 $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
                 header('Location: ' . $redirect);
                 exit;
@@ -55,8 +56,12 @@ class UserRegisterController
         }
         $error = '';
         $success = '';
+        
+        // Generate CSRF token for the form
+        $tm = new TokenManager();
+        $token = $tm->generate();
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $tm = new TokenManager();
             $result = $tm->verify($_POST['token'] ?? '');
             if ($result['status'] !== 'success') {
                 $error = 'Invalid CSRF token. Please refresh and try again.';
@@ -92,7 +97,11 @@ class UserRegisterController
             error_log('User registration error: ' . $e->getMessage());
             $error = 'An unexpected error occurred during registration. Please try again.';
             $success = '';
-            $token = '';
+            
+            // Generate token for the form even in error case
+            $tm = new TokenManager();
+            $token = $tm->generate();
+            
             // Use CMS-themed registration page
             $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
             if (file_exists($cmsRegisterView)) {
