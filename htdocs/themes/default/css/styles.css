@@ -10,6 +10,40 @@
  * Copyright 2011-2022 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+/* Ensure floated images are inline and text wraps */
+img.float-start,
+img.float-end {
+  display: inline !important;
+  vertical-align: top;
+}
+img.float-start {
+  margin: 0 1.5rem 1rem 0 !important;
+}
+img.float-end {
+  margin: 0 0 1rem 1.5rem !important;
+}
+/* Ensure image wrapper does not break float/text wrapping */
+.editor-image-wrapper {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.text-start {
+  text-align: left !important;
+}
+
+.text-end {
+  text-align: right !important;
+}
+
+
+
+ /* Fallback for Bootstrap float and utility classes (for CMS images) */
+.float-start { float: left !important; }
+.float-end { float: right !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.d-block { display: block !important; }
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;

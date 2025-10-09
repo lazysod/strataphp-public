@@ -1,3 +1,4 @@
+<!-- CMS TEMPLATE: page.php -->
 <?php
 // CMS Page Template
 if (!defined('STRPHP_ROOT')) {
@@ -52,6 +53,11 @@ if (!defined('STRPHP_ROOT')) {
     <?php endif; ?>
     
     <style>
+    /* Bootstrap float utility fallbacks for CMS images */
+    .float-start { float: left !important; margin-right: 1.5rem !important; }
+    .float-end { float: right !important; margin-left: 1.5rem !important; }
+    .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+    .d-block { display: block !important; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             line-height: 1.6;
@@ -93,9 +99,14 @@ if (!defined('STRPHP_ROOT')) {
             padding: 0.5em 0 0.5em 1em;
             background: #f8f9fa;
         }
+        .float-start { float: left !important; margin-right: 1.5rem !important; }
+.float-end { float: right !important; margin-left: 1.5rem !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.d-block { display: block !important; }
     </style>
 </head>
 <body>
+    213098712908361290837129083712098371209837109238712098371209837
     <main class="page-content">
         <?php
         // Process content to handle line breaks and paragraphs properly

@@ -23,7 +23,14 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title><?= htmlspecialchars($pageTitle) ?> - v<?= time() ?></title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+    /* Fallback for Bootstrap float and utility classes */
+    .float-start { float: left !important; }
+    .float-end { float: right !important; }
+    .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+    .d-block { display: block !important; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             margin: 0;
@@ -410,11 +417,86 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             text-decoration: underline;
         }
         
+        /* Drag and drop visual feedback */
+        .rich-editor-content.drag-over {
+            border: 2px dashed #007bff !important;
+            background-color: #f8f9fa !important;
+            position: relative;
+        }
+
+        .rich-editor-content.drag-over::after {
+            content: "📷 Drop images here to upload";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 123, 255, 0.95);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
         .source-textarea {
             resize: vertical;
             background: #f8f9fa;
             color: #333;
             border: none !important;
+        }
+
+        .editor-image-wrapper.selected {
+            outline: 3px solid #3498db !important;
+            box-shadow: 0 0 0 4px rgba(52,152,219,0.15);
+            position: relative;
+        }
+        .resize-handle {
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .resize-handle:hover {
+            background: #217dbb;
+        }
+        .editor-image-wrapper {
+            max-width: 100%;
+            box-sizing: border-box;
+            clear: both;
+            transition: outline 0.2s, box-shadow 0.2s;
+        }
+        .editor-image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        /* Floating image toolbar */
+        #image-float-toolbar {
+            position: absolute;
+            display: none;
+            z-index: 9999;
+            background: #fff;
+            border: 1px solid #3498db;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(52,152,219,0.15);
+            padding: 4px 8px;
+            gap: 4px;
+            align-items: center;
+            transition: opacity 0.15s;
+            font-size: 15px;
+            user-select: none;
+        }
+        #image-float-toolbar .img-toolbar-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+        #image-float-toolbar .img-toolbar-btn:hover {
+            color: #3498db;
         }
     </style>
 </head>
@@ -695,6 +777,82 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
         console.log('=== PAGE FORM DEBUG ===');
         console.log('Page loaded at:', new Date());
         
+        // Alignment logic for selected image
+        function alignSelectedImage(alignment) {
+            if (!window.richEditor) return;
+            let selected = document.querySelector('.editor-image-wrapper.selected');
+            if (!selected) return;
+            const img = selected.querySelector('img');
+            if (!img) return;
+            // Remove all Bootstrap alignment classes and reset display
+            img.classList.remove('float-start', 'float-end', 'mx-auto', 'd-block');
+            selected.classList.remove('text-center', 'text-start', 'text-end');
+            // For left/right, REMOVE wrapper and float the image directly
+            if (alignment === 'left' || alignment === 'right') {
+                // If image is wrapped, unwrap it
+                if (selected && selected.classList.contains('editor-image-wrapper')) {
+                    selected.replaceWith(img);
+                }
+                // Remove all float/alignment classes from image
+                img.classList.remove('float-start', 'float-end', 'mx-auto', 'd-block');
+                // Apply float class
+                if (alignment === 'left') {
+                    img.classList.add('float-start');
+                } else {
+                    img.classList.add('float-end');
+                }
+                // Place image directly in the parent element (no wrapper)
+                // No wrapper for left/right
+            } else if (alignment === 'center') {
+                if (selected.tagName !== 'DIV') {
+                    const div = document.createElement('div');
+                    div.className = selected.className;
+                    div.classList.add('editor-image-wrapper');
+                    div.contentEditable = 'false';
+                    div.appendChild(img);
+                    selected.replaceWith(div);
+                    selected = div;
+                }
+                selected.style.display = 'block';
+            } else {
+                // For inline, use span
+                if (selected.tagName !== 'SPAN') {
+                    const span = document.createElement('span');
+                    span.className = selected.className;
+                    span.classList.add('editor-image-wrapper');
+                    span.contentEditable = 'false';
+                    span.appendChild(img);
+                    selected.replaceWith(span);
+                    selected = span;
+                }
+                selected.style.display = '';
+            }
+            // Remove all float and alignment classes from image
+            img.classList.remove('float-start', 'float-end', 'mx-auto', 'd-block');
+            // Apply new alignment
+            switch (alignment) {
+                case 'left':
+                    selected.classList.remove('text-center', 'text-end');
+                    selected.classList.add('text-start');
+                    img.classList.add('float-start');
+                    break;
+                case 'center':
+                    selected.classList.remove('text-start', 'text-end');
+                    selected.classList.add('text-center');
+                    img.classList.add('mx-auto', 'd-block');
+                    break;
+                case 'right':
+                    selected.classList.remove('text-center', 'text-start');
+                    selected.classList.add('text-end');
+                    img.classList.add('float-end');
+                    break;
+                default:
+                    // inline, no extra classes
+                    break;
+            }
+            window.richEditor.textarea.value = window.richEditor.element.innerHTML;
+        }
+
         // Simple Rich Text Editor Implementation
         function initializeRichTextEditor() {
             const textarea = document.getElementById('content');
@@ -710,20 +868,41 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             // Create toolbar
             const toolbar = document.createElement('div');
             toolbar.className = 'rich-editor-toolbar';
-            toolbar.innerHTML = `
-                <button type="button" onclick="execCmd('bold')" title="Bold"><b>B</b></button>
-                <button type="button" onclick="execCmd('italic')" title="Italic"><i>I</i></button>
-                <button type="button" onclick="execCmd('underline')" title="Underline"><u>U</u></button>
-                <button type="button" onclick="execCmd('formatBlock', 'h2')" title="Heading 2">H2</button>
-                <button type="button" onclick="execCmd('formatBlock', 'h3')" title="Heading 3">H3</button>
-                <button type="button" onclick="execCmd('formatBlock', 'p')" title="Paragraph">P</button>
-                <button type="button" onclick="execCmd('insertUnorderedList')" title="Bullet List">• List</button>
-                <button type="button" onclick="execCmd('insertOrderedList')" title="Numbered List">1. List</button>
-                <button type="button" onclick="execCmd('createLink')" title="Link">🔗</button>
-                <button type="button" onclick="insertImage()" title="Insert Image">📷</button>
-                <button type="button" onclick="execCmd('removeFormat')" title="Clear Format">Clear</button>
-                <button type="button" onclick="toggleSource()" title="HTML Source">&lt;&gt;</button>
+            
+            // Replace toolbar.innerHTML assignment and add event listeners for alignment
+            const toolbarHtml = `
+                <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+                <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+                <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+                <button type="button" data-cmd="formatBlock" data-value="h2" title="Heading 2">H2</button>
+                <button type="button" data-cmd="formatBlock" data-value="h3" title="Heading 3">H3</button>
+                <button type="button" data-cmd="formatBlock" data-value="p" title="Paragraph">P</button>
+                <button type="button" data-cmd="insertUnorderedList" title="Bullet List">• List</button>
+                <button type="button" data-cmd="insertOrderedList" title="Numbered List">1. List</button>
+                <button type="button" data-cmd="createLink" title="Link">🔗</button>
+                <button type="button" id="insertImageBtn" title="Insert Image">📷</button>
+                <button type="button" id="alignLeftBtn" title="Align Left">⬅️</button>
+                <button type="button" id="alignCenterBtn" title="Align Center">↔️</button>
+                <button type="button" id="alignRightBtn" title="Align Right">➡️</button>
+                <button type="button" data-cmd="removeFormat" title="Clear Format">Clear</button>
+                <button type="button" id="toggleSourceBtn" title="HTML Source">&lt;&gt;</button>
             `;
+            toolbar.innerHTML = toolbarHtml;
+
+            // Add event listeners for toolbar buttons
+            Array.from(toolbar.querySelectorAll('button[data-cmd]')).forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const cmd = btn.getAttribute('data-cmd');
+                    const value = btn.getAttribute('data-value') || null;
+                    execCmd(cmd, value);
+                });
+            });
+
+            toolbar.querySelector('#insertImageBtn').addEventListener('click', insertImage);
+            toolbar.querySelector('#alignLeftBtn').addEventListener('click', function() { alignSelectedImage('left'); });
+            toolbar.querySelector('#alignCenterBtn').addEventListener('click', function() { alignSelectedImage('center'); });
+            toolbar.querySelector('#alignRightBtn').addEventListener('click', function() { alignSelectedImage('right'); });
+            toolbar.querySelector('#toggleSourceBtn').addEventListener('click', toggleSource);
             
             // Create editor div (instead of iframe)
             const editor = document.createElement('div');
@@ -768,6 +947,62 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 const text = e.clipboardData.getData('text/plain');
                 document.execCommand('insertText', false, text);
                 textarea.value = editor.innerHTML;
+            });
+
+            // Add drag and drop functionality
+            editor.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                editor.classList.add('drag-over');
+            });
+
+            editor.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                editor.classList.remove('drag-over');
+            });
+
+            editor.addEventListener('drop', function(e) {
+                e.preventDefault();
+                editor.classList.remove('drag-over');
+                
+                const files = Array.from(e.dataTransfer.files);
+                const imageFiles = files.filter(file => file.type.startsWith('image/'));
+                
+                if (imageFiles.length === 0) {
+                    alert('Please drop image files only.');
+                    return;
+                }
+                
+                // Save current position for insertion
+                const range = document.createRange();
+                const selection = window.getSelection();
+                
+                // Try to get the position where the drop occurred
+                if (document.caretPositionFromPoint) {
+                    const caretPos = document.caretPositionFromPoint(e.clientX, e.clientY);
+                    if (caretPos) {
+                        range.setStart(caretPos.offsetNode, caretPos.offset);
+                        range.collapse(true);
+                    }
+                } else if (document.caretRangeFromPoint) {
+                    const caretRange = document.caretRangeFromPoint(e.clientX, e.clientY);
+                    if (caretRange) {
+                        range.setStart(caretRange.startContainer, caretRange.startOffset);
+                        range.collapse(true);
+                    }
+                }
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                // Upload each image
+                imageFiles.forEach(file => {
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                        return;
+                    }
+                    uploadImageForEditor(file, range);
+                });
             });
             
             // Store reference for later use
@@ -864,42 +1099,62 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             
             fetch('/admin/cms/upload/image', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Create image element
-                    const img = document.createElement('img');
-                    img.src = data.url;
-                    img.alt = 'Uploaded image';
-                    img.style.maxWidth = '100%';
-                    img.style.height = 'auto';
-                    
-                    // Replace loading text with image
-                    if (range) {
+            .then(async response => {
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        // Create image wrapper as inline span by default
+                        const imageWrapper = document.createElement('span');
+                        imageWrapper.className = 'editor-image-wrapper';
+                        imageWrapper.contentEditable = 'false';
+                        // Create image element with Bootstrap classes
+                        const img = document.createElement('img');
+                        img.src = data.url;
+                        img.alt = 'Uploaded image';
+                        img.className = 'editor-image img-fluid';
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                        // Add click handler for selection
+                        img.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            selectImage(imageWrapper);
+                        });
+                        imageWrapper.appendChild(img);
+                        // Replace loading text with image
+                        if (range) {
+                            const loadingSpan = window.richEditor.element.querySelector('span');
+                            if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
+                                loadingSpan.replaceWith(imageWrapper);
+                            } else {
+                                // Fallback: append to end
+                                window.richEditor.element.appendChild(imageWrapper);
+                            }
+                        } else {
+                            window.richEditor.element.appendChild(imageWrapper);
+                        }
+                        // Update textarea
+                        window.richEditor.textarea.value = window.richEditor.element.innerHTML;
+                        console.log('Image inserted successfully:', data);
+                    } else {
+                        // Remove loading text
                         const loadingSpan = window.richEditor.element.querySelector('span');
                         if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
-                            loadingSpan.replaceWith(img);
-                        } else {
-                            // Fallback: append to end
-                            window.richEditor.element.appendChild(img);
+                            loadingSpan.remove();
                         }
-                    } else {
-                        window.richEditor.element.appendChild(img);
+                        alert('Upload failed: ' + data.error);
                     }
-                    
-                    // Update textarea
-                    window.richEditor.textarea.value = window.richEditor.element.innerHTML;
-                    
-                    console.log('Image inserted successfully:', data);
-                } else {
+                } catch (e) {
                     // Remove loading text
                     const loadingSpan = window.richEditor.element.querySelector('span');
                     if (loadingSpan && loadingSpan.textContent === 'Uploading image...') {
                         loadingSpan.remove();
                     }
-                    alert('Upload failed: ' + data.error);
+                    alert('Upload failed: Server returned non-JSON response. See console for details.');
+                    console.error('Upload response (not JSON):', text);
                 }
             })
             .catch(error => {
@@ -1124,7 +1379,8 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             
             fetch('/admin/cms/upload/image', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             })
             .then(response => {
                 return response.text();
@@ -1161,6 +1417,189 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             document.getElementById('og_image_preview').innerHTML = '';
             document.getElementById('og_image_file').value = '';
         }
+
+        // Fallback: define addResizeHandles if not present
+        if (typeof addResizeHandles !== 'function') {
+            function addResizeHandles(wrapper, img) {
+                // No-op fallback to prevent errors
+                console.log('[DEBUG] addResizeHandles fallback called');
+            }
+        }
+
+        // Fallback: define startImageResize if not present
+        if (typeof startImageResize !== 'function') {
+            function startImageResize(e, wrapper, img, handle) {
+                // No-op fallback to prevent errors
+                console.log('[DEBUG] startImageResize fallback called');
+            }
+        }
+
+        // Expose functions to window for toolbar and image handlers
+        window.execCmd = execCmd;
+        window.insertImage = insertImage;
+        window.alignSelectedImage = alignSelectedImage;
+        window.addResizeHandles = addResizeHandles;
+        window.startImageResize = startImageResize;
+        window.selectImage = selectImage;
+
+        // Ensure selectImage is always called on image click (delegated)
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.querySelector('.rich-editor-content');
+            if (editor) {
+                editor.addEventListener('click', function(e) {
+                    if (e.target && e.target.tagName === 'IMG' && e.target.classList.contains('editor-image')) {
+                        const wrapper = e.target.closest('.editor-image-wrapper');
+                        if (wrapper) selectImage(wrapper);
+                    }
+                });
+            }
+        });
+
+        // Floating image toolbar
+        (function() {
+            const toolbar = document.createElement('div');
+            toolbar.id = 'image-float-toolbar';
+            toolbar.style.position = 'absolute';
+            toolbar.style.display = 'none';
+            toolbar.style.zIndex = '9999';
+            toolbar.style.background = '#fff';
+            toolbar.style.border = '1px solid #3498db';
+            toolbar.style.borderRadius = '6px';
+            toolbar.style.boxShadow = '0 2px 8px rgba(52,152,219,0.15)';
+            toolbar.style.padding = '4px 8px';
+            toolbar.style.gap = '4px';
+            toolbar.style.alignItems = 'center';
+            toolbar.style.transition = 'opacity 0.15s';
+            toolbar.style.fontSize = '15px';
+            toolbar.style.userSelect = 'none';
+            toolbar.innerHTML = `
+                <button type="button" class="img-toolbar-btn" data-action="left" title="Align Left">⬅️</button>
+                <button type="button" class="img-toolbar-btn" data-action="center" title="Align Center">↔️</button>
+                <button type="button" class="img-toolbar-btn" data-action="right" title="Align Right">➡️</button>
+                <button type="button" class="img-toolbar-btn" data-action="alt" title="Edit Alt Text">📝</button>
+                <button type="button" class="img-toolbar-btn" data-action="delete" title="Remove Image">🗑️</button>
+            `;
+            document.body.appendChild(toolbar);
+
+            // Toolbar button actions
+            toolbar.addEventListener('click', function(e) {
+                if (!window._selectedImageWrapper) return;
+                const action = e.target.getAttribute('data-action');
+                if (!action) return;
+                if (action === 'left' || action === 'center' || action === 'right') {
+                    alignSelectedImage(action);
+                } else if (action === 'alt') {
+                    const img = window._selectedImageWrapper.querySelector('img');
+                    if (img) {
+                        const newAlt = prompt('Alt text for image:', img.alt || '');
+                        if (newAlt !== null) img.alt = newAlt;
+                    }
+                } else if (action === 'delete') {
+                    window._selectedImageWrapper.remove();
+                    toolbar.style.display = 'none';
+                    window._selectedImageWrapper = null;
+                    window.richEditor.textarea.value = window.richEditor.element.innerHTML;
+                }
+                window.richEditor.textarea.value = window.richEditor.element.innerHTML;
+            });
+
+            // Hide toolbar on click outside
+            document.addEventListener('mousedown', function(e) {
+                if (!toolbar.contains(e.target) && (!window._selectedImageWrapper || !window._selectedImageWrapper.contains(e.target))) {
+                    toolbar.style.display = 'none';
+                    if (window._selectedImageWrapper) window._selectedImageWrapper.classList.remove('selected');
+                    window._selectedImageWrapper = null;
+                }
+            });
+
+            // Position toolbar above selected image (with debug and fallback)
+            window.showImageToolbar = function(wrapper) {
+                const toolbar = document.getElementById('image-float-toolbar');
+                const rect = wrapper.getBoundingClientRect();
+                const editor = document.querySelector('.rich-editor-content');
+                const editorRect = editor ? editor.getBoundingClientRect() : {left:0,top:0,width:window.innerWidth};
+                let left = rect.left + window.scrollX;
+                let top = rect.top + window.scrollY - toolbar.offsetHeight - 8;
+                // Clamp toolbar within editor horizontally
+                if (left < editorRect.left + window.scrollX) left = editorRect.left + window.scrollX + 8;
+                if (left + toolbar.offsetWidth > editorRect.left + window.scrollX + editorRect.width) left = editorRect.left + window.scrollX + editorRect.width - toolbar.offsetWidth - 8;
+                // Clamp toolbar to top of editor if needed
+                if (top < editorRect.top + window.scrollY) top = rect.bottom + window.scrollY + 8;
+                toolbar.style.left = left + 'px';
+                toolbar.style.top = top + 'px';
+                toolbar.style.display = 'flex';
+                toolbar.style.background = '#fff';
+                toolbar.style.border = '2px solid #e67e22';
+                toolbar.style.zIndex = '99999';
+                toolbar.style.opacity = '1';
+                toolbar.style.visibility = 'visible';
+                toolbar.style.boxShadow = '0 0 10px 2px #e67e22';
+                toolbar.style.pointerEvents = 'auto';
+                window._selectedImageWrapper = wrapper;
+            };
+        })();
+
+        // Enhance selectImage to show floating toolbar
+        function selectImage(wrapper) {
+            console.log('[DEBUG] selectImage called for wrapper:', wrapper);
+            // Deselect others
+            document.querySelectorAll('.editor-image-wrapper.selected').forEach(el => el.classList.remove('selected'));
+            wrapper.classList.add('selected');
+            // Show resize handles
+            const img = wrapper.querySelector('img');
+            if (img) addResizeHandles(wrapper, img);
+            // Show floating toolbar
+            if (window.showImageToolbar) window.showImageToolbar(wrapper);
+        }
+
+        // Ensure all images are wrapped in .editor-image-wrapper (on load and mutation)
+        function wrapAllEditorImages() {
+            const editor = document.querySelector('.rich-editor-content');
+            if (!editor) return;
+            editor.querySelectorAll('img').forEach(img => {
+                // Always add editor-image class
+                img.classList.add('editor-image');
+                if (!img.closest('.editor-image-wrapper')) {
+                    const wrapper = document.createElement('span');
+                    wrapper.className = 'editor-image-wrapper';
+                    wrapper.contentEditable = 'false';
+                    img.parentNode.insertBefore(wrapper, img);
+                    wrapper.appendChild(img);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.querySelector('.rich-editor-content');
+            if (editor) {
+                // Initial wrap
+                wrapAllEditorImages();
+                // Observe for DOM changes (e.g. paste, undo, etc)
+                const observer = new MutationObserver(() => {
+                    wrapAllEditorImages();
+                });
+                observer.observe(editor, { childList: true, subtree: true });
+                // Event delegation for image selection
+                editor.addEventListener('click', function(e) {
+                    if (e.button !== 0) return;
+                    let img = null;
+                    if (e.target.tagName === 'IMG' && e.target.classList.contains('editor-image')) {
+                        img = e.target;
+                    }
+                    if (img) {
+                        let wrapper = img.closest('.editor-image-wrapper');
+                        if (wrapper) {
+                            selectImage(wrapper);
+                        } else {
+                            // Fallback: select the image directly and show toolbar
+                            img.classList.add('selected');
+                            if (window.showImageToolbar) window.showImageToolbar(img);
+                        }
+                        e.stopPropagation();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

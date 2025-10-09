@@ -1,3 +1,4 @@
+<!-- CMS TEMPLATE: show.php -->
 <?php
 $title = $data['item']['title'] ?? 'Cms';
 $showNav = true;
@@ -5,6 +6,7 @@ require __DIR__ . '/../../../views/partials/header.php';
 ?>
 
 <section class="py-5">
+    asdhashdaslkdhasodphapsodhas
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-8">

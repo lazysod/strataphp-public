@@ -60,7 +60,28 @@ $meta = isset($theme) ? (new App\Modules\Cms\ThemeManager())->getPageMeta($page)
     <?php endif; ?>
     
     <!-- Theme Styles -->
-    <style>
+        <style>
+        /* Bootstrap float utility fallbacks for CMS images */
+        .float-start { float: left !important; margin-right: 1.5rem !important; }
+        .float-end { float: right !important; margin-left: 1.5rem !important; }
+        .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+        .d-block { display: block !important; }
+        img.float-start, img.float-end {
+            display: inline !important;
+            vertical-align: top;
+        }
+        img.float-start {
+            margin: 0 1.5rem 1rem 0 !important;
+        }
+        img.float-end {
+            margin: 0 0 1rem 1.5rem !important;
+        }
+        .editor-image-wrapper {
+            display: inline !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            vertical-align: top;
+        }
         <?= (new App\Modules\Cms\ThemeManager())->generateThemeCSS() ?>
         
         /* Enhanced Modern Theme */

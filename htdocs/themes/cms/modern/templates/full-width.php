@@ -86,10 +86,17 @@ $meta = isset($theme) ? (new App\Modules\Cms\ThemeManager())->getPageMeta($page)
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            margin: 40px auto;
-            display: block;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            /* Remove default centering and block display to allow float classes to work */
+            margin: 40px 0;
+            display: inline;
         }
+
+        /* Fallback for Bootstrap float/margin classes if Bootstrap is not loaded */
+        .float-start { float: left !important; margin-right: 1.5rem !important; }
+        .float-end { float: right !important; margin-left: 1.5rem !important; }
+        .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+        .d-block { display: block !important; }
         
         /* Responsive */
         @media (max-width: 768px) {
