@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2025-10-09
 
 ### 🎉 Enhanced Migration System (October 2025)
 
@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic format detection
   - Multi-step rollback capability (e.g., `php bin/rollback.php 3`)
   - Robust error handling for missing or invalid rollbacks
+- **Centralized Version Management** (`htdocs/app/Version.php`) - Professional version handling
+  - Reads version from `composer.json` as canonical source
+  - Removes version from user-editable config files
+  - Provides version comparison and semantic parsing utilities
+  - Automatic fallbacks when composer.json unavailable
 - **Complete Migration Documentation** (`docs/MIGRATION_SYSTEM_GUIDE.md`)
   - Comprehensive usage guide
   - Migration format examples
