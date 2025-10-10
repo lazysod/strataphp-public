@@ -36,9 +36,29 @@ class UserThemeWrapper
         $themeManager = new ThemeManager();
         $meta = $themeManager->getPageMeta($page);
         $navigation = $themeManager->getNavigationPages();
+        $themeConfig = $themeManager->getThemeConfig();
+        // Force site_name to be consistent for all CMS pages
+        $siteName = $themeConfig['site_name'] ?? $themeConfig['name'] ?? 'StrataPHP CMS';
+        $themeConfig['site_name'] = $siteName;
+        $theme = [
+            'config' => $themeConfig,
+            'styles' => $themeConfig['styles'],
+            'name' => $themeConfig['name'],
+            'assets_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets',
+            'css_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/css/style.css',
+            'js_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/js/main.js',
+        ];
 
-        // Include the theme template
-        include dirname(__DIR__, 2) . '/themes/cms/modern/templates/base.php';
+        // Make variables available in template scope
+        extract([
+            'theme' => $theme,
+            'navigation' => $navigation,
+            'meta' => $meta,
+            'page' => $page
+        ]);
+
+    // Include the correct CMS theme template
+    include __DIR__ . '/themes/modern/templates/default.php';
     }
     
     /**

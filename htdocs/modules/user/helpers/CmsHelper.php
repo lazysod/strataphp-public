@@ -20,7 +20,8 @@ class CmsHelper
     {
         try {
             $modules = App::config('modules');
-            return !empty($modules['cms']['enabled']);
+            $enabled = !empty($modules['cms']['enabled']);
+            return $enabled;
         } catch (\Exception $e) {
             return false;
         }
@@ -37,9 +38,9 @@ class CmsHelper
         if (!self::isCmsEnabled()) {
             return false;
         }
-        
         $fullPath = dirname(__DIR__, 2) . '/cms/views/' . $viewPath;
-        return file_exists($fullPath);
+        $exists = file_exists($fullPath);
+        return $exists;
     }
     
     /**
@@ -54,7 +55,6 @@ class CmsHelper
         if (self::isCmsViewAvailable($cmsViewPath)) {
             return dirname(__DIR__, 2) . '/cms/views/' . $cmsViewPath;
         }
-        
         // Return path relative to the calling controller
         return $defaultViewPath;
     }

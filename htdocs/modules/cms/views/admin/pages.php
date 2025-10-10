@@ -187,47 +187,62 @@ unset($_SESSION['success'], $_SESSION['error']);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($pages as $page): ?>
-                    <tr>
-                        <td>
-                            <strong><?= htmlspecialchars($page['title']) ?></strong>
-                            <?php if (!empty($page['excerpt'])): ?>
-                                <br><small style="color: #666;"><?= htmlspecialchars(substr($page['excerpt'], 0, 100)) ?><?= strlen($page['excerpt']) > 100 ? '...' : '' ?></small>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <code><?= htmlspecialchars($page['slug']) ?></code>
-                            <br><small><a href="/<?= htmlspecialchars($page['slug']) ?>" target="_blank" style="color: #3498db;">View →</a></small>
-                        </td>
-                        <td>
-                            <span class="status <?= $page['status'] ?>"><?= ucfirst($page['status']) ?></span>
-                        </td>
-                        <td>
-                            <?= $page['author_id'] ? 'User #' . $page['author_id'] : 'System' ?>
-                        </td>
-                        <td>
-                            <?= date('M j, Y', strtotime($page['created_at'])) ?>
-                            <br><small style="color: #666;"><?= date('g:i A', strtotime($page['created_at'])) ?></small>
-                        </td>
-                        <td style="text-align:center;">
-                            <?php if (!empty($page['is_home'])): ?>
-                                <span style="color: #27ae60; font-weight: bold;">Home</span>
-                            <?php else: ?>
-                                <form method="POST" action="/admin/cms/pages/<?= $page['id'] ?>/set-home" style="display:inline;">
-                                    <button type="submit" class="btn btn-small" onclick="return confirm('Set this page as the home page?')">Set as Home</button>
-                                </form>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <div class="actions">
-                                <a href="/admin/cms/pages/<?= $page['id'] ?>/edit" class="btn btn-small">Edit</a>
-                                <form method="POST" action="/admin/cms/pages/<?= $page['id'] ?>/delete" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this page? This action cannot be undone.')">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <?php
+                    // Build a tree from flat $pages array
+                    $pageTree = [];
+                    $pageIndex = [];
+                    foreach ($pages as $p) {
+                        $p['children'] = [];
+                        $pageIndex[$p['id']] = $p;
+                    }
+                    foreach ($pageIndex as $id => &$p) {
+                        if (!empty($p['parent_id']) && isset($pageIndex[$p['parent_id']])) {
+                            $pageIndex[$p['parent_id']]['children'][] = &$p;
+                        } else {
+                            $pageTree[] = &$p;
+                        }
+                    }
+                    unset($p);
+
+                    // Recursive render function
+                    function renderPageRow($page, $level = 0) {
+                        $indent = $level * 24;
+                        $isParent = !empty($page['children']);
+                        echo '<tr' . ($isParent ? ' style="background:#f6fbff;"' : '') . '>';
+                        echo '<td style="padding-left:' . $indent . 'px">';
+                        if ($isParent) {
+                            echo '<span style="font-weight:bold;color:#2980b9;">' . htmlspecialchars($page['title']) . '</span>';
+                        } else {
+                            echo htmlspecialchars($page['title']);
+                        }
+                        if (!empty($page['excerpt'])) {
+                            echo '<br><small style="color: #666;">' . htmlspecialchars(substr($page['excerpt'], 0, 100)) . (strlen($page['excerpt']) > 100 ? '...' : '') . '</small>';
+                        }
+                        echo '</td>';
+                        echo '<td><code>' . htmlspecialchars($page['slug']) . '</code><br><small><a href="/' . htmlspecialchars($page['slug']) . '" target="_blank" style="color: #3498db;">View →</a></small></td>';
+                        echo '<td><span class="status ' . $page['status'] . '">' . ucfirst($page['status']) . '</span></td>';
+                        echo '<td>' . ($page['author_id'] ? 'User #' . $page['author_id'] : 'System') . '</td>';
+                        echo '<td>' . date('M j, Y', strtotime($page['created_at'])) . '<br><small style="color: #666;">' . date('g:i A', strtotime($page['created_at'])) . '</small></td>';
+                        echo '<td style="text-align:center;">';
+                        if (!empty($page['is_home'])) {
+                            echo '<span style="color: #27ae60; font-weight: bold;">Home</span>';
+                        } else {
+                            echo '<form method="POST" action="/admin/cms/pages/' . $page['id'] . '/set-home" style="display:inline;"><button type="submit" class="btn btn-small" onclick="return confirm(\'Set this page as the home page?\')">Set as Home</button></form>';
+                        }
+                        echo '</td>';
+                        echo '<td><div class="actions"><a href="/admin/cms/pages/' . $page['id'] . '/edit" class="btn btn-small">Edit</a>';
+                        echo '<form method="POST" action="/admin/cms/pages/' . $page['id'] . '/delete" style="display:inline;" onsubmit="return confirm(\'Are you sure you want to delete this page? This action cannot be undone.\')"><button type="submit" class="btn btn-danger">Delete</button></form></div></td>';
+                        echo '</tr>';
+                        if (!empty($page['children'])) {
+                            foreach ($page['children'] as $child) {
+                                renderPageRow($child, $level + 1);
+                            }
+                        }
+                    }
+                    foreach ($pageTree as $rootPage) {
+                        renderPageRow($rootPage);
+                    }
+                    ?>
                 </tbody>
             </table>
         <?php else: ?>

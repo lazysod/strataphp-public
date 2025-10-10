@@ -14,6 +14,7 @@ return [
     'themes' => [
         'modern' => [
             'name' => 'Strata PHP: CMS',
+            'site_name' => 'Strata PHP: CMS',
             'description' => 'Clean, modern design with responsive layout',
             'author' => 'StrataPHP',
             'version' => '1.0.0',

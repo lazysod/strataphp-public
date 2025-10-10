@@ -7,28 +7,42 @@
  */
 
 // Get page meta data, fallback to home page meta if missing
-$themeManager = isset($theme) ? new App\Modules\Cms\ThemeManager() : null;
-$meta = $themeManager ? $themeManager->getPageMeta($page) : [];
+if (!isset($themeManager)) {
+    $themeManager = isset($theme) ? new App\Modules\Cms\ThemeManager() : null;
+}
+if (!isset($meta)) {
+    $meta = $themeManager ? $themeManager->getPageMeta($page) : [];
+}
 // If any of the key OG meta fields are missing, fallback to home page meta
-if (
+if ($themeManager && (
     empty($meta['og_image']) || empty($meta['og_title']) || empty($meta['og_description'])
-) {
+)) {
     $homePage = (new App\Modules\Cms\Models\Page())->getHomePage();
     if ($homePage) {
         $homeMeta = $themeManager->getPageMeta($homePage);
-    if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) $meta['og_image'] = $homeMeta['og_image'];
-    if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) $meta['og_title'] = $homeMeta['og_title'];
-    if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) $meta['og_description'] = $homeMeta['og_description'];
-    if (empty($meta['description']) && !empty($homeMeta['description'])) $meta['description'] = $homeMeta['description'];
-    if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) $meta['twitter_image'] = $homeMeta['twitter_image'];
-    if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) $meta['twitter_title'] = $homeMeta['twitter_title'];
-    if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) $meta['twitter_description'] = $homeMeta['twitter_description'];
+        if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) $meta['og_image'] = $homeMeta['og_image'];
+        if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) $meta['og_title'] = $homeMeta['og_title'];
+        if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) $meta['og_description'] = $homeMeta['og_description'];
+        if (empty($meta['description']) && !empty($homeMeta['description'])) $meta['description'] = $homeMeta['description'];
+        if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) $meta['twitter_image'] = $homeMeta['twitter_image'];
+        if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) $meta['twitter_title'] = $homeMeta['twitter_title'];
+        if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) $meta['twitter_description'] = $homeMeta['twitter_description'];
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- CMS HEADER TEMPLATE: modern/templates/default.php -->
+    <?php
+    $isProfile = isset($page['slug']) && $page['slug'] === 'user/profile';
+    $noindex = !empty($meta['noindex']) || !empty($page['noindex']) || $isProfile;
+    ?>
+    <?php if ($noindex): ?>
+    <meta name="robots" content="noindex, nofollow">
+    <?php else: ?>
+    <meta name="robots" content="index, follow">
+    <?php endif; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($meta['title'] ?? $page['title'] ?? 'Page') ?></title>
