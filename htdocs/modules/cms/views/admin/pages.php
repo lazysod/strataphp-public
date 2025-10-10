@@ -15,6 +15,8 @@ unset($_SESSION['success'], $_SESSION['error']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'Manage Pages') ?></title>
+    <link rel="stylesheet" href="/themes/default/assets/fontawesome/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -227,7 +229,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             $siteLookup[$site['id']] = $site['name'];
                         }
                     }
-                    function renderPageRow($page, $level = 0) {
+                    function renderPageRow($page, $level = 0, $siteLookup = []) {
                         $indent = $level * 24;
                         $isParent = !empty($page['children']);
                         echo '<tr' . ($isParent ? ' style="background:#f6fbff;"' : '') . '>';
@@ -242,7 +244,6 @@ unset($_SESSION['success'], $_SESSION['error']);
                         }
                         echo '</td>';
                         // Site column
-                        global $siteLookup;
                         $siteName = isset($siteLookup[$page['site_id']]) ? htmlspecialchars($siteLookup[$page['site_id']]) : '<span style="color:#aaa;">(none)</span>';
                         echo '<td>' . $siteName . '</td>';
                         echo '<td><code>' . htmlspecialchars($page['slug']) . '</code><br><small><a href="/' . htmlspecialchars($page['slug']) . '" target="_blank" style="color: #3498db;">View →</a></small></td>';
@@ -261,12 +262,12 @@ unset($_SESSION['success'], $_SESSION['error']);
                         echo '</tr>';
                         if (!empty($page['children'])) {
                             foreach ($page['children'] as $child) {
-                                renderPageRow($child, $level + 1);
+                                renderPageRow($child, $level + 1, $siteLookup);
                             }
                         }
                     }
                     foreach ($pageTree as $rootPage) {
-                        renderPageRow($rootPage);
+                        renderPageRow($rootPage, 0, $siteLookup);
                     }
                     ?>
                 </tbody>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Default Page Template (Bootstrap 5 Only)
  *
@@ -32,6 +33,7 @@ if ($themeManager && (
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- CMS HEADER TEMPLATE: modern/templates/default.php -->
     <?php
@@ -39,15 +41,15 @@ if ($themeManager && (
     $noindex = !empty($meta['noindex']) || !empty($page['noindex']) || $isProfile;
     ?>
     <?php if ($noindex): ?>
-    <meta name="robots" content="noindex, nofollow">
+        <meta name="robots" content="noindex, nofollow">
     <?php else: ?>
-    <meta name="robots" content="index, follow">
+        <meta name="robots" content="index, follow">
     <?php endif; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($meta['title'] ?? $page['title'] ?? 'Page') ?></title>
     <?php if (isset($meta['description'])): ?>
-    <meta name="description" content="<?= htmlspecialchars($meta['description']) ?>">
+        <meta name="description" content="<?= htmlspecialchars($meta['description']) ?>">
     <?php endif; ?>
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -73,6 +75,7 @@ if ($themeManager && (
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/modules/cms/themes/modern/assets/css/style.css">
 </head>
+
 <body>
     <header class="cms-header mb-4">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -83,47 +86,82 @@ if ($themeManager && (
                 </button>
                 <div class="collapse navbar-collapse" id="cmsNavbar">
                     <?php
+                    if (session_status() === PHP_SESSION_NONE) session_start();
+                    $sessionPrefix = $config['session_prefix'] ?? 'app_';
+                    $userId = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
+                    $userName = $_SESSION[$sessionPrefix . 'first_name'] ?? 'User';
                     // Recursive function to render nav items with correct Bootstrap classes
-                    function renderNav($items, $level = 0) {
+                    function renderNav($items, $level = 0, $userId = null)
+                    {
                         $ulClass = $level === 0 ? 'navbar-nav ms-auto mb-2 mb-lg-0' : 'dropdown-menu';
-                        // For dropdown-menu, add aria-labelledby referencing the toggle's id
                         if ($level === 0) {
-                            echo '<ul class="' . $ulClass . '">';
+                            foreach ($items as $nav) {
+                                $hasChildren = !empty($nav['children']);
+                                $isActive = ($_SERVER['REQUEST_URI'] === $nav['url']) || ($nav['is_home'] && ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.php'));
+                                $titleLower = strtolower($nav['title']);
+                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) continue;
+                                if ($hasChildren) {
+                                    $liClass = 'nav-item dropdown';
+                                    $aClass = 'nav-link dropdown-toggle';
+                                    echo '<li class="' . $liClass . '">';
+                                    echo '<a class="' . $aClass . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '" id="dropdown-' . htmlspecialchars($nav['slug']) . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($nav['title']) . '</a>';
+                                    foreach ($nav['children'] as &$child) {
+                                        $child['parent_slug'] = $nav['slug'];
+                                    }
+                                    unset($child);
+                                    renderNav($nav['children'], $level + 1, $userId);
+                                    echo '</li>';
+                                } else {
+                                    echo '<li class="nav-item">';
+                                    echo '<a class="nav-link' . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '">' . htmlspecialchars($nav['title']) . '</a>';
+                                    echo '</li>';
+                                }
+                            }
                         } else {
-                            // Find the parent nav slug for aria-labelledby
                             $parentSlug = isset($items[0]['parent_slug']) ? $items[0]['parent_slug'] : (isset($items[0]['parent']) ? $items[0]['parent'] : '');
                             $ariaLabelledBy = $parentSlug ? ' aria-labelledby="dropdown-' . htmlspecialchars($parentSlug) . '"' : '';
-                            echo '<ul class="' . $ulClass . '"' . $ariaLabelledBy . '>';
-                        }
-                        foreach ($items as $nav) {
-                            $hasChildren = !empty($nav['children']);
-                            $isActive = ($_SERVER['REQUEST_URI'] === $nav['url']) || ($nav['is_home'] && ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.php'));
-                            if ($hasChildren) {
-                                $liClass = $level === 0 ? 'nav-item dropdown' : 'dropdown-submenu';
-                                $aClass = $level === 0 ? 'nav-link dropdown-toggle' : 'dropdown-item dropdown-toggle';
-                                echo '<li class="' . $liClass . '">';
-                                echo '<a class="' . $aClass . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '" id="dropdown-' . htmlspecialchars($nav['slug']) . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($nav['title']) . '</a>';
-                                // Pass parent_slug to children for aria-labelledby
-                                foreach ($nav['children'] as &$child) {
-                                    $child['parent_slug'] = $nav['slug'];
+                            echo '<ul class="dropdown-menu"' . $ariaLabelledBy . '>';
+                            foreach ($items as $nav) {
+                                $hasChildren = !empty($nav['children']);
+                                $isActive = ($_SERVER['REQUEST_URI'] === $nav['url']);
+                                $titleLower = strtolower($nav['title']);
+                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) continue;
+                                if ($hasChildren) {
+                                    echo '<li class="dropdown-submenu">';
+                                    echo '<a class="dropdown-item dropdown-toggle' . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '" id="dropdown-' . htmlspecialchars($nav['slug']) . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($nav['title']) . '</a>';
+                                    foreach ($nav['children'] as &$child) {
+                                        $child['parent_slug'] = $nav['slug'];
+                                    }
+                                    unset($child);
+                                    renderNav($nav['children'], $level + 1, $userId);
+                                    echo '</li>';
+                                } else {
+                                    echo '<li>';
+                                    echo '<a class="dropdown-item' . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '">' . htmlspecialchars($nav['title']) . '</a>';
+                                    echo '</li>';
                                 }
-                                unset($child);
-                                renderNav($nav['children'], $level + 1);
-                                echo '</li>';
-                            } else {
-                                $liClass = $level === 0 ? 'nav-item' : '';
-                                $aClass = $level === 0 ? 'nav-link' : 'dropdown-item';
-                                echo '<li' . ($liClass ? ' class="' . $liClass . '"' : '') . '>';
-                                echo '<a class="' . $aClass . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '">' . htmlspecialchars($nav['title']) . '</a>';
-                                echo '</li>';
                             }
+                            echo '</ul>';
                         }
-                        echo '</ul>';
-                    }
-                    if (isset($navigation) && is_array($navigation)) {
-                        renderNav($navigation);
                     }
                     ?>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <?php if (isset($navigation) && is_array($navigation)) renderNav($navigation, 0, $userId); ?>
+                        <?php if ($userId): ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Welcome <?= htmlspecialchars($userName) ?>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <?php if ($_SESSION[$sessionPrefix . 'admin']): ?>
+                                        <li><a class="dropdown-item" href="/admin/dashboard">Admin Dashboard</a></li>
+                                    <?php endif; ?>
+                                    <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                                    <li><a class="dropdown-item" href="/logout.php">Logout</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -139,4 +177,5 @@ if ($themeManager && (
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/modules/cms/themes/modern/assets/js/theme.js"></script>
 </body>
+
 </html>

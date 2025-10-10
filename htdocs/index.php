@@ -1,9 +1,21 @@
 <?php
+
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once __DIR__ . '/app/start.php'; // config, autoload, etc.
 use App\DB;
 use App\User;
+
 $config = require __DIR__ . '/app/config.php';
+
+// Ensure session prefix and PREFIX constant are set before use
+if (!defined('SESSION_PREFIX')) {
+    $config = require __DIR__ . '/app/config.php';
+    define('SESSION_PREFIX', $config['session_prefix'] ?? 'app_');
+}
+$sessionPrefix = defined('SESSION_PREFIX') ? SESSION_PREFIX : 'app_';
+if (!defined('PREFIX')) {
+    define('PREFIX', $sessionPrefix);
+}
 
 // Global error and exception handlers
 

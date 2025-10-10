@@ -205,7 +205,16 @@ if (!defined('STRPHP_ROOT')) {
                             <button class="btn btn-small" onclick="copyUrl(this, '<?= htmlspecialchars($image['url']) ?>')">Copy URL</button>
                             <a class="btn btn-small btn-info" href="<?= htmlspecialchars($image['url']) ?>" download target="_blank">Download</a>
                             <button class="btn btn-small btn-danger" onclick="deleteImage('<?= htmlspecialchars($image['filename']) ?>')">Delete</button>
+                            <button class="btn btn-small btn-success" onclick="insertMediaUrl('<?= htmlspecialchars($image['url']) ?>')">Insert</button>
                         </div>
+    <script>
+    // Insert media into parent window (for modal/iframe usage)
+    function insertMediaUrl(url) {
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ mediaUrl: url }, window.location.origin);
+        }
+    }
+    </script>
                     </div>
                 </div>
             <?php endforeach; ?>

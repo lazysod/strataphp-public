@@ -569,6 +569,87 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                             <div class="form-group">
                                 <label for="content">Content</label>
                                 <textarea id="content" name="content" rows="15"><?= isset($page) ? htmlspecialchars($page['content']) : '' ?></textarea>
+                                <button type="button" class="btn btn-outline-info mt-2" id="openMediaManagerBtn" style="margin-bottom:6px;">
+                                    <i class="fas fa-photo-video"></i> Open Media Manager
+                                </button>
+                                <div class="form-text">Browse and select media to insert directly into your content.</div>
+                                <!-- Modal for Media Manager -->
+                                <div id="mediaManagerModal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;flex-direction:row;">
+                                    <div style="background:#fff;max-width:900px;width:90vw;height:80vh;overflow:auto;position:relative;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,0.2);">
+                                        <button type="button" id="closeMediaManagerModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;background:none;border:none;">&times;</button>
+                                        <iframe src="/admin/cms/media?embed=1" style="width:100%;height:75vh;border:none;border-radius:8px;"></iframe>
+                                    </div>
+                                </div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    // Modal open/close logic
+                                    var mediaModal = document.getElementById('mediaManagerModal');
+                                    var openBtn = document.getElementById('openMediaManagerBtn');
+                                    var closeBtn = document.getElementById('closeMediaManagerModal');
+                                    if (openBtn && mediaModal) {
+                                        openBtn.onclick = function() {
+                                            mediaModal.style.display = 'flex';
+                                            mediaModal.style.alignItems = 'center';
+                                            mediaModal.style.justifyContent = 'center';
+                                            mediaModal.style.flexDirection = 'row';
+                                        };
+                                    }
+                                    if (closeBtn && mediaModal) {
+                                        closeBtn.onclick = function() {
+                                            mediaModal.style.display = 'none';
+                                        };
+                                    }
+                                    // Listen for messages from iframe (media selection)
+                                    window.addEventListener('message', function(event) {
+                                        if (event.origin !== window.location.origin) return;
+                                        if (event.data && event.data.mediaUrl) {
+                                            var url = event.data.mediaUrl;
+                                            var tag = url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? '<img src="'+url+'" alt="" />' : url;
+                                            // Insert into rich text editor at cursor
+                                            var editor = document.querySelector('.rich-editor-content');
+                                            if (editor && editor.isContentEditable) {
+                                                // Insert HTML at cursor
+                                                var sel = window.getSelection();
+                                                if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+                                                    var range = sel.getRangeAt(0);
+                                                    var el = document.createElement('span');
+                                                    el.innerHTML = tag;
+                                                    var frag = document.createDocumentFragment(), node, lastNode;
+                                                    while ((node = el.firstChild)) {
+                                                        lastNode = frag.appendChild(node);
+                                                    }
+                                                    range.deleteContents();
+                                                    range.insertNode(frag);
+                                                    // Move cursor after inserted node
+                                                    if (lastNode) {
+                                                        range.setStartAfter(lastNode);
+                                                        range.collapse(true);
+                                                        sel.removeAllRanges();
+                                                        sel.addRange(range);
+                                                    }
+                                                } else {
+                                                    // Fallback: append to end
+                                                    editor.innerHTML += tag;
+                                                }
+                                                // Sync textarea
+                                                var textarea = document.getElementById('content');
+                                                if (textarea) textarea.value = editor.innerHTML;
+                                            } else {
+                                                // Fallback: insert into textarea
+                                                var textarea = document.getElementById('content');
+                                                if (textarea) {
+                                                    var start = textarea.selectionStart, end = textarea.selectionEnd;
+                                                    var before = textarea.value.substring(0, start), after = textarea.value.substring(end);
+                                                    textarea.value = before + tag + after;
+                                                    textarea.selectionStart = textarea.selectionEnd = before.length + tag.length;
+                                                    textarea.focus();
+                                                }
+                                            }
+                                            mediaModal.style.display = 'none';
+                                        }
+                                    });
+                                });
+                                </script>
                             </div>
                         </div>
 
@@ -907,7 +988,8 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
             const toolbar = document.createElement('div');
             toolbar.className = 'rich-editor-toolbar';
             
-            // Replace toolbar.innerHTML assignment and add event listeners for alignment
+
+            // Add Media Manager button to the toolbar
             const toolbarHtml = `
                 <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
                 <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
@@ -919,6 +1001,7 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 <button type="button" data-cmd="insertOrderedList" title="Numbered List">1. List</button>
                 <button type="button" data-cmd="createLink" title="Link">🔗</button>
                 <button type="button" id="insertImageBtn" title="Insert Image">📷</button>
+                <button type="button" id="mediaManagerBtn" title="Open Media Manager">🖼️</button>
                 <button type="button" id="alignLeftBtn" title="Align Left">⬅️</button>
                 <button type="button" id="alignCenterBtn" title="Align Center">↔️</button>
                 <button type="button" id="alignRightBtn" title="Align Right">➡️</button>
@@ -926,6 +1009,11 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                 <button type="button" id="toggleSourceBtn" title="HTML Source">&lt;&gt;</button>
             `;
             toolbar.innerHTML = toolbarHtml;
+
+            // Add event listener for Media Manager button
+            toolbar.querySelector('#mediaManagerBtn').addEventListener('click', function() {
+                window.open('/admin/cms/media', '_blank', 'noopener');
+            });
 
             // Add event listeners for toolbar buttons
             Array.from(toolbar.querySelectorAll('button[data-cmd]')).forEach(btn => {
@@ -1459,16 +1547,81 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
         // Fallback: define addResizeHandles if not present
         if (typeof addResizeHandles !== 'function') {
             function addResizeHandles(wrapper, img) {
-                // No-op fallback to prevent errors
-                console.log('[DEBUG] addResizeHandles fallback called');
+                // Remove existing handles
+                wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
+                // Only add if not already resizing
+                const handles = ['se', 'sw', 'ne', 'nw'];
+                handles.forEach(dir => {
+                    const handle = document.createElement('span');
+                    handle.className = 'resize-handle resize-' + dir;
+                    handle.dataset.dir = dir;
+                    handle.style.position = 'absolute';
+                    handle.style.width = '12px';
+                    handle.style.height = '12px';
+                    handle.style.background = '#fff';
+                    handle.style.border = '2px solid #3498db';
+                    handle.style.borderRadius = '50%';
+                    handle.style.boxShadow = '0 1px 4px rgba(52,152,219,0.15)';
+                    handle.style.zIndex = '10000';
+                    handle.style.cursor = dir+'-resize';
+                    handle.style.userSelect = 'none';
+                    handle.style.display = 'block';
+                    // Position handle
+                    if (dir === 'se') { handle.style.right = '-6px'; handle.style.bottom = '-6px'; }
+                    if (dir === 'sw') { handle.style.left = '-6px'; handle.style.bottom = '-6px'; }
+                    if (dir === 'ne') { handle.style.right = '-6px'; handle.style.top = '-6px'; }
+                    if (dir === 'nw') { handle.style.left = '-6px'; handle.style.top = '-6px'; }
+                    handle.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        startImageResize(e, wrapper, img, dir);
+                    });
+                    wrapper.style.position = 'relative';
+                    wrapper.appendChild(handle);
+                });
             }
         }
 
         // Fallback: define startImageResize if not present
         if (typeof startImageResize !== 'function') {
-            function startImageResize(e, wrapper, img, handle) {
-                // No-op fallback to prevent errors
-                console.log('[DEBUG] startImageResize fallback called');
+            function startImageResize(e, wrapper, img, dir) {
+                e.preventDefault();
+                e.stopPropagation();
+                const startX = e.clientX;
+                const startY = e.clientY;
+                const startWidth = img.offsetWidth;
+                const startHeight = img.offsetHeight;
+                const aspect = startWidth / startHeight;
+                function onMove(ev) {
+                    let dx = ev.clientX - startX;
+                    let dy = ev.clientY - startY;
+                    let newWidth = startWidth, newHeight = startHeight;
+                    if (dir === 'se') {
+                        newWidth = startWidth + dx;
+                        newHeight = newWidth / aspect;
+                    } else if (dir === 'sw') {
+                        newWidth = startWidth - dx;
+                        newHeight = newWidth / aspect;
+                    } else if (dir === 'ne') {
+                        newWidth = startWidth + dx;
+                        newHeight = newWidth / aspect;
+                    } else if (dir === 'nw') {
+                        newWidth = startWidth - dx;
+                        newHeight = newWidth / aspect;
+                    }
+                    if (newWidth < 32) { newWidth = 32; newHeight = newWidth / aspect; }
+                    img.style.width = newWidth + 'px';
+                    img.style.height = newHeight + 'px';
+                }
+                function onUp(ev) {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                    // Sync textarea after resize
+                    const editor = document.querySelector('.rich-editor-content');
+                    const textarea = document.getElementById('content');
+                    if (editor && textarea) textarea.value = editor.innerHTML;
+                }
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
             }
         }
 

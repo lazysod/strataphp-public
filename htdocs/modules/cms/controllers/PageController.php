@@ -126,9 +126,8 @@ class PageController
         $themeManager = new ThemeManager();
         // Get page data and template
         $page = $data['page'] ?? $data;
-        $template = $page['template'] ?? 'default';
-        // Render with theme system (let exceptions bubble up for debugging)
-        echo $themeManager->renderPage($page, $template);
+    // Force all pages to use the 'default' template for consistent rendering
+    echo $themeManager->renderPage($page, 'default');
     }
     
     /**

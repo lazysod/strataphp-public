@@ -676,18 +676,40 @@ $meta = isset($theme) ? (new App\Modules\Cms\ThemeManager())->getPageMeta($page)
     <nav class="cms-nav">
         <div class="cms-container">
             <ul id="nav-menu">
-                <?php if (isset($navigation) && !empty($navigation)): ?>
-                    <?php foreach ($navigation as $navItem): ?>
-                        <li>
-                            <a href="<?= htmlspecialchars($navItem['url']) ?>"
-                               <?= (!empty($page['slug']) && $page['slug'] === $navItem['slug']) ? 'style="background: rgba(255,255,255,0.1);"' : '' ?>>
-                                <?= htmlspecialchars($navItem['title']) ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
+                <?php
+                // Session/user logic
+                if (session_status() === PHP_SESSION_NONE) session_start();
+                $sessionPrefix = $config['session_prefix'] ?? 'app_';
+                $userId = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
+                $userName = $_SESSION[$sessionPrefix . 'first_name'] ?? 'User';
+                ?>
+                <?php if ($userId): ?>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Welcome <?= htmlspecialchars($userName) ?>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <?php if ($_SESSION[$sessionPrefix . 'admin']): ?>
+                                <li><a class="dropdown-item" href="/admin/dashboard">Admin Dashboard</a></li>
+                            <?php endif; ?>
+                            <li><a class="dropdown-item" href="/admin/dashboard/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/logout.php">Logout</a></li>
+                        </ul>
+                    </li>
                 <?php else: ?>
-                    <!-- Fallback navigation if no CMS pages found -->
-                    <li><a href="/">Home</a></li>
+                    <?php if (isset($navigation) && !empty($navigation)): ?>
+                        <?php foreach ($navigation as $navItem): ?>
+                            <li>
+                                <a href="<?= htmlspecialchars($navItem['url']) ?>"
+                                   <?= (!empty($page['slug']) && $page['slug'] === $navItem['slug']) ? 'style="background: rgba(255,255,255,0.1);"' : '' ?>>
+                                    <?= htmlspecialchars($navItem['title']) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback navigation if no CMS pages found -->
+                        <li><a href="/">Home</a></li>
+                    <?php endif; ?>
                 <?php endif; ?>
             </ul>
         </div>
