@@ -662,3 +662,31 @@ For more, see the code in `htdocs/app/SessionManager.php`, `User.php`, and sessi
 - **[Test Migrations](bin/test_migrations.php)** - Validate migration system
 
 **StrataPHP Framework** - Professional PHP development made simple. 🚀
+
+## CMS Module
+
+The StrataPHP CMS module provides a modern, extensible content management system for your site. It includes:
+
+- **Unified Theming:** All CMS, user, and admin pages use a consistent header, footer, and Bootstrap 5-based design. If the CMS is disabled, the system falls back to the default framework look.
+- **Media Library:**
+  - Upload images (JPG, PNG, GIF, WebP, HEIC) and PDFs
+  - Automatic thumbnail generation for images
+  - AJAX upload with progress bar and instant grid update
+  - AJAX delete (removes both original and thumbnail)
+  - Pagination for large media collections
+  - Secure file validation and storage
+- **Admin Dashboard:**
+  - Modern, responsive UI for managing pages and media
+  - Device-based session management for admins
+  - Quick links to all CMS features
+- **Extensible:**
+  - Easily add new content types or modules
+  - Override templates for custom branding
+
+### Usage
+- Access the CMS admin at `/admin/cms` after logging in as an admin.
+- Use the Media Library to upload, preview, and manage files.
+- All uploads are stored in `htdocs/storage/uploads/cms/` (with thumbnails in `thumbs/`).
+- Deleting a file via the UI removes both the original and its thumbnail (if present).
+
+See the main documentation and `INSTALL.md` for setup and advanced configuration.
