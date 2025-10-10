@@ -16,6 +16,12 @@ if (file_exists($composerAutoload)) {
 global $router;
 
 if (!empty(App::config('modules')['cms']['enabled'])) {
+    $router->post('/admin/cms/sites/delete/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'delete']);
+    // Sites management (multi-tenant API)
+    $router->get('/admin/cms/sites', [\App\Modules\Cms\Controllers\SiteController::class, 'index']);
+    $router->get('/admin/cms/sites/create', [\App\Modules\Cms\Controllers\SiteController::class, 'create']);
+    $router->post('/admin/cms/sites/store', [\App\Modules\Cms\Controllers\SiteController::class, 'store']);
+    $router->get('/admin/cms/sites/regenerate/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'regenerateKey']);
     
     // Public page routes - Dynamic routing for CMS pages
     $router->get('/', [PageController::class, 'home']);

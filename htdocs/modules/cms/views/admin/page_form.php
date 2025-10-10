@@ -586,6 +586,20 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                                             <option value="private" <?= (isset($page) && $page['status'] === 'private') ? 'selected' : '' ?>>Private</option>
                                         </select>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="site_id">Site <span class="required">*</span></label>
+                                        <select id="site_id" name="site_id" required>
+                                            <option value="">-- Select Site --</option>
+                                            <?php if (isset($sites) && is_array($sites)): ?>
+                                                <?php foreach ($sites as $site): ?>
+                                                    <option value="<?= htmlspecialchars($site['id']) ?>" <?= (isset($page) && isset($page['site_id']) && $page['site_id'] == $site['id']) ? 'selected' : '' ?>>
+                                                        <?= htmlspecialchars($site['name']) ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                        <div class="form-text">Assign this page to a site.</div>
+                                    </div>
 
                                     <div class="form-group">
                                         <label for="template">Template</label>

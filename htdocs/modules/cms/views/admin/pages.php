@@ -168,9 +168,23 @@ unset($_SESSION['success'], $_SESSION['error']);
             <div class="alert alert-error"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
 
+
+        <form method="get" action="" style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">
+            <label for="site_id" style="font-weight:600;">Filter by Site:</label>
+            <select name="site_id" id="site_id" onchange="this.form.submit()" style="padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="">All Sites</option>
+                <?php if (isset($sites) && is_array($sites)): ?>
+                    <?php foreach ($sites as $site): ?>
+                        <option value="<?= htmlspecialchars($site['id']) ?>" <?= (isset($selectedSiteId) && $selectedSiteId == $site['id']) ? 'selected' : '' ?>><?= htmlspecialchars($site['name']) ?></option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </select>
+            <noscript><button type="submit" class="btn btn-outline">Filter</button></noscript>
+            <a href="/admin/cms/pages/create" class="btn btn-success" style="margin-left:auto;">+ Create New Page</a>
+        </form>
+
         <div class="header">
             <h1><?= htmlspecialchars($title ?? 'Manage Pages') ?></h1>
-            <a href="/admin/cms/pages/create" class="btn btn-success">+ Create New Page</a>
         </div>
 
         <?php if (isset($pages) && !empty($pages)): ?>
@@ -178,6 +192,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <thead>
                     <tr>
                         <th>Title</th>
+                        <th>Site</th>
                         <th>Slug</th>
                         <th>Status</th>
                         <th>Author</th>
@@ -205,6 +220,13 @@ unset($_SESSION['success'], $_SESSION['error']);
                     unset($p);
 
                     // Recursive render function
+                    // Build a site lookup for display
+                    $siteLookup = [];
+                    if (isset($sites) && is_array($sites)) {
+                        foreach ($sites as $site) {
+                            $siteLookup[$site['id']] = $site['name'];
+                        }
+                    }
                     function renderPageRow($page, $level = 0) {
                         $indent = $level * 24;
                         $isParent = !empty($page['children']);
@@ -219,6 +241,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                             echo '<br><small style="color: #666;">' . htmlspecialchars(substr($page['excerpt'], 0, 100)) . (strlen($page['excerpt']) > 100 ? '...' : '') . '</small>';
                         }
                         echo '</td>';
+                        // Site column
+                        global $siteLookup;
+                        $siteName = isset($siteLookup[$page['site_id']]) ? htmlspecialchars($siteLookup[$page['site_id']]) : '<span style="color:#aaa;">(none)</span>';
+                        echo '<td>' . $siteName . '</td>';
                         echo '<td><code>' . htmlspecialchars($page['slug']) . '</code><br><small><a href="/' . htmlspecialchars($page['slug']) . '" target="_blank" style="color: #3498db;">View →</a></small></td>';
                         echo '<td><span class="status ' . $page['status'] . '">' . ucfirst($page['status']) . '</span></td>';
                         echo '<td>' . ($page['author_id'] ? 'User #' . $page['author_id'] : 'System') . '</td>';

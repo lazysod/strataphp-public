@@ -7,6 +7,65 @@ namespace App\Modules\Cms\Controllers;
     class CmsController
     {
         /**
+         * API: Return all CMS pages as JSON
+         */
+        public function apiPages()
+        {
+            header('Content-Type: application/json');
+            try {
+                // API key authentication using sites table
+                require_once __DIR__ . '/../models/Site.php';
+                $providedKey = $_GET['api_key'] ?? $_SERVER['HTTP_X_API_KEY'] ?? '';
+                $siteModel = new \App\Modules\Cms\Models\Site($this->config);
+                $site = $siteModel->getByApiKey($providedKey);
+                if (!$site) {
+                    http_response_code(403);
+                    echo json_encode([
+                        'success' => false,
+                        'error' => 'Forbidden: Invalid or missing API key.'
+                    ]);
+                    return;
+                }
+
+                require_once __DIR__ . '/../models/Page.php';
+                $pageModel = new \App\Modules\Cms\Models\Page($this->config);
+
+                // Filtering logic (by site_id)
+                $id = isset($_GET['id']) ? intval($_GET['id']) : null;
+                $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
+                $status = isset($_GET['status']) ? trim($_GET['status']) : null;
+                $siteId = $site['id'];
+                $pages = [];
+                if ($id) {
+                    $page = $pageModel->getById($id);
+                    if ($page && $page['site_id'] == $siteId) $pages[] = $page;
+                } elseif ($slug) {
+                    $page = $pageModel->getBySlug($slug);
+                    if ($page && $page['site_id'] == $siteId) $pages[] = $page;
+                } elseif ($status && strtolower($status) === 'published') {
+                    $all = $pageModel->getAllPublished();
+                    foreach ($all as $p) {
+                        if ($p['site_id'] == $siteId) $pages[] = $p;
+                    }
+                } else {
+                    $all = $pageModel->getAll();
+                    foreach ($all as $p) {
+                        if ($p['site_id'] == $siteId) $pages[] = $p;
+                    }
+                }
+                echo json_encode([
+                    'success' => true,
+                    'pages' => $pages
+                ]);
+            } catch (\Exception $e) {
+                http_response_code(500);
+                echo json_encode([
+                    'success' => false,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+        /**
          * Set a page as the root (home) page
          */
         public function setHome($id)

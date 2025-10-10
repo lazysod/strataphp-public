@@ -4,6 +4,7 @@ namespace App\Modules\Cms\Models;
 use App\DB;
 use App\HtmlSanitizer;
 
+
 /**
  * CMS Page Model
  * 
@@ -11,6 +12,23 @@ use App\HtmlSanitizer;
  */
 class Page
 {
+    /**
+     * Get all pages for a specific site
+     */
+    public function getAllBySite($siteId, $limit = null)
+    {
+        try {
+            $sql = "SELECT * FROM cms_pages WHERE site_id = ? ORDER BY created_at DESC";
+            $params = [$siteId];
+            if ($limit) {
+                $sql .= " LIMIT " . (int)$limit;
+            }
+            return $this->db->fetchAll($sql, $params);
+        } catch (\Exception $e) {
+            error_log("Page model getAllBySite error: " . $e->getMessage());
+            return [];
+        }
+    }
     /**
      * Get the page marked as home (is_home = 1)
      */
@@ -83,8 +101,8 @@ class Page
             return $this->db->query("
                 INSERT INTO cms_pages (title, slug, content, excerpt, meta_title, meta_description, 
                                       og_image, og_type, twitter_card, canonical_url, noindex,
-                                      status, template, menu_order, author_id, parent_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                      status, template, menu_order, author_id, parent_id, site_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ", [
                 $sanitizedData['title'],
                 $this->processSlug($sanitizedData['slug'] ?? '', $sanitizedData['title']),
@@ -101,7 +119,8 @@ class Page
                 $sanitizedData['template'],
                 $sanitizedData['menu_order'],
                 $sanitizedData['author_id'],
-                $sanitizedData['parent_id']
+                $sanitizedData['parent_id'],
+                $sanitizedData['site_id']
             ]);
         } catch (\Exception $e) {
             error_log("Page model create error: " . $e->getMessage());
@@ -126,27 +145,28 @@ class Page
                 UPDATE cms_pages 
                 SET title = ?, slug = ?, content = ?, excerpt = ?, meta_title = ?, 
                     meta_description = ?, og_image = ?, og_type = ?, twitter_card = ?, 
-                    canonical_url = ?, noindex = ?, status = ?, template = ?, menu_order = ?, updated_at = NOW()
+                    canonical_url = ?, noindex = ?, status = ?, template = ?, menu_order = ?, site_id = ?, updated_at = NOW()
                 WHERE id = ?
             ", [
-            $sanitizedData['title'],
-            $this->processSlug($sanitizedData['slug'] ?? '', $sanitizedData['title'], $id),
-            $sanitizedData['content'],
-            $sanitizedData['excerpt'],
-            $sanitizedData['meta_title'],
-            $sanitizedData['meta_description'],
-            $sanitizedData['og_image'],
-            $sanitizedData['og_type'],
-            $sanitizedData['twitter_card'],
-            $sanitizedData['canonical_url'],
-            $sanitizedData['noindex'],
-            $sanitizedData['status'],
-            $sanitizedData['template'],
-            $sanitizedData['menu_order'],
-            $id
-        ]);
-        
-        return $result;
+                $sanitizedData['title'],
+                $this->processSlug($sanitizedData['slug'] ?? '', $sanitizedData['title'], $id),
+                $sanitizedData['content'],
+                $sanitizedData['excerpt'],
+                $sanitizedData['meta_title'],
+                $sanitizedData['meta_description'],
+                $sanitizedData['og_image'],
+                $sanitizedData['og_type'],
+                $sanitizedData['twitter_card'],
+                $sanitizedData['canonical_url'],
+                $sanitizedData['noindex'],
+                $sanitizedData['status'],
+                $sanitizedData['template'],
+                $sanitizedData['menu_order'],
+                $sanitizedData['site_id'],
+                $id
+            ]);
+            
+            return $result;
         } catch (\Exception $e) {
             error_log("Page model update error: " . $e->getMessage());
             throw new \Exception("Failed to update page: " . $e->getMessage());
@@ -319,7 +339,8 @@ class Page
                          ? $data['template'] : 'default',
             'menu_order' => max(0, (int)($data['menu_order'] ?? 0)),
             'author_id' => (int)($data['author_id'] ?? 1),
-            'parent_id' => isset($data['parent_id']) ? (int)$data['parent_id'] : null
+            'parent_id' => isset($data['parent_id']) ? (int)$data['parent_id'] : null,
+            'site_id' => isset($data['site_id']) ? (int)$data['site_id'] : null
         ];
     }
     

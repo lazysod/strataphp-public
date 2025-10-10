@@ -99,13 +99,20 @@ class AdminController
     {
         try {
             $pageModel = new Page($this->config);
-            $pages = $pageModel->getAll();
-            
+            $siteModel = new \App\Modules\Cms\Models\Site($this->config);
+            $sites = $siteModel->getAll();
+            $selectedSiteId = isset($_GET['site_id']) && is_numeric($_GET['site_id']) ? (int)$_GET['site_id'] : null;
+            if ($selectedSiteId) {
+                $pages = $pageModel->getAllBySite($selectedSiteId);
+            } else {
+                $pages = $pageModel->getAll();
+            }
             $data = [
                 'title' => 'Manage Pages',
-                'pages' => $pages
+                'pages' => $pages,
+                'sites' => $sites,
+                'selectedSiteId' => $selectedSiteId
             ];
-            
             $this->renderAdminView('pages', $data);
         } catch (\Exception $e) {
             error_log("AdminController pages error: " . $e->getMessage());
@@ -120,10 +127,14 @@ class AdminController
     {
         $pageModel = new Page($this->config);
         $allPages = $pageModel->getAll();
+        // Fetch all sites for the site selector
+        $siteModel = new \App\Modules\Cms\Models\Site($this->config);
+        $sites = $siteModel->getAll();
         $data = [
             'title' => 'Create New Page',
             'page' => null,
-            'allPages' => $allPages
+            'allPages' => $allPages,
+            'sites' => $sites
         ];
         $this->renderAdminView('page_form', $data);
     }
@@ -152,7 +163,8 @@ class AdminController
                 'template' => $_POST['template'] ?? 'default',
                 'menu_order' => $_POST['menu_order'] ?? 0,
                 'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1,
-                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null
+                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null,
+                'site_id' => !empty($_POST['site_id']) ? (int)$_POST['site_id'] : null
             ];
             
             // Validate required fields
@@ -192,10 +204,13 @@ class AdminController
             }
 
             $allPages = $pageModel->getAll();
+            $siteModel = new \App\Modules\Cms\Models\Site($this->config);
+            $sites = $siteModel->getAll();
             $data = [
                 'title' => 'Edit Page',
                 'page' => $page,
-                'allPages' => $allPages
+                'allPages' => $allPages,
+                'sites' => $sites
             ];
             $this->renderAdminView('page_form', $data);
         } catch (\Exception $e) {
@@ -226,7 +241,8 @@ class AdminController
                 'template' => $_POST['template'] ?? 'default',
                 'menu_order' => $_POST['menu_order'] ?? 0,
                 'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1,
-                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null
+                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null,
+                'site_id' => !empty($_POST['site_id']) ? (int)$_POST['site_id'] : null
             ];
             
             // Validate required fields

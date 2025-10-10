@@ -11,6 +11,7 @@ require_once __DIR__ . '/../../../../app/helpers.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'CMS Dashboard') ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6DQD1KQ9Q8cbh6wr60A3Hn6g9l+8nbTov4+1p" crossorigin="anonymous">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -180,6 +181,11 @@ require_once __DIR__ . '/../../../../app/helpers.php';
                 <h3>📊 API Access</h3>
                 <p>Access your content via REST API</p>
                 <a href="/api/cms/pages" class="btn" target="_blank">View API</a>
+            </div>
+            <div class="action-card">
+                <h3>🔑 Manage Sites & API Keys</h3>
+                <p>Create, edit, and manage API access for headless CMS usage</p>
+                <a href="/admin/cms/sites" class="btn btn-info">Manage Sites</a>
             </div>
         </div>
 
