@@ -30,6 +30,7 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     $router->get('/admin/cms/pages/{id}/edit', [AdminController::class, 'editPage']);
     $router->post('/admin/cms/pages/{id}/edit', [AdminController::class, 'updatePage']);
     $router->post('/admin/cms/pages/{id}/delete', [AdminController::class, 'deletePage']);
+    $router->post('/admin/cms/pages/{id}/set-home', [AdminController::class, 'setHomePage']);
     
     // Image upload routes
     $router->post('/admin/cms/upload/image', [ImageController::class, 'upload']);

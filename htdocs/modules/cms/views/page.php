@@ -106,7 +106,6 @@ if (!defined('STRPHP_ROOT')) {
     </style>
 </head>
 <body>
-    213098712908361290837129083712098371209837109238712098371209837
     <main class="page-content">
         <?php
         // Process content to handle line breaks and paragraphs properly

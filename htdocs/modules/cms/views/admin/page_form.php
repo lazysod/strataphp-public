@@ -598,6 +598,30 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="parent_id">Parent Page</label>
+                                        <select id="parent_id" name="parent_id">
+                                            <option value="">-- None (Top Level) --</option>
+                                            <?php
+                                            // Helper to build a flat list with indentation for hierarchy
+                                            function renderParentOptions($pages, $currentId = null, $parentId = null, $level = 0, $excludeIds = []) {
+                                                foreach ($pages as $p) {
+                                                    if ($p['id'] == $currentId || in_array($p['id'], $excludeIds)) continue;
+                                                    if ($p['parent_id'] != $parentId) continue;
+                                                    $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                                                    $selected = (isset($page['parent_id']) && $page['parent_id'] == $p['id']) ? 'selected' : '';
+                                                    echo '<option value="' . htmlspecialchars($p['id']) . '" ' . $selected . '>' . $indent . htmlspecialchars($p['title']) . '</option>';
+                                                    // Prevent circular reference by adding this id to excludeIds
+                                                    renderParentOptions($pages, $currentId, $p['id'], $level + 1, array_merge($excludeIds, [$currentId]));
+                                                }
+                                            }
+                                            if (isset($allPages)) {
+                                                renderParentOptions($allPages, isset($page['id']) ? $page['id'] : null);
+                                            }
+                                            ?>
+                                        </select>
+                                        <div class="form-text">Select a parent page to nest this page under another. Leave blank for top-level.</div>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="menu_order">Menu Order</label>
                                         <input type="number" id="menu_order" name="menu_order" 
                                                value="<?= isset($page) ? htmlspecialchars($page['menu_order']) : '0' ?>" 

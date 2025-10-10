@@ -410,88 +410,120 @@ h1, h2, h3, h4, h5, h6 {
             // Load config and create database connection
             $config = include dirname(__DIR__, 2) . '/app/config.php';
             $db = new \App\DB($config);
-            
-            // Get published pages for navigation
+
+            // Get published pages for navigation (with parent_id)
             $pages = $db->fetchAll("
-                SELECT id, title, slug, menu_order 
-                FROM cms_pages 
-                WHERE status = 'published' 
+                SELECT id, title, slug, menu_order, is_home, parent_id
+                FROM cms_pages
+                WHERE status = 'published' AND show_in_nav = 1
                 ORDER BY menu_order ASC, title ASC
             ");
-            
+
+            // Build a map of id => page
+            $pageMap = [];
+            foreach ($pages as $page) {
+                // Skip if this is the home page (by slug or is_home flag)
+                if ($page['slug'] === 'home' || (isset($page['is_home']) && (int)$page['is_home'] === 1)) {
+                    continue;
+                }
+                $page['children'] = [];
+                $pageMap[$page['id']] = $page;
+            }
+
+            // Build the tree
+            $tree = [];
+            foreach ($pageMap as $id => &$page) {
+                if ($page['parent_id'] && isset($pageMap[$page['parent_id']])) {
+                    $pageMap[$page['parent_id']]['children'][] = &$page;
+                } else {
+                    $tree[] = &$page;
+                }
+            }
+            unset($page); // break reference
+
             $navigation = [];
-            
             // Add home link first
             $navigation[] = [
                 'title' => 'Home',
                 'url' => '/',
                 'slug' => '',
-                'is_home' => true
+                'is_home' => true,
+                'children' => []
             ];
-            
-            // Add CMS pages
-            foreach ($pages as $page) {
-                // Skip if this is already the home page
-                if ($page['slug'] === 'home') {
-                    continue;
-                }
-                
-                $navigation[] = [
-                    'title' => $page['title'],
-                    'url' => '/' . $page['slug'],
-                    'slug' => $page['slug'],
-                    'is_home' => false
-                ];
+
+            // Add the tree (top-level pages)
+            foreach ($tree as $page) {
+                $navigation[] = $this->formatNavPage($page);
             }
-            
+
             // Add user management links if user module is enabled
             if (!empty($config['modules']['user'])) {
-                // Check if user is logged in (using proper session prefix)
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
                 }
-                
                 $sessionPrefix = $config['session_prefix'] ?? 'app_';
                 $isLoggedIn = !empty($_SESSION[$sessionPrefix . 'user_id']);
-                
                 if ($isLoggedIn) {
                     $navigation[] = [
                         'title' => 'Profile',
                         'url' => '/user/profile',
                         'slug' => 'profile',
-                        'is_home' => false
+                        'is_home' => false,
+                        'children' => []
                     ];
                     $navigation[] = [
                         'title' => 'Logout',
                         'url' => '/logout.php',
                         'slug' => 'logout',
-                        'is_home' => false
+                        'is_home' => false,
+                        'children' => []
                     ];
                 } else {
                     $navigation[] = [
                         'title' => 'Login',
                         'url' => '/user/login',
                         'slug' => 'login',
-                        'is_home' => false
+                        'is_home' => false,
+                        'children' => []
                     ];
                     $navigation[] = [
                         'title' => 'Register',
                         'url' => '/user/register',
                         'slug' => 'register',
-                        'is_home' => false
+                        'is_home' => false,
+                        'children' => []
                     ];
                 }
             }
-            
+
             return $navigation;
-            
+
         } catch (\Exception $e) {
             error_log("Navigation loading error: " . $e->getMessage());
-            
             // Fallback navigation if database fails
             return [
-                ['title' => 'Home', 'url' => '/', 'slug' => '', 'is_home' => true]
+                ['title' => 'Home', 'url' => '/', 'slug' => '', 'is_home' => true, 'children' => []]
             ];
         }
+    }
+
+    /**
+     * Helper to format a page for navigation output (recursive for children)
+     */
+    private function formatNavPage($page)
+    {
+        $item = [
+            'title' => $page['title'],
+            'url' => '/' . $page['slug'],
+            'slug' => $page['slug'],
+            'is_home' => false,
+            'children' => []
+        ];
+        if (!empty($page['children'])) {
+            foreach ($page['children'] as $child) {
+                $item['children'][] = $this->formatNavPage($child);
+            }
+        }
+        return $item;
     }
 }

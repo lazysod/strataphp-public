@@ -24,13 +24,18 @@ class PageController
     {
         try {
             $pageModel = new Page($this->config);
-            
-            // Try to find a page with slug 'home' or the first published page
-            $homePage = $pageModel->findBySlug('home');
+
+            // Try to find the page marked as home
+            $homePage = $pageModel->getHomePage();
+            // Fallback: page with slug 'home'
+            if (!$homePage) {
+                $homePage = $pageModel->findBySlug('home');
+            }
+            // Fallback: first published page
             if (!$homePage) {
                 $homePage = $pageModel->getFirstPublished();
             }
-            
+
             if (!$homePage) {
                 // If no pages exist, show a default welcome message
                 $data = [
@@ -112,45 +117,18 @@ class PageController
      */
     private function renderPage($data)
     {
+        // Always use the new theme system for rendering
         // Define the constant to allow access to CMS view files
         if (!defined('STRPHP_ROOT')) {
             define('STRPHP_ROOT', dirname(__DIR__, 3));
         }
-        
-        try {
-            // Use the new theme manager
-            $themeManager = new ThemeManager();
-            
-            // Get page data and template
-            $page = $data['page'] ?? $data;
-            $template = $page['template'] ?? 'default';
-            
-            // Render with theme system
-            echo $themeManager->renderPage($page, $template);
-            
-        } catch (\Exception $e) {
-            error_log("Theme rendering error: " . $e->getMessage());
-            
-            // Fallback to old system
-            $themePath = dirname(__DIR__, 2) . '/themes/' . ($this->config['theme'] ?? 'default');
-            $pageTemplate = $themePath . '/page.php';
-            
-            if (file_exists($pageTemplate)) {
-                // Extract data for template
-                extract($data);
-                include $pageTemplate;
-            } else {
-                // Fallback to CMS module template
-                $fallbackTemplate = dirname(__DIR__) . '/views/page.php';
-                if (file_exists($fallbackTemplate)) {
-                    extract($data);
-                    include $fallbackTemplate;
-                } else {
-                    // Last resort: simple HTML output
-                    echo $this->renderSimplePage($data);
-                }
-            }
-        }
+        // Use the new theme manager
+        $themeManager = new ThemeManager();
+        // Get page data and template
+        $page = $data['page'] ?? $data;
+        $template = $page['template'] ?? 'default';
+        // Render with theme system (let exceptions bubble up for debugging)
+        echo $themeManager->renderPage($page, $template);
     }
     
     /**

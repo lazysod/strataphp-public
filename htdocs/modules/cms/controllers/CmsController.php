@@ -1,11 +1,31 @@
 <?php
 namespace App\Modules\Cms\Controllers;
 
-use App\DB;
-use App\Modules\Cms\Models\Cms;
+    use App\DB;
+    use App\Modules\Cms\Models\Cms;
 
-class CmsController
-{
+    class CmsController
+    {
+        /**
+         * Set a page as the root (home) page
+         */
+        public function setHome($id)
+        {
+            try {
+                // Unset all other home pages
+                $this->db->query('UPDATE cms_pages SET is_home = 0');
+                // Set this page as home
+                $this->db->query('UPDATE cms_pages SET is_home = 1 WHERE id = ?', [$id]);
+                $_SESSION['success'] = 'Home page updated!';
+                header('Location: /admin/cms/pages/' . $id . '/edit');
+                exit;
+            } catch (\Exception $e) {
+                error_log('CmsController setHome error: ' . $e->getMessage());
+                $_SESSION['error'] = 'Failed to set home page.';
+                header('Location: /admin/cms/pages/' . $id . '/edit');
+                exit;
+            }
+        }
     private $db;
     private $config;
     

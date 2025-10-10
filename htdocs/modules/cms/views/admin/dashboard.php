@@ -3,6 +3,7 @@
 if (!defined('STRPHP_ROOT')) {
     exit('Direct access not allowed');
 }
+require_once __DIR__ . '/../../../../app/helpers.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -199,7 +200,7 @@ if (!defined('STRPHP_ROOT')) {
         <?php endif; ?>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
-            <p>StrataPHP CMS Module - Version 1.0.0</p>
+            <p>StrataPHP CMS Module - Version <?php echo htmlspecialchars(config('version')); ?></p>
             <p><a href="/admin" style="color: #3498db;">← Back to Admin Panel</a></p>
         </div>
     </div>

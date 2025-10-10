@@ -13,7 +13,7 @@ return [
     // Available CMS themes
     'themes' => [
         'modern' => [
-            'name' => 'Modern',
+            'name' => 'Strata PHP: CMS',
             'description' => 'Clean, modern design with responsive layout',
             'author' => 'StrataPHP',
             'version' => '1.0.0',
@@ -57,7 +57,7 @@ return [
     
     // Theme directory structure
     'paths' => [
-        'themes_dir' => 'themes/cms',
+        'themes_dir' => 'modules/cms/themes',
         'templates_dir' => 'templates',
         'assets_dir' => 'assets',
         'cache_dir' => 'storage/cache/themes'
@@ -68,7 +68,7 @@ return [
         'default' => [
             'name' => 'Default',
             'description' => 'Standard page layout with header and footer',
-            'file' => 'page.php'
+            'file' => 'default.php'
         ],
         'full-width' => [
             'name' => 'Full Width',

@@ -7,6 +7,26 @@ use App\SessionManager;
 
 class AdminController
 {
+    /**
+     * Set a page as the root (home) page
+     */
+    public function setHomePage($id)
+    {
+        try {
+            // Unset all other home pages
+            $this->db->query('UPDATE cms_pages SET is_home = 0');
+            // Set this page as home
+            $this->db->query('UPDATE cms_pages SET is_home = 1 WHERE id = ?', [$id]);
+            $_SESSION['success'] = 'Home page updated!';
+            header('Location: /admin/cms/pages');
+            exit;
+        } catch (\Exception $e) {
+            error_log('AdminController setHomePage error: ' . $e->getMessage());
+            $_SESSION['error'] = 'Failed to set home page.';
+            header('Location: /admin/cms/pages');
+            exit;
+        }
+    }
     private $db;
     private $config;
     
@@ -98,11 +118,13 @@ class AdminController
      */
     public function createPage()
     {
+        $pageModel = new Page($this->config);
+        $allPages = $pageModel->getAll();
         $data = [
             'title' => 'Create New Page',
-            'page' => null
+            'page' => null,
+            'allPages' => $allPages
         ];
-        
         $this->renderAdminView('page_form', $data);
     }
     
@@ -129,7 +151,8 @@ class AdminController
                 'status' => $_POST['status'] ?? 'draft',
                 'template' => $_POST['template'] ?? 'default',
                 'menu_order' => $_POST['menu_order'] ?? 0,
-                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1
+                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1,
+                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null
             ];
             
             // Validate required fields
@@ -168,11 +191,12 @@ class AdminController
                 exit;
             }
 
+            $allPages = $pageModel->getAll();
             $data = [
                 'title' => 'Edit Page',
-                'page' => $page
+                'page' => $page,
+                'allPages' => $allPages
             ];
-            
             $this->renderAdminView('page_form', $data);
         } catch (\Exception $e) {
             error_log("AdminController editPage error: " . $e->getMessage());
@@ -201,7 +225,8 @@ class AdminController
                 'status' => $_POST['status'] ?? 'draft',
                 'template' => $_POST['template'] ?? 'default',
                 'menu_order' => $_POST['menu_order'] ?? 0,
-                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1
+                'author_id' => $_SESSION[($this->config['session_prefix'] ?? 'app_') . 'user_id'] ?? 1,
+                'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null
             ];
             
             // Validate required fields

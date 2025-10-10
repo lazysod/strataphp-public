@@ -182,6 +182,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                         <th>Status</th>
                         <th>Author</th>
                         <th>Created</th>
+                        <th>Home</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -207,6 +208,15 @@ unset($_SESSION['success'], $_SESSION['error']);
                         <td>
                             <?= date('M j, Y', strtotime($page['created_at'])) ?>
                             <br><small style="color: #666;"><?= date('g:i A', strtotime($page['created_at'])) ?></small>
+                        </td>
+                        <td style="text-align:center;">
+                            <?php if (!empty($page['is_home'])): ?>
+                                <span style="color: #27ae60; font-weight: bold;">Home</span>
+                            <?php else: ?>
+                                <form method="POST" action="/admin/cms/pages/<?= $page['id'] ?>/set-home" style="display:inline;">
+                                    <button type="submit" class="btn btn-small" onclick="return confirm('Set this page as the home page?')">Set as Home</button>
+                                </form>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <div class="actions">

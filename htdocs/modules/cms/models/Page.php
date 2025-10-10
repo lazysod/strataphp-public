@@ -11,6 +11,13 @@ use App\HtmlSanitizer;
  */
 class Page
 {
+    /**
+     * Get the page marked as home (is_home = 1)
+     */
+    public function getHomePage()
+    {
+        return $this->db->fetch("SELECT * FROM cms_pages WHERE is_home = 1 AND status = 'published' LIMIT 1");
+    }
     private $db;
     
     public function __construct($config = null)
@@ -36,7 +43,7 @@ class Page
     {
         return $this->db->fetchAll("
             SELECT * FROM cms_pages 
-            WHERE status = 'published' 
+            WHERE status = 'published'
             ORDER BY menu_order ASC, created_at DESC
         ");
     }
