@@ -167,6 +167,11 @@ require_once __DIR__ . '/../../../../app/helpers.php';
                 <a href="/admin/cms/pages/create" class="btn btn-success">Create Page</a>
             </div>
             <div class="action-card">
+                <h3>🖼️ Media Library</h3>
+                <p>Upload and manage images, documents, and other media files</p>
+                <a href="/admin/cms/media" class="btn btn-info">Open Media Library</a>
+            </div>
+            <div class="action-card">
                 <h3>🌐 View Website</h3>
                 <p>See how your site looks to visitors</p>
                 <a href="/" class="btn" target="_blank">View Site</a>

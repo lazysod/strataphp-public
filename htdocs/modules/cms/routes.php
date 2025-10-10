@@ -32,8 +32,9 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     $router->post('/admin/cms/pages/{id}/delete', [AdminController::class, 'deletePage']);
     $router->post('/admin/cms/pages/{id}/set-home', [AdminController::class, 'setHomePage']);
     
-    // Image upload routes
+    // Image upload and media management routes
     $router->post('/admin/cms/upload/image', [ImageController::class, 'upload']);
+    $router->post('/admin/cms/media/delete', [ImageController::class, 'deleteMedia']);
     $router->get('/admin/cms/media', [AdminController::class, 'mediaLibrary']);
     
     // API routes for headless usage

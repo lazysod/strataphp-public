@@ -146,6 +146,11 @@ if (!defined('STRPHP_ROOT')) {
     </style>
 </head>
 <body>
+    <nav style="margin-bottom: 18px; font-size: 15px;">
+        <a href="/admin/cms/dashboard" style="color: #007cba; text-decoration: none;">Dashboard</a>
+        <span style="color: #888;"> &gt; </span>
+        <span style="color: #333; font-weight: 500;">Media Library</span>
+    </nav>
     <div class="header">
         <h1>Media Library</h1>
         <div>
@@ -155,9 +160,15 @@ if (!defined('STRPHP_ROOT')) {
     </div>
 
     <div class="upload-area" onclick="document.getElementById('media-upload').click()">
-        <h3>📷 Upload New Images</h3>
-        <p>Click here or drag and drop images to upload</p>
-        <input type="file" id="media-upload" multiple accept="image/*">
+        <h3>📷 Upload New Images or PDFs</h3>
+        <p>Click here or drag and drop images or PDFs to upload</p>
+        <input type="file" id="media-upload" multiple accept="image/*,application/pdf">
+        <div id="upload-progress" style="margin-top:10px; display:none;">
+            <div style="background:#eee; border-radius:4px; overflow:hidden; height:18px; width:100%;">
+                <div id="progress-bar" style="background:#007cba; height:18px; width:0%; transition:width 0.2s;"></div>
+            </div>
+            <div id="progress-label" style="font-size:13px; color:#333; margin-top:4px;"></div>
+        </div>
     </div>
 
     <?php if (empty($images)): ?>
@@ -167,10 +178,22 @@ if (!defined('STRPHP_ROOT')) {
         </div>
     <?php else: ?>
         <div class="media-grid">
-            <?php foreach ($images as $image): ?>
+            <?php foreach ($images as $image):
+                $ext = strtolower(pathinfo($image['filename'], PATHINFO_EXTENSION));
+            ?>
                 <div class="media-item" data-filename="<?= htmlspecialchars($image['filename']) ?>">
                     <div class="media-preview">
-                        <img src="<?= htmlspecialchars($image['thumbnail']) ?>" alt="<?= htmlspecialchars($image['filename']) ?>">
+                        <?php if (in_array($ext, ['jpg','jpeg','png','gif','webp'])): ?>
+                            <img src="<?= htmlspecialchars($image['thumbnail']) ?>" alt="<?= htmlspecialchars($image['filename']) ?>">
+                        <?php elseif ($ext === 'pdf'): ?>
+                            <a href="<?= htmlspecialchars($image['url']) ?>" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;text-decoration:none;">
+                                <span style="font-size:48px;">📄</span>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?= htmlspecialchars($image['url']) ?>" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;text-decoration:none;">
+                                <span style="font-size:36px;">📁</span>
+                            </a>
+                        <?php endif; ?>
                     </div>
                     <div class="media-info">
                         <div class="media-filename"><?= htmlspecialchars($image['filename']) ?></div>
@@ -179,14 +202,34 @@ if (!defined('STRPHP_ROOT')) {
                             Uploaded: <?= htmlspecialchars($image['uploaded']) ?>
                         </div>
                         <div class="media-actions">
-                            <button class="btn btn-small" onclick="copyUrl('<?= htmlspecialchars($image['url']) ?>')">Copy URL</button>
+                            <button class="btn btn-small" onclick="copyUrl(this, '<?= htmlspecialchars($image['url']) ?>')">Copy URL</button>
+                            <a class="btn btn-small btn-info" href="<?= htmlspecialchars($image['url']) ?>" download target="_blank">Download</a>
                             <button class="btn btn-small btn-danger" onclick="deleteImage('<?= htmlspecialchars($image['filename']) ?>')">Delete</button>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php if (!empty($images) && isset($page) && isset($totalPages) && $totalPages > 1): ?>
+            <div style="text-align:center; margin: 30px 0;">
+                <nav aria-label="Media pagination">
+                    <ul style="display:inline-flex; list-style:none; padding:0; margin:0; gap:6px;">
+                        <?php if ($page > 1): ?>
+                            <li><a href="?page=<?= $page - 1 ?>" class="btn btn-small">&laquo; Prev</a></li>
+                        <?php endif; ?>
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li><a href="?page=<?= $i ?>" class="btn btn-small<?= ($i == $page ? ' btn-info' : '') ?>"><?= $i ?></a></li>
+                        <?php endfor; ?>
+                        <?php if ($page < $totalPages): ?>
+                            <li><a href="?page=<?= $page + 1 ?>" class="btn btn-small">Next &raquo;</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </nav>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
+
+
 
     <script>
         // File upload handling
@@ -218,51 +261,63 @@ if (!defined('STRPHP_ROOT')) {
         });
 
         function uploadFile(file) {
-            if (!file.type.startsWith('image/')) {
-                alert('Please select image files only.');
+            const allowedTypes = [
+                'image/jpeg','image/png','image/gif','image/webp','image/svg+xml','application/pdf'
+            ];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only images and PDFs are allowed.');
                 return;
             }
-
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB: ' + file.name);
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB: ' + file.name);
                 return;
             }
-
             const formData = new FormData();
             formData.append('image', file);
-
-            fetch('/admin/cms/upload/image', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Reload the page to show new image
-                    window.location.reload();
-                } else {
-                    alert('Upload failed: ' + data.error);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/admin/cms/upload/image', true);
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    document.getElementById('upload-progress').style.display = 'block';
+                    document.getElementById('progress-bar').style.width = percent + '%';
+                    document.getElementById('progress-label').textContent = 'Uploading ' + file.name + ' (' + percent + '%)';
                 }
-            })
-            .catch(error => {
-                alert('Upload failed: ' + error.message);
-                console.error('Upload error:', error);
-            });
+            };
+            xhr.onload = function() {
+                document.getElementById('progress-bar').style.width = '0%';
+                document.getElementById('progress-label').textContent = '';
+                document.getElementById('upload-progress').style.display = 'none';
+                if (xhr.status === 200) {
+                    let data;
+                    try { data = JSON.parse(xhr.responseText); } catch (e) { data = {}; }
+                    if (data.location || data.url) {
+                        // Add new file to grid dynamically (simple reload for now)
+                        window.location.reload();
+                    } else if (data.error) {
+                        alert('Upload failed: ' + data.error);
+                    } else {
+                        alert('Upload failed: Unknown error.');
+                    }
+                } else {
+                    alert('Upload failed: Server error.');
+                }
+            };
+            xhr.onerror = function() {
+                document.getElementById('upload-progress').style.display = 'none';
+                alert('Upload failed: Network error.');
+            };
+            xhr.send(formData);
         }
 
-        function copyUrl(url) {
-            // Create full URL
+        function copyUrl(btn, url) {
             const fullUrl = window.location.origin + url;
-            
-            // Copy to clipboard
             navigator.clipboard.writeText(fullUrl).then(function() {
-                // Provide feedback
-                const originalText = event.target.textContent;
-                event.target.textContent = 'Copied!';
+                btn.textContent = 'Copied!';
                 setTimeout(() => {
-                    event.target.textContent = originalText;
+                    btn.textContent = 'Copy URL';
                 }, 1000);
-            }).catch(function(err) {
+            }).catch(function() {
                 // Fallback for older browsers
                 const textarea = document.createElement('textarea');
                 textarea.value = fullUrl;
@@ -270,19 +325,36 @@ if (!defined('STRPHP_ROOT')) {
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                
-                const originalText = event.target.textContent;
-                event.target.textContent = 'Copied!';
+                btn.textContent = 'Copied!';
                 setTimeout(() => {
-                    event.target.textContent = originalText;
+                    btn.textContent = 'Copy URL';
                 }, 1000);
             });
         }
 
         function deleteImage(filename) {
-            if (confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
-                // TODO: Implement delete functionality
-                alert('Delete functionality will be implemented in the next update.');
+            if (confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
+                fetch('/admin/cms/media/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'filename=' + encodeURIComponent(filename)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the media item from the grid
+                        const item = document.querySelector('.media-item[data-filename="' + filename.replace(/"/g, '\\"') + '"]');
+                        if (item) item.remove();
+                    } else {
+                        alert('Delete failed: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(() => {
+                    alert('Delete failed: Network error');
+                });
             }
         }
     </script>

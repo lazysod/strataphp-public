@@ -4,10 +4,55 @@ namespace App\Modules\Cms\Controllers;
 /**
  * Image Upload Handler for CMS
  */
-class ImageController
-{
+class ImageController {
+    /**
+     * Delete a media file (image, PDF, etc.) via AJAX
+     */
+    public function deleteMedia()
+    {
+        header('Content-Type: application/json');
+        $this->requireAuth();
+        try {
+            $filename = $_POST['filename'] ?? '';
+            if (!$filename || strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, "\\") !== false) {
+                throw new \Exception('Invalid filename');
+            }
+            // Find the file in the upload directory or subdirs
+            $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->uploadDir, \FilesystemIterator::SKIP_DOTS));
+            $filePath = null;
+            foreach ($rii as $fileInfo) {
+                if ($fileInfo->isFile() && $fileInfo->getFilename() === $filename) {
+                    $filePath = $fileInfo->getPathname();
+                    break;
+                }
+            }
+            if (!$filePath || !file_exists($filePath)) {
+                throw new \Exception('File not found');
+            }
+            // Delete the file
+            if (!unlink($filePath)) {
+                throw new \Exception('Failed to delete file');
+            }
+            // If image, also delete thumbnail if exists
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg','jpeg','png','gif','webp','heic'])) {
+                $thumbPath = dirname($filePath) . '/thumbs/' . $filename;
+                if (!file_exists($thumbPath)) {
+                    // Try thumbs dir in main upload dir
+                    $thumbPath = $this->uploadDir . 'thumbs/' . $filename;
+                }
+                if (file_exists($thumbPath)) {
+                    @unlink($thumbPath);
+                }
+            }
+            echo json_encode(['success' => true]);
+        } catch (\Exception $e) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
     private $uploadDir;
-    private $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    private $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'image/heic'];
     private $maxFileSize = 5 * 1024 * 1024; // 5MB
     private $config;
 
@@ -54,13 +99,17 @@ class ImageController
                 throw new \Exception('No image file provided');
             }
             $file = $_FILES['image'];
+            $mimeType = mime_content_type($file['tmp_name']);
             $this->validateFile($file);
             $filename = $this->generateFilename($file['name']);
             $filepath = $this->uploadDir . $filename;
             if (!move_uploaded_file($file['tmp_name'], $filepath)) {
                 throw new \Exception('Failed to upload file');
             }
-            $thumbnailPath = $this->createThumbnail($filepath, $filename);
+            $thumbnailPath = null;
+            if (strpos($mimeType, 'image/') === 0 && $mimeType !== 'image/heic') {
+                $thumbnailPath = $this->createThumbnail($filepath, $filename);
+            }
             ob_clean();
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
             $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -97,11 +146,14 @@ class ImageController
         }
         $mimeType = mime_content_type($file['tmp_name']);
         if (!in_array($mimeType, $this->allowedTypes)) {
-            throw new \Exception('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed');
+            throw new \Exception('Invalid file type. Only JPEG, PNG, GIF, WebP, HEIC images, and PDFs are allowed');
         }
-        $imageInfo = getimagesize($file['tmp_name']);
-        if ($imageInfo === false) {
-            throw new \Exception('Invalid image file');
+        // Only validate image dimensions for images (not PDFs)
+        if (strpos($mimeType, 'image/') === 0 && $mimeType !== 'image/heic') {
+            $imageInfo = getimagesize($file['tmp_name']);
+            if ($imageInfo === false) {
+                throw new \Exception('Invalid image file');
+            }
         }
     }
 

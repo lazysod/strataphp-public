@@ -20,10 +20,13 @@ use App\FileUpload;
 header('Content-Type: application/json');
 
 try {
-    // Check if user is authenticated admin
+    // Check if user is authenticated admin (use session prefix from config)
     session_start();
-    if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    $config = file_exists(__DIR__ . '/../app/config.php') ? require __DIR__ . '/../app/config.php' : [];
+    $sessionPrefix = $config['session_prefix'] ?? 'app_';
+    if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
         http_response_code(403);
+        error_log('UPLOAD DEBUG: Unauthorized access. Session: ' . print_r($_SESSION, true));
         echo json_encode(['error' => 'Unauthorized access']);
         exit;
     }
@@ -31,14 +34,15 @@ try {
     // Check if file was uploaded
     if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
         http_response_code(400);
+        error_log('UPLOAD DEBUG: No file uploaded or upload error. FILES: ' . print_r($_FILES, true));
         echo json_encode(['error' => 'No file uploaded or upload error']);
         exit;
     }
 
-    // Upload options for images
+    // Upload options for images and PDFs
     $uploadOptions = [
-        'images_only' => true,
-        'subdir' => 'cms/images',
+        'images_only' => false, // allow images and pdfs
+        'subdir' => 'cms/files',
         'resize_width' => 1920,
         'resize_height' => 1080,
         'quality' => 85,
@@ -56,6 +60,7 @@ try {
         ]);
     } else {
         http_response_code(400);
+        error_log('UPLOAD DEBUG: Upload failed. Error: ' . $result['error'] . ' FILE: ' . print_r($_FILES['file'], true));
         echo json_encode([
             'error' => $result['error']
         ]);

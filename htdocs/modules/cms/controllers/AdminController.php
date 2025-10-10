@@ -425,34 +425,47 @@ class AdminController
         $this->requireAuth();
         
         try {
-            $uploadDir = __DIR__ . '/../../../../storage/uploads/cms/';
+            $uploadDir = __DIR__ . '/../../../../htdocs/storage/uploads/cms/';
             $thumbDir = $uploadDir . 'thumbs/';
             $images = [];
-            
+            $perPage = 20;
+            $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+            $total = 0;
             if (is_dir($uploadDir)) {
-                $files = array_diff(scandir($uploadDir), ['.', '..', 'thumbs']);
-                
-                foreach ($files as $file) {
-                    $filePath = $uploadDir . $file;
-                    if (is_file($filePath) && preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file)) {
-                        $images[] = [
-                            'filename' => $file,
-                            'url' => '/storage/uploads/cms/' . $file,
-                            'thumbnail' => file_exists($thumbDir . $file) ? '/storage/uploads/cms/thumbs/' . $file : '/storage/uploads/cms/' . $file,
-                            'size' => filesize($filePath),
-                            'uploaded' => date('Y-m-d H:i:s', filemtime($filePath))
-                        ];
+                $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($uploadDir, \FilesystemIterator::SKIP_DOTS));
+                foreach ($rii as $fileInfo) {
+                    if ($fileInfo->isFile()) {
+                        $filePath = $fileInfo->getPathname();
+                        $file = $fileInfo->getFilename();
+                        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                        if (in_array($ext, ['jpg','jpeg','png','gif','webp','pdf'])) {
+                            $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp']);
+                            // Get relative path for URL (always relative to /storage/uploads/cms/)
+                            $relativeFile = ltrim(str_replace($uploadDir, '', $filePath), '/\\');
+                            $url = '/storage/uploads/cms/' . str_replace(DIRECTORY_SEPARATOR, '/', $relativeFile);
+                            $images[] = [
+                                'filename' => $file,
+                                'url' => $url,
+                                'thumbnail' => $isImage ? $url : '',
+                                'size' => filesize($filePath),
+                                'uploaded' => date('Y-m-d H:i:s', filemtime($filePath))
+                            ];
+                        }
                     }
                 }
-                
                 // Sort by upload date (newest first)
                 usort($images, function($a, $b) {
                     return strtotime($b['uploaded']) - strtotime($a['uploaded']);
                 });
+                $total = count($images);
+                $images = array_slice($images, ($page - 1) * $perPage, $perPage);
             }
-            
-            $this->renderAdminView('media_library', ['images' => $images]);
-            
+            $totalPages = max(1, ceil($total / $perPage));
+            $this->renderAdminView('media_library', [
+                'images' => $images,
+                'page' => $page,
+                'totalPages' => $totalPages
+            ]);
         } catch (\Exception $e) {
             error_log("Media library error: " . $e->getMessage());
             $this->renderAdminView('error', ['message' => 'Failed to load media library']);
