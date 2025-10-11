@@ -182,41 +182,6 @@ namespace App\Modules\Cms\Controllers;
     }
     
     /**
-     * Display the specified resource
-     */
-    public function show($id)
-    {
-        try {
-            // Validate ID
-            if (!is_numeric($id) || $id <= 0) {
-                header('HTTP/1.0 404 Not Found');
-                echo '404 - Invalid cms ID';
-                exit;
-            }
-            
-            $cmsModel = new Cms($this->db);
-            $item = $cmsModel->getById($id);
-            
-            if (!$item) {
-                header('HTTP/1.0 404 Not Found');
-                echo '404 - Cms not found';
-                exit;
-            }
-            
-            $data = [
-                'item' => $item,
-                'title' => $item['title']
-            ];
-            
-            include __DIR__ . '/../views/show.php';
-        } catch (\Exception $e) {
-            error_log("CmsController show error: " . $e->getMessage());
-            http_response_code(500);
-            echo 'An error occurred while loading the cms.';
-        }
-    }
-    
-    /**
      * Show the form for editing the specified resource
      */
     public function edit($id)

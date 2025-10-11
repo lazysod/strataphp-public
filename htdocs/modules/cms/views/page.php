@@ -25,10 +25,6 @@ if (!defined('STRPHP_ROOT')) {
     <meta property="og:title" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
     <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'article') ?>">
-    <?php 
-    // Debug: Check og_image value
-    // echo '<!-- DEBUG: og_image = "' . ($og_image ?? 'NOT SET') . '" -->' . PHP_EOL;
-    ?>
     <?php if (!empty($og_image)): ?>
     <meta property="og:image" content="<?= htmlspecialchars($og_image) ?>">
     <meta property="og:image:width" content="1200">
