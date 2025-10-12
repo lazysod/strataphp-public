@@ -6,7 +6,7 @@ return [
     'version' => '1.0.0',
     'description' => 'Community module marketplace with submission, review, and approval system for StrataPHP modules.',
     'author' => 'StrataPHP Framework',
-    'category' => 'Core',
+    'category' => 'Admin',
     'license' => 'MIT',
     'homepage' => 'https://github.com/strataphp/module-directory-module',
     'repository' => 'https://github.com/strataphp/module-directory-module.git',
@@ -14,7 +14,9 @@ return [
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => false,
     'suitable_as_default' => false,
-    'dependencies' => ['user'], // Requires user management system
+    'dependencies' => [
+        'user' => '^1.0'
+    ], // Requires user management system
     'permissions' => [
         'module-directory.view', 
         'module-directory.submit', 
