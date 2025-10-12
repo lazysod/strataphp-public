@@ -12,6 +12,7 @@ require_once __DIR__ . '/theme.php';
 
 // date_default_timezone_set('Europe/London');
 return array(
+    'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
     'site_description' => 'A simple PHP framework',
     'admin_email' => getenv('ADMIN_EMAIL') ?: 'your-admin@example.com',
@@ -82,7 +83,7 @@ return array(
         ),
         'contact' =>
         array(
-            'enabled' => true,
+            'enabled' => false,
             'suitable_as_default' => true,
         ),
         'links' =>
@@ -92,12 +93,27 @@ return array(
         ),
         'admin' =>
         array(
-            'enabled' => true, // Always enabled, cannot be disabled
+            'enabled' => true,
             'suitable_as_default' => false,
         ),
         'helloworld' =>
         array(
-            'enabled' => true,
+            'enabled' => false,
+            'suitable_as_default' => false,
+        ),
+        'api' =>
+        array(
+            'enabled' => false,
+            'suitable_as_default' => false,
+        ),
+        'test-module' =>
+        array(
+            'enabled' => false,
+            'suitable_as_default' => false,
+        ),
+        'cms' =>
+        array(
+            'enabled' => false,
             'suitable_as_default' => false,
         ),
     ),
@@ -115,6 +131,6 @@ return array(
         'terms' => '/views/terms.php',
     ),
     'default_module' => 'home',
-    // Enable or disable user registration
+    'update_url' => '', // Optional: URL to check for updates
     'registration_enabled' => true,
 );
