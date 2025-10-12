@@ -68,6 +68,8 @@ class GoogleAnalyticsAdminController {
             echo '<button type="submit" class="btn btn-primary">Save</button>';
             echo '</form>';
             echo '</div></section>';
+            // Include footer for consistent layout
+            require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php';
         } catch (\Throwable $e) {
             // Log or display error for admin
             echo '<div class="alert alert-danger">An error occurred: ' . htmlspecialchars($e->getMessage()) . '</div>';
