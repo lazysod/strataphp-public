@@ -1,34 +1,39 @@
 <?php
-
 /**
  * Default Page Template (Bootstrap 5 Only)
  *
  * This template is for the new CMS theme system. No embedded CSS or JS.
  * All layout uses Bootstrap 5 utility classes. All custom styles in theme.css.
+ *
+ * Error handling: Wraps meta/data preparation in try-catch and logs errors.
  */
-
-// Get page meta data, fallback to home page meta if missing
-if (!isset($themeManager)) {
-    $themeManager = isset($theme) ? new App\Modules\Cms\ThemeManager() : null;
-}
-if (!isset($meta)) {
-    $meta = $themeManager ? $themeManager->getPageMeta($page) : [];
-}
-// If any of the key OG meta fields are missing, fallback to home page meta
-if ($themeManager && (
-    empty($meta['og_image']) || empty($meta['og_title']) || empty($meta['og_description'])
-)) {
-    $homePage = (new App\Modules\Cms\Models\Page())->getHomePage();
-    if ($homePage) {
-        $homeMeta = $themeManager->getPageMeta($homePage);
-        if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) $meta['og_image'] = $homeMeta['og_image'];
-        if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) $meta['og_title'] = $homeMeta['og_title'];
-        if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) $meta['og_description'] = $homeMeta['og_description'];
-        if (empty($meta['description']) && !empty($homeMeta['description'])) $meta['description'] = $homeMeta['description'];
-        if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) $meta['twitter_image'] = $homeMeta['twitter_image'];
-        if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) $meta['twitter_title'] = $homeMeta['twitter_title'];
-        if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) $meta['twitter_description'] = $homeMeta['twitter_description'];
+try {
+    // Get page meta data, fallback to home page meta if missing
+    if (!isset($themeManager)) {
+        $themeManager = isset($theme) ? new App\Modules\Cms\ThemeManager() : null;
     }
+    if (!isset($meta)) {
+        $meta = $themeManager ? $themeManager->getPageMeta($page) : [];
+    }
+    // If any of the key OG meta fields are missing, fallback to home page meta
+    if ($themeManager && (
+        empty($meta['og_image']) || empty($meta['og_title']) || empty($meta['og_description'])
+    )) {
+        $homePage = (new App\Modules\Cms\Models\Page())->getHomePage();
+        if ($homePage) {
+            $homeMeta = $themeManager->getPageMeta($homePage);
+            if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) $meta['og_image'] = $homeMeta['og_image'];
+            if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) $meta['og_title'] = $homeMeta['og_title'];
+            if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) $meta['og_description'] = $homeMeta['og_description'];
+            if (empty($meta['description']) && !empty($homeMeta['description'])) $meta['description'] = $homeMeta['description'];
+            if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) $meta['twitter_image'] = $homeMeta['twitter_image'];
+            if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) $meta['twitter_title'] = $homeMeta['twitter_title'];
+            if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) $meta['twitter_description'] = $homeMeta['twitter_description'];
+        }
+    }
+} catch (\Throwable $e) {
+    error_log("CMS theme default.php error: " . $e->getMessage());
+    echo '<div class="alert alert-danger">An error occurred preparing the page meta data.</div>';
 }
 ?>
 <!DOCTYPE html>

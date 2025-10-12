@@ -1,4 +1,3 @@
-<!-- CMS TEMPLATE: page.php -->
 <?php
 // CMS Page Template
 if (!defined('STRPHP_ROOT')) {

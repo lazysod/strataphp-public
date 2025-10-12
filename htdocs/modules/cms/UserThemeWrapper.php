@@ -14,51 +14,56 @@ class UserThemeWrapper
      */
     public static function renderUserPage($title, $content, $additionalMeta = [])
     {
-        // Create page data for CMS theme
-        $page = [
-            'title' => $title,
-            'content' => $content,
-            'meta_description' => $additionalMeta['description'] ?? "User management - {$title}",
-            'meta_title' => $additionalMeta['title'] ?? "{$title} | StrataPHP CMS",
-            'slug' => $additionalMeta['slug'] ?? strtolower(str_replace(' ', '-', $title)),
-            'status' => 'published',
-            'template' => 'default',
-            'og_image' => $additionalMeta['og_image'] ?? '',
-            'og_type' => 'website',
-            'twitter_card' => 'summary',
-            'canonical_url' => $additionalMeta['canonical'] ?? '',
-            'noindex' => $additionalMeta['noindex'] ?? false,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
+        try {
+            // Create page data for CMS theme
+            $page = [
+                'title' => $title,
+                'content' => $content,
+                'meta_description' => $additionalMeta['description'] ?? "User management - {$title}",
+                'meta_title' => $additionalMeta['title'] ?? "{$title} | StrataPHP CMS",
+                'slug' => $additionalMeta['slug'] ?? strtolower(str_replace(' ', '-', $title)),
+                'status' => 'published',
+                'template' => 'default',
+                'og_image' => $additionalMeta['og_image'] ?? '',
+                'og_type' => 'website',
+                'twitter_card' => 'summary',
+                'canonical_url' => $additionalMeta['canonical'] ?? '',
+                'noindex' => $additionalMeta['noindex'] ?? false,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
 
-        // Use CMS theme manager
-        $themeManager = new ThemeManager();
-        $meta = $themeManager->getPageMeta($page);
-        $navigation = $themeManager->getNavigationPages();
-        $themeConfig = $themeManager->getThemeConfig();
-        // Force site_name to be consistent for all CMS pages
-        $siteName = $themeConfig['site_name'] ?? $themeConfig['name'] ?? 'StrataPHP CMS';
-        $themeConfig['site_name'] = $siteName;
-        $theme = [
-            'config' => $themeConfig,
-            'styles' => $themeConfig['styles'],
-            'name' => $themeConfig['name'],
-            'assets_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets',
-            'css_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/css/style.css',
-            'js_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/js/main.js',
-        ];
+            // Use CMS theme manager
+            $themeManager = new ThemeManager();
+            $meta = $themeManager->getPageMeta($page);
+            $navigation = $themeManager->getNavigationPages();
+            $themeConfig = $themeManager->getThemeConfig();
+            // Force site_name to be consistent for all CMS pages
+            $siteName = $themeConfig['site_name'] ?? $themeConfig['name'] ?? 'StrataPHP CMS';
+            $themeConfig['site_name'] = $siteName;
+            $theme = [
+                'config' => $themeConfig,
+                'styles' => $themeConfig['styles'],
+                'name' => $themeConfig['name'],
+                'assets_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets',
+                'css_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/css/style.css',
+                'js_url' => '/' . 'modules/cms/themes/' . $themeManager->getCurrentTheme() . '/assets/js/main.js',
+            ];
 
-        // Make variables available in template scope
-        extract([
-            'theme' => $theme,
-            'navigation' => $navigation,
-            'meta' => $meta,
-            'page' => $page
-        ]);
+            // Make variables available in template scope
+            extract([
+                'theme' => $theme,
+                'navigation' => $navigation,
+                'meta' => $meta,
+                'page' => $page
+            ]);
 
-    // Include the correct CMS theme template
-    include __DIR__ . '/themes/modern/templates/default.php';
+            // Include the correct CMS theme template
+            include __DIR__ . '/themes/modern/templates/default.php';
+        } catch (\Throwable $e) {
+            error_log("UserThemeWrapper::renderUserPage error: " . $e->getMessage());
+            echo '<div class="alert alert-danger">An error occurred rendering the user page.</div>';
+        }
     }
     
     /**

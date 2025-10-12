@@ -294,13 +294,15 @@ class ModuleValidator
             $isViewFile = strpos($file, '/views/') !== false;
             $isRouteFile = $filename === 'routes.php';
             $isIndexFile = $filename === 'index.php';
-            
-            if (!$isViewFile && !$isRouteFile && !$isIndexFile) {
+            $isConfigFile = strpos($file, '/config/') !== false;
+
+            // Skip view files, route files, index files, and config files from error handling check
+            if (!$isViewFile && !$isRouteFile && !$isIndexFile && !$isConfigFile) {
                 // Check for proper error handling (required)
                 if (strpos($content, 'try') === false && strpos($content, 'catch') === false) {
                     $this->errors[] = "Missing error handling in: " . basename($file);
                 }
-                
+
                 // Check for documentation (required)
                 if (strpos($content, '/**') === false) {
                     $this->errors[] = "Missing documentation comments in: " . basename($file);

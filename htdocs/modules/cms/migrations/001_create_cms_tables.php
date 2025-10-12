@@ -1,5 +1,17 @@
 <?php
-// Migration: Create CMS tables for pages, posts, menus, and content management
+/**
+ * Migration: Create CMS tables for pages, posts, menus, and content management
+ *
+ * This migration creates the following tables:
+ * - cms_pages: Stores CMS pages and metadata
+ * - cms_posts: Stores blog/news posts
+ * - cms_categories: Stores categories for posts
+ * - cms_menus, cms_menu_items: Stores navigation menus and items
+ * - cms_content_revisions: Stores revision history for content
+ *
+ * @param \App\DB $db Database connection instance
+ * @return void
+ */
 return function($db) {
     try {
         // CMS Pages table
