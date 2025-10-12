@@ -60,9 +60,9 @@ return [
             ]
         ]
     ],
-    'item2' => [
-        'label' => 'Item 2',
-        'url' => '/contact',
+    'example_link' => [
+        'label' => 'Example link',
+        'url' => '#example',
         'show' => true,
         'order' => 4
     ]

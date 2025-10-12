@@ -22,13 +22,6 @@ return [
         'new_tab' => true,
         'url' => 'https://strataphp.org',
     ],
-    'links' => [
-        'label' => 'Links',
-        'show' => false,
-        'order' => 4,
-        'new_tab' => false,
-        'url' => '/links',
-    ],
     'Contact' => [
         'label' => 'Contact Us',
         'url' => '/contact',

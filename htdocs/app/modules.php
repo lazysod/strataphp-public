@@ -29,7 +29,7 @@ return array (
     ),
     'google_analytics' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
     ),
     'helloworld' => 
@@ -44,7 +44,7 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => true,
     ),
     'user' => 
@@ -54,7 +54,8 @@ return array (
     ),
   ),
   'default_module' => 'home',
-  'module_directory' => array (
+  'module_directory' => 
+  array (
     'enabled' => false,
     'suitable_as_default' => false,
   ),
