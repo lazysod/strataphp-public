@@ -66,6 +66,23 @@ Once installed and the admin account is created, you can log in and begin config
 
 ---
 
+
+## SEO & Meta Tags
+_Per-page meta tags for SEO and social sharing._
+
+You can set custom meta tags (title, description, keywords) for any page by defining variables in your controller or before including the header:
+
+```php
+$metaTitle = 'Custom Page Title';
+$metaDescription = 'A unique description for this page.';
+$metaKeywords = 'custom, keywords, for, this, page';
+include 'views/partials/header.php';
+```
+
+If you do not set these variables, the site-wide defaults from your config will be used. This allows for flexible, SEO-friendly pages throughout your site.
+
+---
+
 ## Features
 _A summary of the framework's core capabilities._
 
