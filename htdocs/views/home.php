@@ -1,5 +1,6 @@
 <?php 
 use App\App;
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
 require __DIR__ . '/partials/header.php'; 
 ?>
             <header class="bg-dark py-5">

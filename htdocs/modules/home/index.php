@@ -18,5 +18,7 @@ return [
         'models' => false       // No data persistence needed
     ],
     'update_url' => '', // Optional: URL to check for updates
-    'enabled' => true
+    'enabled' => true,
+    'suitable_as_default' => true,
+    
 ];

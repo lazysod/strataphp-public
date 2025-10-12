@@ -33,5 +33,6 @@ return [
     'routes' => [
         '/links' => 'LinksController@index',
         '/links/about' => 'LinksController@about'
-    ]
+    ], 
+    'suitable_as_default' => true
 ];
