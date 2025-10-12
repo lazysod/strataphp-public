@@ -333,6 +333,10 @@ class ModuleInstallerController
                 
                 if (is_dir($moduleDir) && file_exists($indexFile)) {
                     $moduleData = include $indexFile;
+                    if (!is_array($moduleData)) {
+                        // Skip or log error if index.php does not return array
+                        continue;
+                    }
                     $moduleData['directory'] = $dir;
                     $moduleData['enabled'] = $this->config['modules'][$dir]['enabled'] ?? false;
                     $modules[] = $moduleData;

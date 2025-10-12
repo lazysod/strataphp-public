@@ -4,8 +4,23 @@ if (!isset($siteConfig)) {
     $siteConfig = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
 }
 
-// Always use $siteConfig['modules'] for the UI
+// Always merge discovered modules with config for the UI
 $modules = $siteConfig['modules'];
+$modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
+if (is_dir($modulesPath)) {
+    $moduleDirectories = array_filter(glob($modulesPath . '/*'), 'is_dir');
+    foreach ($moduleDirectories as $moduleDir) {
+        $moduleName = basename($moduleDir);
+        $moduleIndexPath = $moduleDir . '/index.php';
+        if (!file_exists($moduleIndexPath)) continue;
+        if (!isset($modules[$moduleName])) {
+            $modules[$moduleName] = [
+                'enabled' => false,
+                'suitable_as_default' => false
+            ];
+        }
+    }
+}
 
 // Admin session check
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';

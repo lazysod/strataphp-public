@@ -93,26 +93,22 @@ class ModuleManagerController {
     private function scanModules($siteConfig) {
         $modules = [];
         $modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
-        
         if (!is_dir($modulesPath)) {
             return isset($siteConfig['modules']) ? $siteConfig['modules'] : [];
         }
-        
         // Scan filesystem for module directories
         $moduleDirectories = array_filter(glob($modulesPath . '/*'), 'is_dir');
-        
+        $existingModuleNames = [];
         foreach ($moduleDirectories as $moduleDir) {
             $moduleName = basename($moduleDir);
+            $existingModuleNames[] = $moduleName;
             $moduleIndexPath = $moduleDir . '/index.php';
-            
             // Skip if no index.php exists (required for StrataPHP modules)
             if (!file_exists($moduleIndexPath)) {
                 continue;
             }
-            
             // Start with config data if exists
             $moduleData = isset($siteConfig['modules'][$moduleName]) ? $siteConfig['modules'][$moduleName] : [];
-            
             // Set defaults for modules not in config
             if (!isset($moduleData['enabled'])) {
                 $moduleData['enabled'] = false;
@@ -120,10 +116,16 @@ class ModuleManagerController {
             if (!isset($moduleData['suitable_as_default'])) {
                 $moduleData['suitable_as_default'] = false;
             }
-            
             $modules[$moduleName] = $moduleData;
         }
-        
+        // Remove config entries for modules that do not exist on disk
+        if (isset($siteConfig['modules'])) {
+            foreach ($siteConfig['modules'] as $modName => $modInfo) {
+                if (!in_array($modName, $existingModuleNames)) {
+                    unset($modules[$modName]);
+                }
+            }
+        }
         return $modules;
     }
 

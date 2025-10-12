@@ -47,11 +47,6 @@ return array (
       'enabled' => false,
       'suitable_as_default' => true,
     ),
-    'module_directory' => 
-    array (
-      'enabled' => false,
-      'suitable_as_default' => false,
-    ),
     'user' => 
     array (
       'enabled' => false,
@@ -59,4 +54,8 @@ return array (
     ),
   ),
   'default_module' => 'home',
+  'module_directory' => array (
+    'enabled' => false,
+    'suitable_as_default' => false,
+  ),
 );
