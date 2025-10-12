@@ -13,7 +13,31 @@ class ModuleAutoDiscovery
      */
     public static function discover($modulesDir)
     {
-    // Clean: no die, no debug
+        $modules = [];
+        if (!is_dir($modulesDir)) {
+            error_log('[ModuleAutoDiscovery] Directory not found: ' . $modulesDir);
+            return $modules;
+        }
+        foreach (scandir($modulesDir) as $moduleName) {
+            if ($moduleName === '.' || $moduleName === '..') continue;
+            $modulePath = $modulesDir . DIRECTORY_SEPARATOR . $moduleName;
+            $indexFile = $modulePath . DIRECTORY_SEPARATOR . 'index.php';
+            if (is_dir($modulePath) && file_exists($indexFile)) {
+                $meta = include $indexFile;
+                if (!is_array($meta)) {
+                    error_log('[ModuleAutoDiscovery] Invalid metadata for module: ' . $moduleName);
+                    continue;
+                }
+                $modules[$moduleName] = [
+                    'enabled' => isset($meta['enabled']) ? (bool)$meta['enabled'] : false,
+                    'suitable_as_default' => isset($meta['suitable_as_default']) ? (bool)$meta['suitable_as_default'] : false,
+                ];
+            }
+        }
+        if (empty($modules)) {
+            error_log('[ModuleAutoDiscovery] No modules discovered in: ' . $modulesDir);
+        }
+        return $modules;
     $modules = [];
         if (!is_dir($modulesDir)) return $modules;
         foreach (scandir($modulesDir) as $moduleName) {

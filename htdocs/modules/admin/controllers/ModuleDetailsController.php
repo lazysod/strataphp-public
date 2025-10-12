@@ -176,13 +176,15 @@ class ModuleDetailsController
         
         try {
             $metadata = include $indexFile;
-            
+            if (!is_array($metadata)) {
+                // If not an array, return null or handle as error
+                return null;
+            }
             // Add computed fields
             $metadata['path'] = $modulePath;
             $metadata['last_modified'] = date('Y-m-d H:i:s', filemtime($indexFile));
             $metadata['file_count'] = $this->countFiles($modulePath);
             $metadata['size'] = $this->getDirectorySize($modulePath);
-            
             return $metadata;
         } catch (\Exception $e) {
             return null;

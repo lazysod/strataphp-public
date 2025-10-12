@@ -1,4 +1,6 @@
 <?php
+// Google Analytics Admin Settings Route (protected by admin middleware)
+$router->get('/admin/google-analytics-settings', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
 use App\Controllers\AdminController;
 use App\Modules\Admin\Controllers\ModuleInstallerController;
 use App\Modules\Admin\Controllers\ModuleDetailsController;

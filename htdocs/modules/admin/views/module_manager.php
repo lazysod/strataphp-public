@@ -1,15 +1,15 @@
 <?php
-// Ensure $config and $modules are always available
-if (!isset($config)) {
-    $config = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
+// Ensure $siteConfig is always available, but NEVER overwrite $modules if already set (from controller)
+if (!isset($siteConfig)) {
+    $siteConfig = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
 }
-if (!isset($modules)) {
-    $modules = isset($config['modules']) ? $config['modules'] : [];
-}
+
+// Always use $siteConfig['modules'] for the UI
+$modules = $siteConfig['modules'];
 
 // Admin session check
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
-$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+$sessionPrefix = $siteConfig['session_prefix'] ?? ($siteConfig['prefix'] ?? 'framework');
 if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin/admin_login.php');
     exit;
@@ -23,6 +23,9 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             <div>
                 <a href="/admin/module-installer" class="btn btn-primary">
                     <i class="fas fa-download me-2"></i>Install New Module
+                </a>
+                <a href="/admin/google-analytics-settings" class="btn btn-outline-info ms-2">
+                    <i class="fab fa-google me-1"></i>Google Analytics Settings
                 </a>
             </div>
         </div>
@@ -79,6 +82,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                         <h4 class="mb-0"><?= count(array_unique(array_map(function($m) { 
                             $path = ($_SERVER['DOCUMENT_ROOT'] ?? dirname(__FILE__, 4)) . '/modules/' . $m;
                             $metadata = file_exists($path . '/index.php') ? (include $path . '/index.php') : [];
+                                $moduleMeta = file_exists($path . '/index.php') ? (include $path . '/index.php') : [];
+                                $metadata = is_array($moduleMeta) ? $moduleMeta : [];
                             return $metadata['category'] ?? 'Uncategorized';
                         }, array_keys($modules)))) ?></h4>
                         <small>Categories</small>
@@ -105,6 +110,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                             foreach ($modules as $modName => $modInfo) {
                                 $modulePath = ($_SERVER['DOCUMENT_ROOT'] ?? dirname(__FILE__, 4)) . '/modules/' . $modName;
                                 $metadata = file_exists($modulePath . '/index.php') ? (include $modulePath . '/index.php') : [];
+                                    $moduleMeta = file_exists($modulePath . '/index.php') ? (include $modulePath . '/index.php') : [];
+                                    $metadata = is_array($moduleMeta) ? $moduleMeta : [];
+                                    $moduleMeta = file_exists($modulePath . '/index.php') ? (include $modulePath . '/index.php') : [];
+                                    $metadata = is_array($moduleMeta) ? $moduleMeta : [];
                                 $category = $metadata['category'] ?? 'Uncategorized';
                                 $categories[$category] = ($categories[$category] ?? 0) + 1;
                             }
@@ -199,7 +208,6 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                 } else {
                                     $modulePath = $documentRoot . '/modules/' . $modName;
                                 }
-                                
                                 $metadata = [];
                                 if (file_exists($modulePath . '/index.php')) {
                                     try {
@@ -208,12 +216,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         $metadata = [];
                                     }
                                 }
-                                
                                 $category = $metadata['category'] ?? 'Uncategorized';
                                 $description = $metadata['description'] ?? '';
                                 $version = $metadata['version'] ?? '1.0.0';
                                 $author = $metadata['author'] ?? '';
-                                
                                 // Get validation status for each module
                                 $validationStatus = null;
                                 if ($moduleValidator) {
@@ -222,7 +228,6 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         $validationStatus = $validationResults['valid'];
                                     }
                                 }
-                                
                                 $isCore = ($modName === 'admin' || $modName === 'home');
                                 $isEnabled = !empty($modInfo['enabled']);
                                 ?>
@@ -271,6 +276,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         </span>
                                     </td>
                                     <td>
+                                        <input type="hidden" name="enabled_present[]" value="<?php echo htmlspecialchars($modName); ?>">
                                         <?php if ($modName === 'admin'): ?>
                                             <input type="checkbox" checked disabled>
                                             <input type="hidden" class="table-view-input" name="enabled[]" value="admin">
@@ -280,7 +286,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                             <input type="hidden" class="table-view-input" name="enabled[]" value="home">
                                             <small class="text-muted ms-2">Required</small>
                                         <?php else: ?>
-                                            <input type="checkbox" class="table-view-checkbox" name="enabled[]" value="<?php echo htmlspecialchars($modName); ?>" <?php if ($isEnabled) echo 'checked'; ?>>
+                                            <input type="checkbox" class="table-view-checkbox" name="enabled[]" value="<?php echo htmlspecialchars($modName); ?>" <?php echo (!empty($modInfo['enabled']) ? 'checked' : ''); ?>>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -522,6 +528,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                 <?php endif; ?>
             </div>
             <div class="mb-3">
+                <!-- Debug panels removed -->
                 <label for="default_module" class="form-label"><strong>Default Module (Root Page)</strong></label>
                 <select id="default_module" name="default_module" class="form-select">
                     <?php
@@ -529,7 +536,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     foreach ($modules as $modName => $modInfo):
                         if (!empty($modInfo['enabled']) && !empty($modInfo['suitable_as_default'])):
                     ?>
-                        <option value="<?php echo htmlspecialchars($modName); ?>" <?php if (isset($config['default_module']) && $config['default_module'] === $modName) echo 'selected'; ?>><?php echo htmlspecialchars($modName); ?></option>
+                        <option value="<?php echo htmlspecialchars($modName); ?>" <?php if (isset($siteConfig['default_module']) && $siteConfig['default_module'] === $modName) echo 'selected'; ?>><?php echo htmlspecialchars($modName); ?></option>
                     <?php
                         endif;
                     endforeach;
@@ -538,6 +545,9 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             </div>
             <button type="submit" class="btn btn-success">Save Changes</button>
         </form>
+        
+        <!-- Debug Output -->
+
         
         <!-- Bulk Actions -->
         <div class="mt-4">
@@ -952,21 +962,14 @@ function switchActiveView(viewType) {
     const tableInputs = document.querySelectorAll('.table-view-input');
     const cardCheckboxes = document.querySelectorAll('.card-view-checkbox');
     const cardInputs = document.querySelectorAll('.card-view-input');
-    
     if (viewType === 'table') {
-        // Enable table view checkboxes
         tableCheckboxes.forEach(cb => cb.disabled = false);
         tableInputs.forEach(input => input.disabled = false);
-        
-        // Disable card view checkboxes
         cardCheckboxes.forEach(cb => cb.disabled = true);
         cardInputs.forEach(input => input.disabled = true);
     } else {
-        // Enable card view checkboxes
         cardCheckboxes.forEach(cb => cb.disabled = false);
         cardInputs.forEach(input => input.disabled = false);
-        
-        // Disable table view checkboxes
         tableCheckboxes.forEach(cb => cb.disabled = true);
         tableInputs.forEach(input => input.disabled = true);
     }
@@ -985,9 +988,14 @@ document.getElementById('cardView').addEventListener('change', function() {
     }
 });
 
-// Initialize with table view active (default)
+// Always enable checkboxes for the default (table) view on page load
 document.addEventListener('DOMContentLoaded', function() {
     switchActiveView('table');
+    // Also ensure all checkboxes for the active view are enabled
+    setTimeout(function() {
+        const tableCheckboxes = document.querySelectorAll('.table-view-checkbox');
+        tableCheckboxes.forEach(cb => cb.disabled = false);
+    }, 100);
 });
 </script>
 

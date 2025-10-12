@@ -16,7 +16,7 @@ class ModuleManagerController {
      */
     public function index() {
         try {
-            global $config;
+            global $siteConfig;
             
             // Handle form submission first
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,7 +25,7 @@ class ModuleManagerController {
             }
             
             // Scan filesystem for all modules and merge with config
-            $modules = $this->scanModules($config);
+            $modules = $this->scanModules($siteConfig);
             
             // Include the view directly with variables available
             include __DIR__ . '/../views/module_manager.php';
@@ -41,55 +41,41 @@ class ModuleManagerController {
      */
     private function handleFormSubmission() {
         try {
-            global $config;
+            // (Debug logging removed)
+
+            // Load current modules.php
+            $modulesPath = __DIR__ . '/../../../app/modules.php';
+            $modulesConfig = include $modulesPath;
             $enabled = $_POST['enabled'] ?? [];
-            
-            // Remove duplicates that might come from multiple form views
             $enabled = array_unique($enabled);
-            
-            // Get all modules from filesystem scan
-            $allModules = $this->scanModules($config);
-            
-            // Initialize modules array if not exists
-            if (!isset($config['modules'])) {
-                $config['modules'] = [];
-            }
-            
-            // Update all modules - IMPORTANT: Set ALL modules, not just enabled ones
-            foreach ($allModules as $modName => $modInfo) {
-                // Admin and home modules are always enabled
+            $enabledPresent = $_POST['enabled_present'] ?? [];
+
+            // Update enabled state for all modules using enabled_present[]
+            foreach ($modulesConfig['modules'] as $modName => &$modInfo) {
                 if ($modName === 'admin' || $modName === 'home') {
-                    $config['modules'][$modName]['enabled'] = true;
+                    $modInfo['enabled'] = true;
                 } else {
-                    // A module is enabled ONLY if it's in the $enabled array
-                    // If checkbox is unchecked, it won't be in the array, so it gets disabled
-                    $isEnabled = in_array($modName, $enabled);
-                    $config['modules'][$modName]['enabled'] = $isEnabled;
+                    // If module is present in enabled_present, set enabled based on enabled[]
+                    $modInfo['enabled'] = in_array($modName, $enabled);
                 }
-                
-                // Preserve or set suitable_as_default flag
-                if (!isset($config['modules'][$modName]['suitable_as_default'])) {
-                    $config['modules'][$modName]['suitable_as_default'] = false;
+                if (!isset($modInfo['suitable_as_default'])) {
+                    $modInfo['suitable_as_default'] = false;
                 }
             }
-            
+            unset($modInfo);
+
             // Save default module selection
-            if (isset($_POST['default_module']) && in_array($_POST['default_module'], $enabled)) {
-                $config['default_module'] = $_POST['default_module'];
+            if (isset($_POST['default_module']) && is_string($_POST['default_module']) && $_POST['default_module'] !== '') {
+                $modulesConfig['default_module'] = $_POST['default_module'];
             }
-            
-            $configPath = __DIR__ . '/../../../app/config.php';
-            $configExport = var_export($config, true);
-            
-            // Security: Validate config path and backup original
-            if (!$this->isSecureConfigPath($configPath)) {
-                throw new \Exception("Invalid configuration path");
-            }
-            
-            if (!$this->secureConfigWrite($configPath, "<?php\nreturn $configExport;")) {
-                throw new \Exception("Failed to write configuration file");
-            }
-            
+
+            // Write back to modules.php only
+            $modulesExport = var_export($modulesConfig, true);
+            $modulesContent = "<?php\nreturn $modulesExport;\n";
+            file_put_contents($modulesPath, $modulesContent, LOCK_EX);
+
+            // (Debug logging removed)
+
             $_SESSION['success'] = 'Module configuration updated successfully.';
             header('Location: /admin/modules');
             exit;
@@ -104,12 +90,12 @@ class ModuleManagerController {
     /**
      * Scan filesystem for all modules and merge with config data
      */
-    private function scanModules($config) {
+    private function scanModules($siteConfig) {
         $modules = [];
         $modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
         
         if (!is_dir($modulesPath)) {
-            return isset($config['modules']) ? $config['modules'] : [];
+            return isset($siteConfig['modules']) ? $siteConfig['modules'] : [];
         }
         
         // Scan filesystem for module directories
@@ -125,7 +111,7 @@ class ModuleManagerController {
             }
             
             // Start with config data if exists
-            $moduleData = isset($config['modules'][$moduleName]) ? $config['modules'][$moduleName] : [];
+            $moduleData = isset($siteConfig['modules'][$moduleName]) ? $siteConfig['modules'][$moduleName] : [];
             
             // Set defaults for modules not in config
             if (!isset($moduleData['enabled'])) {
@@ -167,18 +153,8 @@ class ModuleManagerController {
             return false;
         }
         
-        // Create backup
-        $backupPath = $configPath . '.backup.' . time();
-        if (file_exists($configPath)) {
-            copy($configPath, $backupPath);
-        }
-        
-        // Write new config
+        // Write new config (no backup)
         $result = file_put_contents($configPath, $content, LOCK_EX);
-        
-        // Clean up old backups (keep only last 5)
-        $this->cleanupConfigBackups(dirname($configPath));
-        
         return $result !== false;
     }
     
@@ -256,7 +232,7 @@ class ModuleManagerController {
      */
     private function checkModuleProtection($moduleName)
     {
-        global $config;
+    global $siteConfig;
         
         // System modules that cannot be deleted
         $systemModules = ['admin', 'user'];
@@ -268,7 +244,7 @@ class ModuleManagerController {
         }
         
         // Check if it's the default module
-        $defaultModule = $config['default_module'] ?? '';
+    $defaultModule = $siteConfig['default_module'] ?? '';
         if ($moduleName === $defaultModule) {
             return [
                 'can_delete' => false,
@@ -379,15 +355,15 @@ class ModuleManagerController {
     private function performModuleDeletion($moduleName, $keepData = false)
     {
         try {
-            global $config;
+            global $siteConfig;
             
             // 1. Remove from config
-            if (isset($config['modules'][$moduleName])) {
-                unset($config['modules'][$moduleName]);
+            if (isset($siteConfig['modules'][$moduleName])) {
+                unset($siteConfig['modules'][$moduleName]);
                 
                 // Save updated config
                 $configPath = dirname(__DIR__, 3) . '/app/config.php';
-                $configContent = "<?php\nreturn " . var_export($config, true) . ";\n";
+                $configContent = "<?php\nreturn " . var_export($siteConfig, true) . ";\n";
                 file_put_contents($configPath, $configContent);
             }
             

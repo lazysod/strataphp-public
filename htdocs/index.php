@@ -132,7 +132,9 @@ if (!$isLoginPage) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-global $router;
+$requestPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+if ($requestPath === '//') { $requestPath = '/'; }
+
 // Centralized routing: all requests are dispatched via the modular router
 if (isset($router) && $router instanceof Router) {
     $router->dispatch($method, $requestPath);

@@ -156,3 +156,4 @@ $sessionPrefix = $config['session_prefix'] ?? 'app_';
 if (empty($_SESSION[$sessionPrefix . 'csrf_token'])) {
     $_SESSION[$sessionPrefix . 'csrf_token'] = Token::generate();
 }
+
