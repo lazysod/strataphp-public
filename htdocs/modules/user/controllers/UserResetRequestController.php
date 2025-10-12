@@ -4,13 +4,42 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\TokenManager;
 use App\DB;
+use App\Modules\User\Helpers\CmsHelper;
+
+/**
+ * User Password Reset Request Controller
+ * 
+ * Handles password reset request processing, validates user email,
+ * generates secure reset tokens, and sends password reset emails
+ * 
+ * @package StrataPHP\Modules\User\Controllers
+ * @author StrataPHP Framework
+ * @version 1.0.0
+ */
 class UserResetRequestController
 {
+    /**
+     * Process password reset requests
+     * 
+     * @return void
+     */
     public function index()
     {
-        global $config;
-        $error = '';
-        $success = '';
+        try {
+            global $config;
+            
+            // Check if user is already logged in
+            $prefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$prefix . 'user_id'])) {
+                // Use CmsHelper for smart redirect based on CMS availability
+                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
+                header('Location: ' . $redirect);
+                exit;
+            }
+            
+            $error = '';
+            $success = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tm = new TokenManager();
             $result = $tm->verify($_POST['token'] ?? '');
@@ -62,6 +91,14 @@ class UserResetRequestController
                 }
             }
         }
-        include __DIR__ . '/../views/reset_request.php';
+        $viewPath = CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
+        include $viewPath;
+        } catch (\Exception $e) {
+            error_log('User reset request error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            $viewPath = CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
+            include $viewPath;
+        }
     }
 }

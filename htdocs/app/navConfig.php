@@ -3,14 +3,14 @@
 return [
     'Home' => [
         'label' => 'Home',
-        'show' => true,
+        'show' => false,
         'order' => 1,
         'new_tab' => false,
         'url' => '/',
     ],
     'About' => [
         'label' => 'About',
-        'show' => true,
+        'show' => false,
         'order' => 2,
         'new_tab' => false,
         'url' => '/about',
@@ -24,7 +24,7 @@ return [
     ],
     'links' => [
         'label' => 'Links',
-        'show' => true,
+        'show' => false,
         'order' => 4,
         'new_tab' => false,
         'url' => '/links',

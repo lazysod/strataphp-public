@@ -1,0 +1,181 @@
+{
+    "name": "user",
+    "displayName": "User Management Module",
+    "description": "Comprehensive user authentication and management system with registration, login, profiles, and password reset",
+    "version": "1.0.0",
+    "author": "StrataPHP",
+    "license": "MIT",
+    "category": "authentication",
+    "tags": ["user", "authentication", "registration", "login", "profile", "security"],
+    "type": "module",
+    "framework": "strataphp",
+    "frameworkVersion": ">=1.0.0",
+    
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\User\\": ""
+        }
+    },
+    
+    "routes": {
+        "file": "routes.php",
+        "prefix": "/user",
+        "can_be_default": true
+    },
+    
+    "database": {
+        "tables": ["users", "user_sessions"],
+        "migrations": [
+            "002_create_users_table.php",
+            "008_create_user_sessions_table.php",
+            "009_add_ip_address_to_user_sessions.php"
+        ],
+        "requires_migration": true
+    },
+    
+    "dependencies": {
+        "php": ">=7.4",
+        "strataphp": ">=1.0.0",
+        "phpmailer/phpmailer": "^6.0"
+    },
+    
+    "config": {
+        "enabled": true,
+        "session": {
+            "timeout": 3600,
+            "remember_me": true,
+            "track_sessions": true
+        },
+        "registration": {
+            "enabled": true,
+            "email_verification": false,
+            "auto_login": true
+        },
+        "password_reset": {
+            "enabled": true,
+            "token_expiry": 3600
+        }
+    },
+    
+    "permissions": {
+        "public": true,
+        "authentication": true,
+        "roles": ["user", "admin"],
+        "self_registration": true
+    },
+    
+    "files": {
+        "controllers": [
+            "controllers/EmailTestController.php",
+            "controllers/UserActivateController.php",
+            "controllers/UserLoginController.php",
+            "controllers/UserProfileController.php",
+            "controllers/UserRegisterController.php",
+            "controllers/UserResetController.php",
+            "controllers/UserResetRequestController.php",
+            "controllers/UserSessionsController.php"
+        ],
+        "views": ["views/"],
+        "routes": ["routes.php"],
+        "entry": ["index.php"]
+    },
+    
+    "authentication": {
+        "methods": ["session"],
+        "password_hashing": "bcrypt",
+        "session_management": true,
+        "csrf_protection": true,
+        "rate_limiting": false
+    },
+    
+    "user_features": [
+        "User registration",
+        "Email verification",
+        "Secure login/logout",
+        "Profile management",
+        "Password reset via email",
+        "Session tracking",
+        "Device fingerprinting",
+        "Remember me functionality"
+    ],
+    
+    "security_features": [
+        "Password hashing with bcrypt",
+        "CSRF token protection",
+        "Input sanitization",
+        "SQL injection prevention",
+        "Session hijacking protection",
+        "IP address tracking",
+        "Failed login tracking"
+    ],
+    
+    "testing": {
+        "unit_tests": false,
+        "integration_tests": false,
+        "authentication_tests": false,
+        "email_tests": true
+    },
+    
+    "documentation": {
+        "readme": "README.md",
+        "api_docs": false,
+        "security_guide": true
+    },
+    
+    "quality": {
+        "code_style": "PSR-12",
+        "static_analysis": false,
+        "security_scan": false
+    },
+    
+    "performance": {
+        "caching": false,
+        "database_queries": 5,
+        "external_requests": true,
+        "session_optimization": true
+    },
+    
+    "security": {
+        "input_validation": true,
+        "output_sanitization": true,
+        "csrf_protection": true,
+        "authentication": true,
+        "authorization": true,
+        "password_strength": true,
+        "session_security": true
+    },
+    
+    "email_integration": {
+        "verification_emails": true,
+        "password_reset_emails": true,
+        "welcome_emails": false,
+        "notification_emails": false
+    },
+    
+    "session_management": {
+        "device_tracking": true,
+        "ip_tracking": true,
+        "session_timeout": true,
+        "concurrent_sessions": true,
+        "session_cleanup": false
+    },
+    
+    "extensibility": [
+        "Two-factor authentication",
+        "Social login integration",
+        "Role-based permissions",
+        "Account lockout policies",
+        "Password history",
+        "Login analytics"
+    ],
+    
+    "requirements": {
+        "email_configuration": "SMTP settings required for verification and reset",
+        "php_extensions": ["openssl", "mbstring", "session"],
+        "database": "MySQL or compatible database",
+        "https": "Recommended for production"
+    },
+    
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+}

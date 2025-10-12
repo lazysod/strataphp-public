@@ -9,11 +9,16 @@ if (file_exists($composerAutoload)) {
 use App\Controllers\AdminController;
 // Home module routes (core route for /)
 global $router;
-if (!empty(App::config('default_module')) && App::config('default_module') === 'home') {
+
+// Fallback homepage route when CMS is disabled or not available
+$modules = App::config('modules') ?? [];
+$cmsEnabled = !empty($modules['cms']['enabled']);
+
+if (!$cmsEnabled || (!empty(App::config('default_module')) && App::config('default_module') === 'home')) {
     $router->get(
         '/', function () {
             if (class_exists('App\\App')) {
-                // App::log('DEBUG: / route dispatched');
+                // App::log('DEBUG: / route dispatched (fallback)');
             }
             if (class_exists('App\\Controllers\\HomeController')) {
                 // App::log('DEBUG: HomeController found');

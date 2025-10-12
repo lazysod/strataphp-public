@@ -106,18 +106,147 @@ composer install</pre></li>
   </section>
   <section id="extending-modules">
     <h2>Extending & Modules</h2>
+    <p><em>How to add, enable, or disable modules, and create your own.</em></p>
+    
+    <h3>Module Structure Requirements</h3>
+    <p>Each module must have specific files and follow certain conventions to pass validation:</p>
+    
+    <h4>Required Files:</h4>
+    <ul>
+      <li><strong><code>index.php</code></strong> - Module metadata and configuration</li>
+      <li><strong><code>routes.php</code></strong> - Module routing definitions</li>
+      <li><strong><code>README.md</code></strong> - Module documentation</li>
+      <li><strong><code>CHANGELOG.md</code></strong> - Version history and changes</li>
+    </ul>
+    
+    <h4>Directory Structure:</h4>
+    <pre><code>your-module/
+├── index.php          # Module metadata (required)
+├── routes.php          # Routes definition (required) 
+├── README.md           # Documentation (required)
+├── CHANGELOG.md        # Change history (required)
+├── controllers/        # Controller classes (if needed)
+├── models/            # Model classes (if needed)
+├── views/             # Template files (if needed)
+└── assets/            # CSS, JS, images (optional)</code></pre>
+    
+    <h4>Module Metadata (<code>index.php</code>)</h4>
+    <p>Your module's <code>index.php</code> must return an array with metadata:</p>
+    <pre><code>&lt;?php
+return [
+    'name' => 'Your Module Name',
+    'slug' => 'your-module',
+    'version' => '1.0.0',
+    'description' => 'Brief description of your module',
+    'author' => 'Your Name',
+    'category' => 'Utility', // See valid categories below
+    'license' => 'MIT',
+    'framework_version' => '1.0.0',
+    'repository' => 'https://github.com/your-repo',
+    'homepage' => 'https://your-homepage.com',
+    'support_url' => 'https://github.com/your-repo/issues',
+    'structure_requirements' => [
+        'controllers' => true,  // Set to false if no controllers needed
+        'views' => true,        // Set to false if no views needed  
+        'models' => false       // Set to false if no models needed
+    ],
+    'enabled' => true
+];
+?&gt;</code></pre>
+    
+    <h4>Valid Categories:</h4>
+    <p><code>Content</code>, <code>E-commerce</code>, <code>Social</code>, <code>Utility</code>, <code>Analytics</code>, <code>Security</code>, <code>SEO</code>, <code>Media</code>, <code>API</code>, <code>Admin</code>, <code>Development</code>, <code>Marketing</code></p>
+    
+    <h3>Module Validation System</h3>
+    <p>StrataPHP includes a comprehensive validation system that ensures modules meet quality and security standards:</p>
+    
+    <h4>Validation Checks:</h4>
+    <ul>
+      <li><strong>Structure Validation:</strong>
+        <ul>
+          <li>✅ Required files exist (index.php, routes.php, README.md)</li>
+          <li>✅ Directory structure matches declared requirements</li>
+          <li>✅ Proper PSR-4 namespace compliance</li>
+        </ul>
+      </li>
+      <li><strong>Security Validation:</strong>
+        <ul>
+          <li>✅ No dangerous functions (eval, exec, system) except in admin modules</li>
+          <li>✅ SQL injection prevention (parameterized queries)</li>
+          <li>✅ XSS protection (proper output escaping)</li>
+          <li>✅ File access safety (path validation)</li>
+        </ul>
+      </li>
+      <li><strong>Code Quality Validation:</strong>
+        <ul>
+          <li>✅ Error handling (try-catch blocks in all methods)</li>
+          <li>✅ Documentation (PHPDoc comments for classes and methods)</li>
+          <li>✅ Convention compliance (naming, structure)</li>
+          <li>✅ Performance optimization (efficient queries, minimal dependencies)</li>
+        </ul>
+      </li>
+    </ul>
+    
+    <h4>Validation Levels:</h4>
+    <ul>
+      <li><strong>✅ Valid (Green)</strong> - Module passes all critical checks
+        <ul>
+          <li>All required files present</li>
+          <li>No security vulnerabilities</li>
+          <li>Proper error handling and documentation</li>
+          <li>Ready for production use</li>
+        </ul>
+      </li>
+      <li><strong>⚠️ Warnings (Yellow)</strong> - Module works but has recommendations
+        <ul>
+          <li>Missing optional files (CHANGELOG.md)</li>
+          <li>Non-standard categories</li>
+          <li>Performance suggestions</li>
+        </ul>
+      </li>
+      <li><strong>❌ Invalid (Red)</strong> - Module has critical issues
+        <ul>
+          <li>Missing required files or structure</li>
+          <li>Security vulnerabilities</li>
+          <li>Missing error handling or documentation</li>
+        </ul>
+      </li>
+    </ul>
+    
+    <h4>Using the Validation System:</h4>
     <ol>
-      <li>Each module should have its own folder under <code>htdocs/modules/yourmodule/</code>.</li>
-      <li>Organize your module with subfolders for <code>controllers/</code>, <code>models/</code>, <code>views/</code>, and <code>assets/</code> as needed.</li>
-      <li>Use the provided <code>DB</code> class for all database operations.</li>
-      <li>Add any module-specific config to <code>app/config.php</code> under the <code>'modules'</code> array or as a separate config key.</li>
-      <li>Use the <code>TokenManager</code> class for CSRF protection in all forms.</li>
-      <li>Use the session prefix (<code>PREFIX</code>) for any session variables to avoid conflicts.</li>
-      <li>Place your module's views in the module's <code>views/</code> folder.</li>
-      <li>Store CSS, JS, and images in the module's <code>assets/</code> folder if needed.</li>
-      <li>Use the <code>Logger</code> class for logging important events or errors.</li>
-      <li>Control module activation via the <code>'modules'</code> array in <code>app/config.php</code>.</li>
-      <li>Document your module's usage, routes, and configuration in a <code>README.md</code> inside your module folder.</li>
+      <li><strong>Admin Interface:</strong>
+        <ul>
+          <li>Visit <code>/admin/modules</code> to see validation status</li>
+          <li>Click module names to view detailed validation results</li>
+          <li>Use "Validate" buttons to re-run checks</li>
+        </ul>
+      </li>
+      <li><strong>Command Line:</strong>
+        <pre><code>php -r "
+require_once 'vendor/autoload.php';
+require_once 'htdocs/app/start.php';
+\$validator = new \App\Services\ModuleValidator();
+\$results = \$validator->validateModule('htdocs/modules/your-module');
+echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
+"</code></pre>
+      </li>
+    </ol>
+    
+    <h3>Development Guidelines</h3>
+    <ol>
+      <li><strong>Directory Structure:</strong> Each module should have its own folder under <code>htdocs/modules/yourmodule/</code>. Organize your module with subfolders for <code>controllers/</code>, <code>models/</code>, <code>views/</code>, and <code>assets/</code> as needed.</li>
+      <li><strong>Autoloading:</strong> Place your controllers in <code>controllers/</code>, models in <code>models/</code>, and views in <code>views/</code>. The framework's autoloader will automatically load classes from these locations if you follow the naming conventions.</li>
+      <li><strong>Database Access:</strong> Use the provided <code>DB</code> class for all database operations. Do not use legacy or custom DB connection code.</li>
+      <li><strong>Error Handling:</strong> Wrap all controller methods in try-catch blocks for proper error handling.</li>
+      <li><strong>Documentation:</strong> Add PHPDoc comments to all classes and methods for proper documentation.</li>
+      <li><strong>Configuration:</strong> Add any module-specific config to <code>app/config.php</code> under the <code>'modules'</code> array or as a separate config key.</li>
+      <li><strong>Security:</strong> Use the <code>TokenManager</code> class for CSRF protection in all forms. Validate and sanitize all user input.</li>
+      <li><strong>Session & Auth:</strong> Use the session prefix (<code>PREFIX</code>) for any session variables to avoid conflicts. Check authentication/authorization as needed for your module's routes.</li>
+      <li><strong>Views & Assets:</strong> Place your module's views in the module's <code>views/</code> folder. Store CSS, JS, and images in the module's <code>assets/</code> folder if needed.</li>
+      <li><strong>Logging:</strong> Use the <code>Logger</code> class for logging important events or errors.</li>
+      <li><strong>Enable/Disable Modules:</strong> Control module activation via the <code>'modules'</code> array in <code>app/config.php</code>.</li>
+      <li><strong>Documentation:</strong> Document your module's usage, routes, and configuration in a <code>README.md</code> inside your module folder.</li>
     </ol>
   </section>
   <section id="api-module-management">

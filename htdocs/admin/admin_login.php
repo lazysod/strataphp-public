@@ -36,36 +36,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $db = null;
-        if (class_exists('DB')) {
+        try {
             $db = new DB($config);
-        }
-        $user = new User($db, $config);
-        $loginResult = $user->login(['email' => $email, 'pwd' => $password]);
-        // Only allow admin login if user is admin
-        if ($loginResult['status'] === 'success' && !empty($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
-            // Set admin session variable to user_id for consistency
-            $_SESSION[$sessionPrefix . 'admin'] = $_SESSION[$sessionPrefix . 'user_id'];
-            // Create session in user_sessions for admin
-            require_once __DIR__ . '/../app/SessionManager.php';
-            $db = new DB($config);
-            $sessionManager = new App\SessionManager($db, $config);
-            $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], false);
-            header('Location: /admin/dashboard');
-            exit;
-        } else {
-            $error = 'Invalid admin credentials.';
-            session_destroy();
-            $logger = new Logger($config);
-            $logger->warning(
-                'Failed admin login',
-                [
-                    'email' => $email,
-                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-                    'time' => date('Y-m-d H:i:s')
-                ]
-            );
+            $user = new User($db, $config);
+            $loginResult = $user->login(['email' => $email, 'pwd' => $password]);
+            
+            // Only allow admin login if user is admin
+            if ($loginResult['status'] === 'success' && !empty($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
+                // Set admin session variable to user_id for consistency
+                $_SESSION[$sessionPrefix . 'admin'] = $_SESSION[$sessionPrefix . 'user_id'];
+                // Create session in user_sessions for admin
+                require_once __DIR__ . '/../app/SessionManager.php';
+                $db = new DB($config);
+                $sessionManager = new App\SessionManager($db, $config);
+                $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], false);
+                header('Location: /admin/dashboard');
+                exit;
+            } else {
+                $error = 'Invalid admin credentials.';
+                session_destroy();
+                $logger = new Logger($config);
+                $logger->warning(
+                    'Failed admin login',
+                    [
+                        'email' => $email,
+                        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+                        'time' => date('Y-m-d H:i:s')
+                    ]
+                );
+            }
+        } catch (Exception $e) {
+            $error = 'Database connection error. Please try again.';
+            error_log("Admin login DB error: " . $e->getMessage());
         }
     }
 }

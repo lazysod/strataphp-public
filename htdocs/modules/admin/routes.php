@@ -1,5 +1,38 @@
 <?php
+// Google Analytics Admin Settings Route (protected by admin middleware)
+$router->get('/admin/google-analytics-settings', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
 use App\Controllers\AdminController;
+use App\Modules\Admin\Controllers\ModuleInstallerController;
+use App\Modules\Admin\Controllers\ModuleDetailsController;
+use App\Modules\Admin\Controllers\ModuleManagerController;
+use App\Modules\Admin\Controllers\AdminLinksController;
+
+// Links Admin Routes
+$router->get('/admin/links', [AdminLinksController::class, 'index']);
+$router->post('/admin/links', [AdminLinksController::class, 'index']);
+$router->get('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->post('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+$router->post('/admin/links/order', [AdminLinksController::class, 'order']);
+
+// Module Installer Routes
+$router->get('/admin/module-installer', [ModuleInstallerController::class, 'index']);
+$router->post('/admin/module-installer/upload', [ModuleInstallerController::class, 'uploadInstall']);
+$router->post('/admin/module-installer/url', [ModuleInstallerController::class, 'urlInstall']);
+$router->post('/admin/module-installer/generate', [ModuleInstallerController::class, 'generateModule']);
+
+// Module Details Routes
+$router->get('/admin/modules/details/{module}', [ModuleDetailsController::class, 'show']);
+$router->post('/admin/modules/validate/{module}', [ModuleDetailsController::class, 'validate']);
+$router->get('/admin/modules/validate-all', [ModuleDetailsController::class, 'validateAll']);
+
+// Module Manager Routes
+$router->get('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules/delete/{module}', [ModuleManagerController::class, 'delete']);
+
 // Admin User Management Routes
 $router->get('/admin/users', [\App\Modules\Admin\Controllers\UserAdminController::class, 'index']);
 $router->get('/admin/users/add', [\App\Modules\Admin\Controllers\UserAdminController::class, 'add']);

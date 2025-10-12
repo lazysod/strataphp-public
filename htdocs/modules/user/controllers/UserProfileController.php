@@ -5,17 +5,34 @@ use App\DB;
 use App\App;
 use App\User;
 // User profile controller for updating user details
+/**
+ * User Profile Controller
+ * 
+ * Manages user profile viewing and editing functionality
+ * Handles profile updates, password changes, and user data management
+ */
 class UserProfileController
 {
+    /**
+     * Handle user profile requests
+     * 
+     * Displays user profile and processes profile update requests
+     * Includes validation, security checks, and error handling
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        if (empty($config['modules']['user'])) {
-            header('Location: /');
-            exit;
-        }
-        if (empty($_SESSION[PREFIX . 'user_id'])) {
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            if (empty($config['modules']['user'])) {
+                header('Location: /');
+                exit;
+            }
+            
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
             header('Location: /user/login');
             exit;
         }
@@ -23,7 +40,7 @@ class UserProfileController
         $success = '';
         $db = new DB($config);
         $userModel = new User($db, $config);
-        $userId = $_SESSION[PREFIX . 'user_id'];
+        $userId = $_SESSION[$sessionPrefix . 'user_id'];
         // Fetch current user info
         $sql = "SELECT * FROM users WHERE id = ?";
         $rows = $db->fetchAll($sql, [$userId]);
@@ -87,6 +104,14 @@ class UserProfileController
                 }
             }
         }
-        include __DIR__ . '/../views/profile.php';
+    $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
+    include $viewPath;
+        } catch (\Exception $e) {
+            error_log('User profile error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
+            include $viewPath;
+        }
     }
 }

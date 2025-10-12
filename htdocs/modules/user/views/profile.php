@@ -12,13 +12,13 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
                         <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
-                            <?php echo $success ?>
+                            <?php echo htmlspecialchars($success ?? '', ENT_QUOTES, 'UTF-8') ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
                     <?php if (!empty($error)) : ?>
                         <div class="alert alert-danger text-center alert-dismissible fade show" role="alert">
-                            <?php echo $error ?>
+                            <?php echo htmlspecialchars($error ?? '', ENT_QUOTES, 'UTF-8') ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
@@ -32,7 +32,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                             } else {
                                 // fallback to gravatar
                                 $gravatar = 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($user['email'] ?? ''))) . '?s=80&r=g&d=mm';
-                                echo '<img src="' . $gravatar . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+                                echo '<img src="' . htmlspecialchars($gravatar, ENT_QUOTES, 'UTF-8') . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
                             }
                             ?>
                             <input type="file" name="avatar" accept="image/png,image/jpeg,image/jpg,image/webp" class="form-control mt-2" style="max-width:300px;margin:auto;">

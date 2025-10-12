@@ -137,18 +137,20 @@ class User
     }
     public function generate_session()
     {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
         $session_array = array(
             'session_id' => session_create_id(),
             'session_expire' => date('Y-m-d H:i:s', strtotime('+1 hour')),
         );
-        $_SESSION[PREFIX . 'session'] = $session_array;
+        $_SESSION[$sessionPrefix . 'session'] = $session_array;
     }
 
     public function session_check()
     {
-        if (isset($_SESSION[PREFIX . 'session'])) {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        if (isset($_SESSION[$sessionPrefix . 'session'])) {
             $now = date('Y-m-d H:i:s');
-            if ($now >= $_SESSION[PREFIX . 'session']['session_expire']) {
+            if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
                 }
@@ -162,8 +164,9 @@ class User
 
     public function cookie_check()
     {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
         if (isset($_COOKIE[PREFIX . 'cookie_login'])) {
-            if (!isset($_SESSION[PREFIX . 'user_id'])) {
+            if (!isset($_SESSION[$sessionPrefix . 'user_id'])) {
                 $oldCookie = $_COOKIE[PREFIX . 'cookie_login'];
                 $sql = "SELECT * FROM `cookie_login` WHERE `cookie_hash`=?";
                 $rows = $this->db->fetchAll($sql, [$oldCookie]);
@@ -183,23 +186,23 @@ class User
                                 ];
                             }
                             $rank = $this->get_rank($row2['id']);
-                            $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
-                            $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
+                            $_SESSION[$sessionPrefix . 'rank_title'] = $rank['title'];
+                            $_SESSION[$sessionPrefix . 'rank_level'] = $rank['level'];
                             if ($rank['admin'] > 0) {
-                                $_SESSION[PREFIX . 'admin'] = $rank['admin'];
+                                $_SESSION[$sessionPrefix . 'admin'] = $rank['admin'];
                             }
-                            $_SESSION[PREFIX . 'display_name'] = $row2['display_name'];
-                            $_SESSION[PREFIX . 'email'] = $row2['email'];
-                            $_SESSION[PREFIX . 'first_name'] = $row2['first_name'];
-                            $_SESSION[PREFIX . 'second_name'] = $row2['second_name'];
-                            $_SESSION[PREFIX . 'user_id'] = $userId;
-                            $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
-                            $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
-                            $_SESSION[PREFIX . 'admin'] = $rank['admin'];
-                            $_SESSION[PREFIX . 'sec_hash'] = $row2['security_hash'];
-                            $_SESSION[PREFIX . 'avatar'] = $this->gravatar($_SESSION[PREFIX . 'email']);
-                            $_SESSION[PREFIX . 'last_log'] = $row2['last_access'];
-                            $_SESSION[PREFIX . 'user'] = [
+                            $_SESSION[$sessionPrefix . 'display_name'] = $row2['display_name'];
+                            $_SESSION[$sessionPrefix . 'email'] = $row2['email'];
+                            $_SESSION[$sessionPrefix . 'first_name'] = $row2['first_name'];
+                            $_SESSION[$sessionPrefix . 'second_name'] = $row2['second_name'];
+                            $_SESSION[$sessionPrefix . 'user_id'] = $userId;
+                            $_SESSION[$sessionPrefix . 'rank_title'] = $rank['title'];
+                            $_SESSION[$sessionPrefix . 'rank_level'] = $rank['level'];
+                            $_SESSION[$sessionPrefix . 'admin'] = $rank['admin'];
+                            $_SESSION[$sessionPrefix . 'sec_hash'] = $row2['security_hash'];
+                            $_SESSION[$sessionPrefix . 'avatar'] = $this->gravatar($_SESSION[$sessionPrefix . 'email']);
+                            $_SESSION[$sessionPrefix . 'last_log'] = $row2['last_access'];
+                            $_SESSION[$sessionPrefix . 'user'] = [
                                 'id' => $row2['id'],
                                 'display_name' => $row2['display_name'],
                                 // 'first_name' => $row2['first_name'],
@@ -230,7 +233,7 @@ class User
                     $this->db->query($update1, [$hash, $loginID]);
                     $update2 = "UPDATE `users` SET `last_access`=? WHERE `id`=?";
                     $now = date('Y-m-d H:i:s');
-                    $this->db->query($update2, [$now, $_SESSION[PREFIX . 'user_id']]);
+                    $this->db->query($update2, [$now, $_SESSION[$sessionPrefix . 'user_id']]);
                 }
             }
         }
@@ -413,19 +416,20 @@ class User
                             'message' => 'Your account was closed or is inaccessible.'
                         ];
                     }
-                    $_SESSION[PREFIX . 'rank_title'] = $rank['title'];
-                    $_SESSION[PREFIX . 'rank_level'] = $rank['level'];
+                    $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+                    $_SESSION[$sessionPrefix . 'rank_title'] = $rank['title'];
+                    $_SESSION[$sessionPrefix . 'rank_level'] = $rank['level'];
                     if ($rank['admin'] > 0) {
-                        $_SESSION[PREFIX . 'admin'] = $rank['admin'];
+                        $_SESSION[$sessionPrefix . 'admin'] = $rank['admin'];
                     }
-                    $_SESSION[PREFIX . 'email'] = $row['email'];
-                    $_SESSION[PREFIX . 'user_id'] = $row['id'];
-                    $_SESSION[PREFIX . 'sec_hash'] = $row['security_hash'];
-                    $_SESSION[PREFIX . 'first_name'] = $row['first_name'];
-                    $_SESSION[PREFIX . 'second_name'] = $row['second_name'];
-                    $_SESSION[PREFIX . 'last_log'] = $row['last_access'];
-                    $_SESSION[PREFIX . 'avatar'] = $row['avatar'];
-                    $_SESSION[PREFIX . 'user'] = [
+                    $_SESSION[$sessionPrefix . 'email'] = $row['email'];
+                    $_SESSION[$sessionPrefix . 'user_id'] = $row['id'];
+                    $_SESSION[$sessionPrefix . 'sec_hash'] = $row['security_hash'];
+                    $_SESSION[$sessionPrefix . 'first_name'] = $row['first_name'];
+                    $_SESSION[$sessionPrefix . 'second_name'] = $row['second_name'];
+                    $_SESSION[$sessionPrefix . 'last_log'] = $row['last_access'];
+                    $_SESSION[$sessionPrefix . 'avatar'] = $row['avatar'];
+                    $_SESSION[$sessionPrefix . 'user'] = [
                         'id' => $row['id'],
                         'email' => $row['email'],
                         'is_admin' => ($rank['admin'] > 0 ? 1 : 0),
@@ -435,7 +439,7 @@ class User
                     ];
                     $now = date('Y-m-d H:i:s');
                     $update = "UPDATE users SET last_access = ? WHERE id = ?";
-                    $this->db->query($update, [$now, $_SESSION[PREFIX . 'user_id']]);
+                    $this->db->query($update, [$now, $_SESSION[$sessionPrefix . 'user_id']]);
 
                     // New session management
                     require_once __DIR__ . '/SessionManager.php';

@@ -1,7 +1,9 @@
 <?php
 // DEBUG: Show all errors for troubleshooting
 // App::debug(true);
-if (isset($_SESSION[PREFIX . 'user_id'])) {
+$config = include dirname(__DIR__, 3) . '/app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (isset($_SESSION[$sessionPrefix . 'user_id'])) {
     // If user is already logged in, redirect to home or dashboard
     header('Location: /');
     exit;
@@ -20,13 +22,13 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
                         <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
-                            <?php echo $success ?>
+                            <?php echo htmlspecialchars($success ?? '', ENT_QUOTES, 'UTF-8') ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
                     <?php if (!empty($error)) : ?>
                         <div class="alert alert-danger text-center alert-dismissible fade show" role="alert">
-                            <?php echo $error ?>
+                            <?php echo htmlspecialchars($error ?? '', ENT_QUOTES, 'UTF-8') ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>

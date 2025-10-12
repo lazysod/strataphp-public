@@ -7,6 +7,7 @@
 - [Security](#security)
 - [User & Admin System](#user--admin-system)
 - [Extending & Modules](#extending--modules)
+- [Links Management](#links-management)
 - [API Module Management](#api-module-management)
 - [Planned Features](#planned-features)
 - [Release Notes](#release-notes)
@@ -65,10 +66,33 @@ Once installed and the admin account is created, you can log in and begin config
 
 ---
 
+
+## SEO & Meta Tags
+_Per-page meta tags for SEO and social sharing._
+
+You can set custom meta tags (title, description, keywords) for any page by defining variables in your controller or before including the header:
+
+```php
+$metaTitle = 'Custom Page Title';
+$metaDescription = 'A unique description for this page.';
+$metaKeywords = 'custom, keywords, for, this, page';
+include 'views/partials/header.php';
+```
+
+If you do not set these variables, the site-wide defaults from your config will be used. This allows for flexible, SEO-friendly pages throughout your site.
+
+---
+
 ## Features
 _A summary of the framework's core capabilities._
 
-- **Modular architecture**: Easily add or remove modules (user system, forum, etc.)
+- **Modular architecture**: Easily add or remove modules (user system, CMS, forum, etc.)
+- **CMS Toggle System**: Enable/disable the CMS module without breaking site functionality
+- **CLI Module Generator**: Create production-ready modules with `php bin/create-module.php`
+- **Advanced Module Management**: Dual-view interface with validation, safe deletion, and bulk operations
+- **Professional CMS**: Content management with image uploads, SEO optimization, and modern theming
+- **Graceful Fallbacks**: Automatic fallback to default themes when CMS is disabled
+- **Smart Redirects**: Context-aware user redirects based on module availability and user roles
 - **Unified DB class**: All database access uses the PDO-based `DB` class (no legacy `dbcon`)
 - **Admin & user systems are independent**: Admin profile and login work even if the user module is disabled
 - **User authentication**: Registration, login, profile, password reset (with token expiry), all via modular, class-based controllers
@@ -79,8 +103,8 @@ _A summary of the framework's core capabilities._
 - **Logging**: Security/auth events logged to `storage/logs/` via the `Logger` class
 - **Dynamic navigation**: Shows login/register/user menu based on config and session
 - **Extensible**: Add new modules in `/htdocs/modules/` (see user module for example)
-- **Admin links management**: Add, edit, delete, and reorder links in the admin panel, with FontAwesome icon auto-detection and NSFW marking.
-- **NSFW support for links**: Mark links as NSFW in the admin panel; public users must confirm before visiting NSFW links.
+- **Links management**: Complete Linktree-style link management with drag & drop ordering
+- **Module validation system**: Comprehensive security and quality checks for all modules
 - **Module enable/disable UI**: Admin panel allows enabling/disabling modules and selecting the default module for the root page.
 
 ---
@@ -116,6 +140,42 @@ _Important security features and best practices._
 ## User & Admin System
 _Managing users, admins, and authentication._
 
+### CMS Toggle Feature
+
+StrataPHP includes a revolutionary **CMS Toggle System** that allows you to enable/disable the CMS module without breaking your site:
+
+#### **When CMS Module is Enabled** (`'enabled' => true`)
+- Modern CMS themes for all user authentication pages (login, register, password reset)
+- Admin users redirect to `/admin/cms` (professional CMS dashboard)
+- Regular users redirect to `/user/profile` after login
+- Dynamic page routing and rich content management interface
+- All CMS features available (page management, image uploads, SEO tools)
+
+#### **When CMS Module is Disabled** (`'enabled' => false`)  
+- **Graceful fallback** to default StrataPHP themes
+- Admin users redirect to `/admin` (basic admin panel)
+- Regular users redirect to `/user/profile` after login
+- Standard framework routing with no CMS dependencies
+- **Zero data loss** - all CMS content safely preserved
+- All core StrataPHP functionality maintained
+
+#### **Toggle Configuration**
+```php
+// In htdocs/app/config.php
+'modules' => [
+    'cms' => [
+        'enabled' => true,  // Change to false to disable CMS
+        'suitable_as_default' => false,
+    ],
+]
+```
+
+#### **Benefits**
+- ✅ **Risk-free adoption** - try CMS features without commitment
+- ✅ **Developer confidence** - easy testing between modes  
+- ✅ **Professional degradation** - site never breaks
+- ✅ **Zero breaking changes** - instant revert capability
+
 ### Disable User Registration
 
 To prevent new users from registering (while still allowing existing users to log in), set the following in your `htdocs/app/config.php`:
@@ -138,6 +198,169 @@ _How to add, enable, or disable modules, and create your own._
 
 To extend the framework, you can create your own modules in the `htdocs/modules/` directory. Here are some guidelines to help you build robust, maintainable modules:
 
+### Module Structure Requirements
+
+Each module must have specific files and follow certain conventions to pass validation:
+
+#### Required Files:
+- **`index.php`** - Module metadata and configuration
+- **`routes.php`** - Module routing definitions  
+- **`README.md`** - Module documentation
+- **`CHANGELOG.md`** - Version history and changes
+
+#### Directory Structure:
+```
+your-module/
+├── index.php          # Module metadata (required)
+├── routes.php          # Routes definition (required) 
+├── README.md           # Documentation (required)
+├── CHANGELOG.md        # Change history (required)
+├── controllers/        # Controller classes (if needed)
+├── models/            # Model classes (if needed)
+├── views/             # Template files (if needed)
+└── assets/            # CSS, JS, images (optional)
+```
+
+### Module Generator
+
+StrataPHP includes a powerful CLI module generator that creates production-ready modules with proper validation and security features:
+
+```sh
+php bin/create-module.php your-module-name
+```
+
+The generator creates:
+- **Complete directory structure** with all required files
+- **Validation-ready code** with proper error handling and security
+- **Database models** with prepared statements and input validation
+- **Controllers** with try-catch blocks and proper error logging
+- **Template views** with consistent styling and structure
+- **Routing configuration** with proper namespacing
+- **Documentation** with usage examples and API reference
+
+#### Generated Module Features:
+- **Security First**: CSRF protection, prepared statements, input validation
+- **Error Handling**: Comprehensive try-catch blocks and logging
+- **Code Quality**: PHPDoc comments, consistent formatting, best practices
+- **Framework Integration**: Uses StrataPHP DB class, routing, and conventions
+
+### Module Management Interface
+
+Access the module management interface at `/admin/modules` to:
+
+**Dual-View Interface:**
+- **Table View**: Compact list with enable/disable checkboxes
+- **Card View**: Visual cards showing module details and metadata
+- **JavaScript View Switching**: Seamless switching between display modes
+
+**Management Features:**
+- **Enable/Disable Modules**: Toggle module activation with real-time feedback
+- **Module Validation**: Built-in quality and security checks
+- **Safe Module Deletion**: Automatic backups before deletion
+- **Module Details**: View comprehensive information about each module
+- **Installation Status**: See which modules are installed vs. configured
+
+**Bulk Operations:**
+- **Select Multiple**: Use checkboxes to select multiple modules
+- **Batch Enable/Disable**: Change status of multiple modules at once
+- **Save Changes**: Apply all modifications with a single action
+
+#### Directory Structure:
+```
+```
+
+#### Module Metadata (`index.php`)
+Your module's `index.php` must return an array with metadata:
+
+```php
+<?php
+return [
+    'name' => 'Your Module Name',
+    'slug' => 'your-module',
+    'version' => '1.0.0',
+    'description' => 'Brief description of your module',
+    'author' => 'Your Name',
+    'category' => 'Utility', // See valid categories below
+    'license' => 'MIT',
+    'framework_version' => '1.0.0',
+    'repository' => 'https://github.com/your-repo',
+    'homepage' => 'https://your-homepage.com',
+    'support_url' => 'https://github.com/your-repo/issues',
+    'structure_requirements' => [
+        'controllers' => true,  // Set to false if no controllers needed
+        'views' => true,        // Set to false if no views needed  
+        'models' => false       // Set to false if no models needed
+    ],
+    'enabled' => true
+];
+?>
+```
+
+#### Valid Categories:
+- `Content`, `E-commerce`, `Social`, `Utility`, `Analytics`
+- `Security`, `SEO`, `Media`, `API`, `Admin`, `Development`, `Marketing`
+
+### Module Validation System
+
+StrataPHP includes a comprehensive validation system that ensures modules meet quality and security standards:
+
+#### Validation Checks:
+
+**Structure Validation:**
+- ✅ Required files exist (index.php, routes.php, README.md)
+- ✅ Directory structure matches declared requirements
+- ✅ Proper PSR-4 namespace compliance
+
+**Security Validation:**
+- ✅ No dangerous functions (eval, exec, system) except in admin modules
+- ✅ SQL injection prevention (parameterized queries)
+- ✅ XSS protection (proper output escaping)
+- ✅ File access safety (path validation)
+
+**Code Quality Validation:**
+- ✅ Error handling (try-catch blocks in all methods)
+- ✅ Documentation (PHPDoc comments for classes and methods)
+- ✅ Convention compliance (naming, structure)
+- ✅ Performance optimization (efficient queries, minimal dependencies)
+
+#### Validation Levels:
+
+**✅ Valid (Green)** - Module passes all critical checks
+- All required files present
+- No security vulnerabilities  
+- Proper error handling and documentation
+- Ready for production use
+
+**⚠️ Warnings (Yellow)** - Module works but has recommendations
+- Missing optional files (CHANGELOG.md)
+- Non-standard categories
+- Performance suggestions
+
+**❌ Invalid (Red)** - Module has critical issues
+- Missing required files or structure
+- Security vulnerabilities
+- Missing error handling or documentation
+
+#### Using the Validation System:
+
+1. **Admin Interface:**
+   - Visit `/admin/modules` to see validation status
+   - Click module names to view detailed validation results
+   - Use "Validate" buttons to re-run checks
+
+2. **Command Line:**
+   ```bash
+   php -r "
+   require_once 'vendor/autoload.php';
+   require_once 'htdocs/app/start.php';
+   \$validator = new \App\Services\ModuleValidator();
+   \$results = \$validator->validateModule('htdocs/modules/your-module');
+   echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
+   "
+   ```
+
+### Development Guidelines
+
 1. **Directory Structure**
   - Each module should have its own folder under `htdocs/modules/yourmodule/`.
   - Organize your module with subfolders for `controllers/`, `models/`, `views/`, and `assets/` as needed.
@@ -154,32 +377,122 @@ To extend the framework, you can create your own modules in the `htdocs/modules/
     $result = $db->fetch("SELECT * FROM mytable WHERE id = ?", [$id]);
     ```
 
-4. **Configuration**
+4. **Error Handling**
+  - Wrap all controller methods in try-catch blocks:
+    ```php
+    public function index() {
+        try {
+            // Your code here
+        } catch (\Exception $e) {
+            error_log("Error in YourController: " . $e->getMessage());
+            // Handle error appropriately
+        }
+    }
+    ```
+
+5. **Documentation**
+  - Add PHPDoc comments to all classes and methods:
+    ```php
+    /**
+     * Your Controller Description
+     * 
+     * Handles functionality for your module
+     */
+    class YourController {
+        /**
+         * Display the main page
+         * 
+         * @return void
+         */
+        public function index() {
+            // Implementation
+        }
+    }
+    ```
+
+6. **Configuration**
   - Add any module-specific config to `app/config.php` under the `'modules'` array or as a separate config key.
   - Access config via the global `$config` array.
 
-5. **Security**
+7. **Security**
   - Use the `TokenManager` class for CSRF protection in all forms.
   - Validate and sanitize all user input.
 
-6. **Session & Auth**
+8. **Session & Auth**
   - Use the session prefix (`PREFIX`) for any session variables to avoid conflicts.
   - Check authentication/authorization as needed for your module's routes.
 
-7. **Views & Assets**
+9. **Views & Assets**
   - Place your module's views in the module's `views/` folder.
   - Store CSS, JS, and images in the module's `assets/` folder if needed.
 
-8. **Logging**
+10. **Logging**
   - Use the `Logger` class for logging important events or errors.
 
-9. **Enable/Disable Modules**
+11. **Enable/Disable Modules**
   - Control module activation via the `'modules'` array in `app/config.php`.
 
-10. **Documentation**
+12. **Documentation**
    - Document your module's usage, routes, and configuration in a `README.md` inside your module folder.
 
 By following these guidelines, your modules will be consistent with the framework and easy for others to use or extend.
+
+---
+
+## Links Management
+_Managing Linktree-style links through the admin interface._
+
+StrataPHP includes a comprehensive links management system for creating Linktree-style pages:
+
+### Admin Interface (`/admin/links`)
+
+**Features:**
+- **CRUD Operations**: Create, read, update, and delete links
+- **Drag & Drop Ordering**: Reorder links with intuitive interface
+- **Icon Auto-Detection**: Automatic icon assignment for popular platforms
+- **URL Validation**: Ensures all links are properly formatted
+- **Preview Mode**: See how links appear to visitors
+
+**Link Properties:**
+- **Title**: Display name for the link
+- **URL**: Target destination (with validation)
+- **Description**: Optional subtitle or description
+- **Icon**: Auto-detected or custom icon selection
+- **Order**: Display position (drag to reorder)
+- **Status**: Enable/disable individual links
+
+### Public Display (`/links`)
+
+**User Experience:**
+- **Responsive Design**: Works on all devices and screen sizes
+- **Fast Loading**: Optimized for quick page loads
+- **Analytics Ready**: Easy integration with tracking services
+- **Social Media Optimized**: Proper meta tags and sharing support
+
+**Customization:**
+- **Themes**: Customize appearance through CSS
+- **Branding**: Add logos and custom styling
+- **Adult Content Warning**: Optional age gate for sensitive content
+
+### Database Schema
+
+The links system uses the `links` table with these fields:
+- `id` - Primary key
+- `title` - Link display text
+- `url` - Target URL
+- `description` - Optional subtitle
+- `icon` - Icon identifier
+- `order` - Display order
+- `created_at` - Creation timestamp
+- `updated_at` - Last modification
+
+### Integration
+
+Links can be integrated into other modules or used as:
+- **Homepage**: Set links as the default module
+- **Navigation**: Include in site menus
+- **Sidebar**: Display in widget areas
+- **API Endpoints**: Access via REST API (when API module enabled)
 
 ---
 
@@ -226,10 +539,12 @@ The Strata Framework includes a robust migration and seeding system for managing
 - **Forward migrations**: Apply all new migrations in order with `php bin/migrate.php`.
 - **Rollback**: Undo the latest (or multiple) migrations with `php bin/rollback.php [steps]`.
 - **Migration status**: See which migrations are applied or pending with `php bin/migration_status.php`.
+- **Migration testing**: Validate all migrations and test rollback capability with `php bin/test_migrations.php`.
 - **Migration locking**: Prevents concurrent migration runs; shows who/when set the lock.
 - **Migration logging**: Tracks who ran each migration and when (`applied_by`, `applied_at`).
 - **Migration generator**: Create new migration and rollback templates with `php bin/create_migration.php MigrationName`.
 - **Down migrations**: Each migration can have a `.down.php` file for rollback support.
+- **Dual format support**: Supports both array format and separate `.down.php` files with automatic detection.
 
 ### Seeding Features
 - **Seeding**: Populate your database with test/demo data using `php bin/seed.php` (runs all seeds in `seeds/`).
@@ -241,6 +556,7 @@ The Strata Framework includes a robust migration and seeding system for managing
 php bin/migrate.php                # Apply all new migrations
 php bin/rollback.php 2             # Roll back the last 2 migrations
 php bin/migration_status.php       # Show migration status
+php bin/test_migrations.php        # Test all migrations and rollback capability
 php bin/create_migration.php AddUsersTable   # Scaffold new migration and down file
 php bin/seed.php                   # Run all seed files
 php bin/seed.php --down            # Remove all seeded data
@@ -250,8 +566,10 @@ php bin/seed.php --down            # Remove all seeded data
 - Always create a `.down.php` file for each migration/seed to support rollback.
 - Never run `.down.php` files as forward migrations.
 - Use the migration lock to avoid concurrent schema changes in teams/CI.
+- Test migrations with `php bin/test_migrations.php` before deploying to production.
+- Both array format and separate `.down.php` files are supported for maximum flexibility.
 
-See the `bin/` and `migrations/` folders for more details and examples.
+See the `bin/` and `migrations/` folders for more details and examples. For comprehensive migration documentation, see `docs/MIGRATION_SYSTEM_GUIDE.md`.
 
 ---
 
@@ -338,3 +656,54 @@ StrataPHP now uses a modern, secure session management system with device-based 
 
 ---
 For more, see the code in `htdocs/app/SessionManager.php`, `User.php`, and session dashboard controllers/views.
+
+---
+
+## 📚 Documentation
+
+### **Complete Guides**
+- **[Migration System Guide](docs/MIGRATION_SYSTEM_GUIDE.md)** - Complete migration and rollback documentation
+- **[Theme System Guide](docs/THEME_SYSTEM_GUIDE.md)** - Framework and CMS theme architecture
+- **[Template Customization](docs/TEMPLATE_CUSTOMIZATION.md)** - Quick start for customizing themes
+- **[Module Development](MODULE_SYSTEM.md)** - Creating and managing modules
+- **[Module Standards](MODULE_STANDARDS.md)** - Module development best practices
+
+### **Setup & Installation**
+- **[Installation Guide](INSTALL.md)** - Database setup and configuration
+- **[CMS Toggle System](CHANGELOG_CMS_TOGGLE.md)** - CMS enable/disable functionality
+- **[Database Cleanup](docs/db_cleanup_2025-09-12.md)** - Legacy table removal guide
+
+### **Framework Reference**
+- **[Changelog](CHANGELOG.md)** - Version history and feature updates
+- **[Migration Status](bin/migration_status.php)** - Check applied migrations
+- **[Test Migrations](bin/test_migrations.php)** - Validate migration system
+
+**StrataPHP Framework** - Professional PHP development made simple. 🚀
+
+## CMS Module
+
+The StrataPHP CMS module provides a modern, extensible content management system for your site. It includes:
+
+- **Unified Theming:** All CMS, user, and admin pages use a consistent header, footer, and Bootstrap 5-based design. If the CMS is disabled, the system falls back to the default framework look.
+- **Media Library:**
+  - Upload images (JPG, PNG, GIF, WebP, HEIC) and PDFs
+  - Automatic thumbnail generation for images
+  - AJAX upload with progress bar and instant grid update
+  - AJAX delete (removes both original and thumbnail)
+  - Pagination for large media collections
+  - Secure file validation and storage
+- **Admin Dashboard:**
+  - Modern, responsive UI for managing pages and media
+  - Device-based session management for admins
+  - Quick links to all CMS features
+- **Extensible:**
+  - Easily add new content types or modules
+  - Override templates for custom branding
+
+### Usage
+- Access the CMS admin at `/admin/cms` after logging in as an admin.
+- Use the Media Library to upload, preview, and manage files.
+- All uploads are stored in `htdocs/storage/uploads/cms/` (with thumbnails in `thumbs/`).
+- Deleting a file via the UI removes both the original and its thumbnail (if present).
+
+See the main documentation and `INSTALL.md` for setup and advanced configuration.

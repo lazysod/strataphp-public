@@ -24,6 +24,41 @@ return [
         'show' => true,
         'order' => 4,
         'url' => '/admin/modules',
+        'children' => [
+            'manage' => [
+                'label' => 'Manage Modules',
+                'url' => '/admin/modules',
+                'show' => true
+            ],
+            'installer' => [
+                'label' => 'Install New Module',
+                'url' => '/admin/module-installer',
+                'show' => true
+            ]
+        ]
+    ],
+    'cms' => [
+        'label' => 'CMS',
+        'show' => true,
+        'order' => 5,
+        'url' => '/admin/cms',
+        'children' => [
+            'dashboard' => [
+                'label' => 'CMS Dashboard',
+                'url' => '/admin/cms',
+                'show' => true
+            ],
+            'pages' => [
+                'label' => 'Manage Pages',
+                'url' => '/admin/cms/pages',
+                'show' => true
+            ],
+            'create' => [
+                'label' => 'Create Page',
+                'url' => '/admin/cms/pages/create',
+                'show' => true
+            ]
+        ]
     ],
     'item2' => [
         'label' => 'Item 2',

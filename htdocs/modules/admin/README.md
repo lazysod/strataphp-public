@@ -1,50 +1,80 @@
-# Admin Links Management Documentation
+# Admin Module
 
-This guide explains how to use and extend the Admin Links Management features in the Strata Framework.
+## Overview
+The Admin module provides comprehensive administrative functionality for the StrataPHP framework, including module management, user administration, link management, and system monitoring.
 
 ## Features
-- Add, edit, delete, and reorder links from the admin panel
-- FontAwesome icon auto-detection for popular domains
-- NSFW marking and badge support
-- Public users must confirm before visiting NSFW links
 
-## Usage
+### Module Management
+- **Dual-View Interface**: Switch between table and card views for module display
+- **Enable/Disable Modules**: Toggle module activation with real-time feedback
+- **Module Validation**: Built-in quality and security checks for all modules
+- **Safe Module Deletion**: Automatic backups before module removal
+- **Module Details**: View comprehensive information about each module
+- **Bulk Operations**: Select and modify multiple modules simultaneously
 
-### Adding a Link
-- Go to **Admin > Links > Add Link**
-- Fill in the title, URL, and (optionally) FontAwesome icon
-- Check the **NSFW?** box if the link is not safe for work
-- Click **Add Link**
+### Links Management
+- **CRUD Operations**: Add, edit, delete, and reorder links from the admin panel
+- **Icon Auto-Detection**: FontAwesome icon detection for popular domains
+- **Drag & Drop Ordering**: Intuitive link reordering interface
+- **URL Validation**: Ensures all links are properly formatted
+- **Adult Content Support**: NSFW marking and confirmation dialogs
 
-### Editing a Link
-- Go to **Admin > Links > Edit** for the desired link
-- Update any field and toggle the NSFW status
-- Click **Save Changes**
+### User Administration
+- **User Management**: Create, edit, suspend, and delete user accounts
+- **Session Monitoring**: View and manage active user sessions
+- **Device Tracking**: Monitor login devices and locations
+- **Bulk Operations**: Perform actions on multiple users
 
-### Deleting a Link
-- Click **Delete** next to any link in the list
-- Confirm deletion in the dialog
+### System Administration
+- **Configuration Management**: Update system settings through web interface
+- **Security Monitoring**: Track authentication events and security logs
+- **Database Management**: Monitor database performance and integrity
+- **Backup Systems**: Automated backups for critical operations
 
-### Reordering Links
-- Use the up/down arrows in the list to change link order
+## Admin Interface Routes
 
-### NSFW Support
-- NSFW links show a badge in admin and public views
-- Public users must confirm before visiting NSFW links (JS confirmation dialog)
+### Module Management (`/admin/modules`)
+- **View Modules**: See all installed and available modules
+- **Enable/Disable**: Toggle module activation status
+- **Validate Modules**: Run security and quality checks
+- **Delete Modules**: Remove modules with automatic backup
 
-### Icon Auto-Detection
-- If the icon field is left blank, the system will auto-detect a FontAwesome icon based on the link's domain
+### Links Management (`/admin/links`)
+- **Manage Links**: Full CRUD operations for link management
+- **Reorder Links**: Drag and drop interface for link ordering
+- **Icon Management**: Auto-detection and manual icon selection
 
-## Extending
-- The controller is in `modules/admin/controllers/AdminLinksController.php`
-- The model is in `modules/admin/models/Links.php`
-- Views are in `modules/admin/links/views/`
-- You can add new fields, validation, or custom logic as needed
+### User Management (`/admin/users`)
+- **User Administration**: Complete user account management
+- **Session Management**: Monitor and control user sessions
+- **Security Actions**: Suspend, unsuspend, and delete accounts
 
-## Example Code
+## Installation & Enabling
 
-See the source files for implementation details and customization options.
+The Admin module is automatically installed and cannot be disabled (core system module).
+
+### Access Requirements
+- Admin authentication required for all admin routes
+- Session-based security with device tracking
+- CSRF protection on all forms
+- Automatic session timeout and security logging
+
+## Development & Extension
+
+### Adding New Admin Features
+1. Create controllers in `controllers/` directory
+2. Add routes to `routes.php`
+3. Create views in `views/` directory
+4. Follow security best practices (authentication, CSRF, validation)
+
+### Security Guidelines
+- All admin actions require authentication verification
+- Use CSRF tokens on all forms
+- Validate and sanitize all input
+- Log security-relevant events
+- Implement proper error handling
 
 ---
 
-For more information, see the main project README.
+For more information, see the main project README and framework documentation.

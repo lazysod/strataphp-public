@@ -2,14 +2,41 @@
 namespace App\Modules\User\Controllers;
 use App\DB;
 use App\TokenManager;
+use App\Modules\User\Helpers\CmsHelper;
+/**
+ * User Password Reset Controller
+ * 
+ * Handles password reset functionality with token validation
+ * Processes password reset requests and validates reset tokens
+ */
 class UserResetController
 {
+    /**
+     * Handle password reset requests
+     * 
+     * Validates reset tokens and processes password updates
+     * Includes security validation and proper error handling
+     * 
+     * @return void
+     */
     public function index()
     {
-        include_once dirname(__DIR__, 3) . '/app/start.php';
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        $error = '';
-        $success = '';
+        try {
+            include_once dirname(__DIR__, 3) . '/app/start.php';
+            $config = include dirname(__DIR__, 3) . '/app/config.php';
+            
+            // Check if user is already logged in
+            $prefix = $config['session_prefix'] ?? 'app_';
+            if (isset($_SESSION[$prefix . 'user_id'])) {
+                // Use CmsHelper for smart redirect based on CMS availability
+                $isAdmin = isset($_SESSION[$prefix . 'admin']) && $_SESSION[$prefix . 'admin'] > 0;
+                $redirect = CmsHelper::getLoggedInRedirect($isAdmin);
+                header('Location: ' . $redirect);
+                exit;
+            }
+            
+            $error = '';
+            $success = '';
         // Validate token and get user_id
         $db = new DB($config);
         $token = $_GET['token'] ?? '';
@@ -56,6 +83,14 @@ class UserResetController
                 }
             }
         }
-        include __DIR__ . '/../views/reset.php';
+        $viewPath = CmsHelper::getViewPath('user/reset.php', __DIR__ . '/../views/reset.php');
+        include $viewPath;
+        } catch (\Exception $e) {
+            error_log('User reset error: ' . $e->getMessage());
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            $viewPath = CmsHelper::getViewPath('user/reset.php', __DIR__ . '/../views/reset.php');
+            include $viewPath;
+        }
     }
 }

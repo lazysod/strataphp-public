@@ -1,24 +1,88 @@
 {
     "name": "lazysod/strataphp",
-    "description": "A modular PHP framework with PSR-4 autoloading.",
+    "description": "A lightweight, modular PHP framework with automatic module discovery, PSR-4 autoloading, and comprehensive CLI tools.",
     "type": "project",
+    "version": "1.2.0",
+    "keywords": [
+        "php",
+        "framework",
+        "modular",
+        "psr-4",
+        "mvc",
+        "cli",
+        "modules"
+    ],
+    "homepage": "https://github.com/lazysod/strataphp-dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barry",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lazysod/strataphp-dev/issues",
+        "source": "https://github.com/lazysod/strataphp-dev"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "htdocs/app/",
             "App\\Controllers\\": "htdocs/controllers/",
-            "App\\Modules\\Admin\\Controllers\\": "htdocs/modules/admin/controllers/",
-            "App\\Modules\\Admin\\Models\\": "htdocs/modules/admin/models/",
-            "App\\Modules\\Links\\Controllers\\": "htdocs/modules/links/controllers/",
-            "App\\Modules\\User\\Controllers\\": "htdocs/modules/user/controllers/",
-            "App\\Modules\\Contact\\Controllers\\": "htdocs/modules/contact/controllers/"
+            "App\\Models\\": "htdocs/models/",
+            "App\\Modules\\": "htdocs/modules/",
+            "App\\Modules\\Test-module\\Controllers\\": "htdocs/modules/test-module/controllers/",
+            "App\\Modules\\Test-module\\Models\\": "htdocs/modules/test-module/models/",
+            "App\\Modules\\Test-security\\Controllers\\": "htdocs/modules/test-security/controllers/",
+            "App\\Modules\\Test-security\\Models\\": "htdocs/modules/test-security/models/",
+            "App\\Modules\\TestSecurity\\Controllers\\": "htdocs/modules/test_security/controllers/",
+            "App\\Modules\\TestSecurity\\Models\\": "htdocs/modules/test_security/models/",
+            "App\\Modules\\TestModule\\Controllers\\": "htdocs/modules/test_module/controllers/",
+            "App\\Modules\\TestModule\\Models\\": "htdocs/modules/test_module/models/",
+            "App\\Modules\\TestConventions\\Controllers\\": "htdocs/modules/test_conventions/controllers/",
+            "App\\Modules\\TestConventions\\Models\\": "htdocs/modules/test_conventions/models/",
+            "App\\Modules\\CleanupTest\\Controllers\\": "htdocs/modules/cleanup_test/controllers/",
+            "App\\Modules\\CleanupTest\\Models\\": "htdocs/modules/cleanup_test/models/",
+            "App\\Modules\\Cms\\Controllers\\": "htdocs/modules/cms/controllers/",
+            "App\\Modules\\Cms\\Models\\": "htdocs/modules/cms/models/",
+            "App\\Modules\\ModuleDirectory\\Controllers\\": "htdocs/modules/module_directory/controllers/",
+            "App\\Modules\\ModuleDirectory\\Models\\": "htdocs/modules/module_directory/models/",
+            "App\\Modules\\GoogleAnalytics\\Controllers\\": "htdocs/modules/google_analytics/controllers/",
+            "App\\Modules\\GoogleAnalytics\\Models\\": "htdocs/modules/google_analytics/models/"
         }
     },
     "require": {
+        "php": ">=8.0",
         "phpmailer/phpmailer": "^6.10",
         "vlucas/phpdotenv": "^5.6",
         "twig/twig": "^3.21"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.13"
-    }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "*": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php -r \"echo 'Autoloader updated successfully.\\n';\""
+        ],
+        "create-module": [
+            "@php bin/create-module.php"
+        ],
+        "install-module": [
+            "@php bin/install-module.php"
+        ],
+        "migrate": [
+            "@php bin/migrate.php"
+        ],
+        "create-admin": [
+            "@php bin/create_admin.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

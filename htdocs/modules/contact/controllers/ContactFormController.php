@@ -4,24 +4,56 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\App;
 use App\Token;
+
+/**
+ * Contact Form Controller
+ * 
+ * Handles contact form display and submission processing.
+ * Manages CSRF protection, form validation, and email sending.
+ * 
+ * @package App\Modules\Contact\Controllers
+ * @author  StrataPHP Framework
+ * @version 1.0.0
+ */
 class ContactFormController
 {
+    /**
+     * Display the contact form
+     * 
+     * Renders the contact form with CSRF token protection.
+     * Sets up the page title and includes the contact form view.
+     * 
+     * @return void
+     */
     public function index()
     {
+        $config = include dirname(__DIR__, 3) . '/app/config.php';
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $page_title = 'Contact Us';
-        if (empty($_SESSION[PREFIX . 'csrf_token'])) {
-            $_SESSION[PREFIX . 'csrf_token'] = Token::generate(32);
+        if (empty($_SESSION[$sessionPrefix . 'csrf_token'])) {
+            $_SESSION[$sessionPrefix . 'csrf_token'] = Token::generate(32);
         }
-        $csrf_token = $_SESSION[PREFIX . 'csrf_token'];
+        $csrf_token = $_SESSION[$sessionPrefix . 'csrf_token'];
         include __DIR__ . '/../views/contact_form.php';
     }
+    
+    /**
+     * Process contact form submission
+     * 
+     * Validates form data, sends email via PHPMailer, and handles responses.
+     * Includes CSRF protection and comprehensive input validation.
+     * 
+     * @return void
+     */
     public function submit()
     {
+        $config = include dirname(__DIR__, 3) . '/app/config.php';
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $page_title = 'Contact Us';
         $success = false;
         $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $tokenValid = isset($_POST['csrf_token']) && isset($_SESSION[PREFIX . 'csrf_token']) && hash_equals($_SESSION[PREFIX . 'csrf_token'], $_POST['csrf_token']);
+            $tokenValid = isset($_POST['csrf_token']) && isset($_SESSION[$sessionPrefix . 'csrf_token']) && hash_equals($_SESSION[$sessionPrefix . 'csrf_token'], $_POST['csrf_token']);
             if (!$tokenValid) {
                 $error = 'Invalid CSRF token.';
             } else {
@@ -30,7 +62,17 @@ class ContactFormController
                 $phone = trim($_POST['phone'] ?? '');
                 $message = trim($_POST['message'] ?? '');
                 $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-                if ($name && $email && $message) {
+                
+                // Enhanced validation
+                if (empty($name) || strlen($name) < 2 || strlen($name) > 100) {
+                    $error = 'Name must be between 2 and 100 characters.';
+                } elseif (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $error = 'Please provide a valid email address.';
+                } elseif (!empty($phone) && !preg_match('/^[\+\d\s\-\(\)\.]+$/', $phone)) {
+                    $error = 'Please provide a valid phone number.';
+                } elseif (empty($message) || strlen($message) < 10 || strlen($message) > 2000) {
+                    $error = 'Message must be between 10 and 2000 characters.';
+                } else {
                     $mail = new PHPMailer(true);
                     try {
                         $mail->isSMTP();
@@ -50,8 +92,6 @@ class ContactFormController
                     } catch (Exception $e) {
                         $error = 'Mailer Error: ' . $mail->ErrorInfo;
                     }
-                } else {
-                    $error = 'Please fill in all required fields.';
                 }
             }
         }
