@@ -1,43 +1,60 @@
 <?php
 namespace App\Modules\GoogleAnalytics\Controllers;
 
-use App\DB;
-
+/**
+ * Google Analytics Settings Controller (File-based)
+ *
+ * Handles the display and saving of Google Analytics Measurement ID using a JSON config file.
+ * No database required.
+ *
+ * @author StrataPHP Framework
+ */
 class GoogleAnalyticsSettingsController
 {
-    protected $db;
-
-    public function __construct(DB $db)
-    {
-        $this->db = $db;
-    }
-
-    // Show the settings form
+    /**
+     * Show the settings form
+     *
+     * @return void
+     */
     public function index()
     {
-        $stmt = $this->db->getPdo()->query("SELECT * FROM google_analytics_settings ORDER BY id DESC LIMIT 1");
-        $row = $stmt->fetch();
-        $measurementId = $row['measurement_id'] ?? '';
-        include __DIR__ . '/../views/settings.php';
+        try {
+            $settingsPath = dirname(__DIR__, 3) . '/storage/settings/google_analytics.json';
+            $measurementId = '';
+            if (file_exists($settingsPath)) {
+                $data = json_decode(file_get_contents($settingsPath), true);
+                $measurementId = $data['measurement_id'] ?? '';
+            }
+            include __DIR__ . '/../views/settings.php';
+        } catch (\Throwable $e) {
+            echo '<div class="alert alert-danger">An error occurred: ' . htmlspecialchars($e->getMessage()) . '</div>';
+        }
     }
 
-    // Handle form submission
+    /**
+     * Handle form submission to save Measurement ID
+     *
+     * @return void
+     */
     public function save()
     {
-        $measurementId = $_POST['measurement_id'] ?? '';
-        if ($measurementId) {
-            // Upsert logic: update if exists, else insert
-            $pdo = $this->db->getPdo();
-            $row = $pdo->query("SELECT id FROM google_analytics_settings LIMIT 1")->fetch();
-            if ($row) {
-                $stmt = $pdo->prepare("UPDATE google_analytics_settings SET measurement_id = ?, updated_at = NOW() WHERE id = ?");
-                $stmt->execute([$measurementId, $row['id']]);
-            } else {
-                $stmt = $pdo->prepare("INSERT INTO google_analytics_settings (measurement_id) VALUES (?)");
-                $stmt->execute([$measurementId]);
+        try {
+            $measurementId = $_POST['measurement_id'] ?? '';
+            $settingsPath = dirname(__DIR__, 3) . '/storage/settings/google_analytics.json';
+            if ($measurementId) {
+                $json = json_encode(['measurement_id' => $measurementId], JSON_PRETTY_PRINT);
+                if ($json === false) {
+                    throw new \Exception('Failed to encode JSON.');
+                }
+                $result = @file_put_contents($settingsPath, $json);
+                if ($result === false) {
+                    throw new \Exception('Failed to write settings file.');
+                }
             }
+            header('Location: /admin/google-analytics-settings');
+            exit;
+        } catch (\Throwable $e) {
+            echo '<div class="alert alert-danger">An error occurred: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
-        header('Location: /admin/google-analytics-settings');
-        exit;
     }
 }

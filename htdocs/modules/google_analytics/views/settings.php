@@ -3,7 +3,13 @@
 session_start();
 $settingsPath = __DIR__ . '/../settings.json';
 $measurementId = '';
+// Path is constructed using __DIR__ and is not user-controlled, ensuring safety.
 if (file_exists($settingsPath)) {
+    // Extra safety: ensure settings path is within allowed directory
+    if (strpos(realpath(dirname($settingsPath)), realpath(__DIR__ . '/..')) !== 0) {
+        throw new Exception('Settings path is outside allowed directory.');
+    }
+    // Safe: $settingsPath is a fixed path, not user-controlled
     $data = json_decode(file_get_contents($settingsPath), true);
     $measurementId = $data['measurement_id'] ?? '';
 }

@@ -1,43 +1,41 @@
-# GoogleAnalytics Module
 
-A google_analytics module for StrataPHP framework.
+# Google Analytics Module
+
+A simple module for StrataPHP to embed Google Analytics tracking code using a Measurement ID.
 
 ## Features
 
-- Create, read, update, delete google_analytics
-- RESTful routes
-- Clean MVC structure
-- Bootstrap-styled views
-- API endpoints
+- Admin UI to set and update your Google Analytics Measurement ID
+- Secure file-based storage (no database required)
+- Automatically embeds the correct tracking code on your site
 
 ## Installation
 
-This module was generated using the StrataPHP module generator.
+1. Copy the module to your `htdocs/modules/` directory.
+2. Enable the module in your admin panel or in `app/config.php`.
+3. Visit the admin settings page to enter your Measurement ID.
 
-## Database
+## Configuration
 
-Create the required table:
+The Measurement ID is stored in a secure JSON file:
 
-```sql
-CREATE TABLE google_analytics (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+```
+storage/settings/google_analytics.json
 ```
 
-## Routes
+Example contents:
 
-- `GET /google_analytics` - List all items
-- `GET /google_analytics/create` - Show create form
-- `POST /google_analytics/create` - Store new item
-- `GET /google_analytics/{id}` - Show single item
-- `GET /google_analytics/{id}/edit` - Show edit form
-- `POST /google_analytics/{id}/edit` - Update item
-- `POST /google_analytics/{id}/delete` - Delete item
-- `GET /api/google_analytics` - API endpoint
+```json
+{
+    "measurement_id": "G-XXXXXXXXXX"
+}
+```
+
+## Usage
+
+Once set, the module will automatically embed the Google Analytics tracking code on your site using the provided Measurement ID.
+
+No database table or migration is required for this module.
 
 ## Customization
 
