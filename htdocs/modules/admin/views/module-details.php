@@ -37,6 +37,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                             <p><strong>Version:</strong> <?= htmlspecialchars($moduleData['version'] ?? 'Unknown') ?></p>
                             <p><strong>Author:</strong> <?= htmlspecialchars($moduleData['author'] ?? 'Unknown') ?></p>
                             <p><strong>License:</strong> <?= htmlspecialchars($moduleData['license'] ?? 'Unknown') ?></p>
+                            <p><strong>Home Page:</strong> <?= '<a href="' . htmlspecialchars($moduleData['homepage'] ?? 'Unknown').'" target="_blank" title="Go to Home Page">' . htmlspecialchars($moduleData['homepage'] ?? 'Unknown').'</a>' ?></p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Category:</strong> <?= htmlspecialchars($moduleData['category'] ?? 'Uncategorized') ?></p>
@@ -47,7 +48,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                                     <span class="badge bg-secondary">Disabled</span>
                                 <?php endif; ?>
                             </p>
+                            <p><strong>Module Type:</strong> <?= htmlspecialchars($moduleData['category'] ?? 'Unknown') ?></p>
                             <p><strong>Framework Version:</strong> <?= htmlspecialchars($moduleData['framework_version'] ?? 'Unknown') ?></p>
+                            <p><strong>Repository:</strong> <?= '<a href="' . htmlspecialchars($moduleData['repository'] ?? 'Unknown').'" target="_blank" title="Go to Repository">' . htmlspecialchars($moduleData['repository'] ?? 'Unknown').'</a>' ?></p>
                         </div>
                     </div>
                     <?php if (!empty($moduleData['description'])): ?>
