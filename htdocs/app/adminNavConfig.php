@@ -13,12 +13,6 @@ return [
         'order' => 2,
         'url' => '/admin/users/',
     ],
-    'admin_links' => [
-        'label' => 'Links',
-        'show' => true,
-        'order' => 3,
-        'url' => '/admin/links',
-    ],
     'modules' => [
         'label' => 'Modules',
         'show' => true,
@@ -37,29 +31,30 @@ return [
             ]
         ]
     ],
-    'cms' => [
-        'label' => 'CMS',
-        'show' => true,
-        'order' => 5,
-        'url' => '/admin/cms',
-        'children' => [
-            'dashboard' => [
-                'label' => 'CMS Dashboard',
-                'url' => '/admin/cms',
-                'show' => true
-            ],
-            'pages' => [
-                'label' => 'Manage Pages',
-                'url' => '/admin/cms/pages',
-                'show' => true
-            ],
-            'create' => [
-                'label' => 'Create Page',
-                'url' => '/admin/cms/pages/create',
-                'show' => true
-            ]
-        ]
-    ],
+    // CMS menu example
+    // 'cms' => [
+    //     'label' => 'CMS',
+    //     'show' => true,
+    //     'order' => 5,
+    //     'url' => '/admin/cms',
+    //     'children' => [
+    //         'dashboard' => [
+    //             'label' => 'CMS Dashboard',
+    //             'url' => '/admin/cms',
+    //             'show' => true
+    //         ],
+    //         'pages' => [
+    //             'label' => 'Manage Pages',
+    //             'url' => '/admin/cms/pages',
+    //             'show' => true
+    //         ],
+    //         'create' => [
+    //             'label' => 'Create Page',
+    //             'url' => '/admin/cms/pages/create',
+    //             'show' => true
+    //         ]
+    //     ]
+    // ],
     'example_link' => [
         'label' => 'Example link',
         'url' => '#example',
