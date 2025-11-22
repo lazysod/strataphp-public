@@ -92,7 +92,7 @@ class JokesApiController extends ApiController
                 $this->error('Method Not Allowed', 405);
                 return;
             }
-
+            // dummy get data from a DB or other source
             $input = file_get_contents('php://input');
             $data = json_decode($input, true);
             if (!is_array($data) || empty($data['joke'])) {
