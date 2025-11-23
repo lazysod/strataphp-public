@@ -170,7 +170,7 @@ require_once __DIR__ . '/../../../../app/helpers.php';
             <div class="action-card">
                 <h3>🖼️ Media Library</h3>
                 <p>Upload and manage images, documents, and other media files</p>
-                <a href="/admin/cms/media" class="btn btn-info">Open Media Library</a>
+                <a href="/admin/media/media-library" class="btn btn-info">Open Media Library</a>
             </div>
             <div class="action-card">
                 <h3>🌐 View Website</h3>

@@ -116,7 +116,7 @@ function initializeRichTextEditor() {
   toolbar
     .querySelector("#mediaManagerBtn")
     .addEventListener("click", function () {
-      window.open("/admin/cms/media", "_blank", "noopener");
+      window.open("/admin/media/media-library", "_blank", "noopener");
     });
 
   // Add event listeners for toolbar buttons
@@ -345,7 +345,7 @@ function uploadImageForEditor(file, range) {
     window.getSelection().removeAllRanges();
   }
 
-  fetch("/admin/cms/upload/image", {
+  fetch("/admin/media/upload/image", {
     method: "POST",
     body: formData,
     credentials: "same-origin",
@@ -637,7 +637,7 @@ function uploadOgImage(file) {
   const preview = document.getElementById("og_image_preview");
   preview.innerHTML = '<div class="upload-progress">Uploading...</div>';
 
-  fetch("/admin/cms/upload/image", {
+  fetch("/admin/media/upload/image", {
     method: "POST",
     body: formData,
     credentials: "same-origin",
@@ -907,7 +907,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Enhance selectImage to show floating toolbar
 function selectImage(wrapper) {
-  console.log("[DEBUG] selectImage called for wrapper:", wrapper);
   // Deselect others
   document
     .querySelectorAll(".editor-image-wrapper.selected")

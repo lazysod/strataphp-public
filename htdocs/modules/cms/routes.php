@@ -5,7 +5,7 @@ use App\App;
 use App\Modules\Cms\Controllers\CmsController;
 use App\Modules\Cms\Controllers\PageController;
 use App\Modules\Cms\Controllers\AdminController;
-use App\Modules\Cms\Controllers\ImageController;
+
 
 // Ensure Composer autoloader is loaded for App class
 $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
@@ -38,10 +38,7 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     $router->post('/admin/cms/pages/{id}/delete', [AdminController::class, 'deletePage']);
     $router->post('/admin/cms/pages/{id}/set-home', [AdminController::class, 'setHomePage']);
     
-    // Image upload and media management routes
-    $router->post('/admin/cms/upload/image', [ImageController::class, 'upload']);
-    $router->post('/admin/cms/media/delete', [ImageController::class, 'deleteMedia']);
-    $router->get('/admin/cms/media', [AdminController::class, 'mediaLibrary']);
+
     
     // API routes for headless usage
     $router->get('/api/cms/pages', [CmsController::class, 'apiPages']);

@@ -13,6 +13,16 @@ $success_message = isset($_SESSION['success']) ? $_SESSION['success'] : null;
 $error_message = isset($_SESSION['error']) ? $_SESSION['error'] : null;
 if (isset($_SESSION['success'])) unset($_SESSION['success']);
 if (isset($_SESSION['error'])) unset($_SESSION['error']);
+<?php
+// Warn if Media module is not enabled
+$mediaEnabled = false;
+if (isset($config['modules']['media'])) {
+    $mediaInfo = $config['modules']['media'];
+    $mediaEnabled = is_array($mediaInfo) ? !empty($mediaInfo['enabled']) : (bool)$mediaInfo;
+}
+if (!$mediaEnabled) {
+    echo '<div style="background:#ffe0e0;color:#c0392b;padding:12px 18px;border-radius:6px;margin-bottom:18px;font-weight:bold;">Media Manager module is not enabled. Media features will be unavailable.</div>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,11 +115,24 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                                 <div id="mediaManagerModal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;flex-direction:row;">
                                     <div style="background:#fff;max-width:900px;width:90vw;height:80vh;overflow:auto;position:relative;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,0.2);">
                                         <button type="button" id="closeMediaManagerModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;background:none;border:none;">&times;</button>
-                                        <iframe src="/admin/cms/media?embed=1" style="width:100%;height:75vh;border:none;border-radius:8px;"></iframe>
+                                        <iframe src="/admin/media/media-library?embed=1" style="width:100%;height:75vh;border:none;border-radius:8px;"></iframe>
                                     </div>
                                 </div>
                                 <script>
                                 document.addEventListener('DOMContentLoaded', function() {
+                                    // Cleanup resize handles before form submit
+                                    var form = document.querySelector('form');
+                                    if (form) {
+                                        form.addEventListener('submit', function(e) {
+                                            var editor = document.querySelector('.rich-editor-content');
+                                            var textarea = document.getElementById('content');
+                                            if (editor) {
+                                                var handles = editor.querySelectorAll('.resize-handle');
+                                                handles.forEach(function(h) { h.remove(); });
+                                                if (textarea) textarea.value = editor.innerHTML;
+                                            }
+                                        });
+                                    }
                                     // Modal open/close logic
                                     var mediaModal = document.getElementById('mediaManagerModal');
                                     var openBtn = document.getElementById('openMediaManagerBtn');
@@ -161,6 +184,10 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                                                     }
                                                     // Sync textarea
                                                     var textarea = document.getElementById('content');
+                                                    if (editor) {
+                                                        var handles = editor.querySelectorAll('.resize-handle');
+                                                        handles.forEach(function(h) { h.remove(); });
+                                                    }
                                                     if (textarea) textarea.value = editor.innerHTML;
                                                 } else {
                                                     // Fallback: insert into textarea
@@ -172,6 +199,13 @@ if (isset($_SESSION['error'])) unset($_SESSION['error']);
                                                         textarea.selectionStart = textarea.selectionEnd = before.length + tag.length;
                                                         textarea.focus();
                                                     }
+                                                }
+                                                // Cleanup: remove any leftover resize handles
+                                                if (editor) {
+                                                    var handles = editor.querySelectorAll('.resize-handle');
+                                                    handles.forEach(function(h) { h.remove(); });
+                                                    // Sync textarea again after cleanup
+                                                    if (textarea) textarea.value = editor.innerHTML;
                                                 }
                                                 mediaModal.style.display = 'none';
                                             }
