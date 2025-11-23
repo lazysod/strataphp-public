@@ -1,4 +1,3 @@
-
 # Google Analytics Module
 
 A simple module for StrataPHP to embed Google Analytics tracking code using a Measurement ID.
@@ -43,6 +42,19 @@ No database table or migration is required for this module.
 2. Update views in `views/` directory
 3. Add custom routes in `routes.php`
 4. Update database schema as needed
+
+## Navigation Config Example
+
+To add the Google Analytics module to your admin navigation, add this to `adminNavConfig.php`:
+
+```php
+[
+    'label' => 'Google Analytics',
+    'icon' => 'fa-chart-line',
+    'url' => '/admin/google-analytics-settings',
+    'show' => true
+]
+```
 
 ## License
 

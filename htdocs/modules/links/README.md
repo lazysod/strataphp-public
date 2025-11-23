@@ -186,6 +186,19 @@ The module uses the default StrataPHP theme. To customize:
 - ✅ PHPDoc documentation throughout
 - ✅ Framework routing conventions
 
+## Navigation Config Example
+
+To add the Links module to your admin navigation, add this to `adminNavConfig.php`:
+
+```php
+[
+    'label' => 'Links',
+    'icon' => 'fa-link',
+    'url' => '/admin/links',
+    'show' => true
+]
+```
+
 ## Troubleshooting
 
 ### Links Not Displaying

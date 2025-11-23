@@ -75,6 +75,15 @@ The Admin module is automatically installed and cannot be disabled (core system 
 - Log security-relevant events
 - Implement proper error handling
 
----
+## Navigation Config Example
 
-For more information, see the main project README and framework documentation.
+To add the Admin module to your admin navigation, add this to `adminNavConfig.php`:
+
+```php
+[
+    'label' => 'Admin',
+    'icon' => 'fa-cogs',
+    'url' => '/admin',
+    'show' => true
+]
+```

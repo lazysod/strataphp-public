@@ -226,6 +226,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
 
             <!-- Keywords/Tags -->
             <?php if (!empty($moduleData['keywords'])): ?>
+                    <!-- Navigation Config Example -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-sitemap me-1"></i>
+                            Navigation Config Example
+                        </div>
+                        <div class="card-body">
+                            <p>To add this module to your admin navigation, add the following to <code>adminNavConfig.php</code>:</p>
+                            <pre><code class="language-php">[
+            'label' => '<?= htmlspecialchars($moduleData['name']) ?>',
+            'icon' => 'fa-cube',
+            'url' => '/admin/<?= htmlspecialchars(strtolower($moduleData['name'])) ?>',
+            'show' => true
+        ]</code></pre>
+                        </div>
+                    </div>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-tags me-1"></i>

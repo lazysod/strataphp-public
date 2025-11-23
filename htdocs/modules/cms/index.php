@@ -16,7 +16,8 @@ return [
     'enabled' => false,
     'suitable_as_default' => false,
     'dependencies' => [
-        'user' => '>=1.0.0' // Requires user management for authors
+        'user' => 'User >=1.0.0',  // Requires user management for authors
+        'media' => 'Media >=1.0.0'  // Requires media management for media library
     ],
     'permissions' => [
         'cms.pages.create', 'cms.pages.read', 'cms.pages.update', 'cms.pages.delete',

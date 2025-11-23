@@ -68,6 +68,19 @@ Enable the contact module in your config:
 ]
 ```
 
+## Navigation Config Example
+
+To add the Contact module to your admin navigation, add this to `adminNavConfig.php`:
+
+```php
+[
+    'label' => 'Contact',
+    'icon' => 'fa-envelope',
+    'url' => '/admin/contact',
+    'show' => true
+]
+```
+
 ## Usage
 
 ### Accessing the Contact Form

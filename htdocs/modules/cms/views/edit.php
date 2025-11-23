@@ -30,7 +30,7 @@ require __DIR__ . '/../../../views/partials/header.php';
                         <div id="mediaManagerModal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;flex-direction:row;">
                             <div style="background:#fff;max-width:900px;width:90vw;height:80vh;overflow:auto;position:relative;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,0.2);">
                                 <button type="button" id="closeMediaManagerModal" style="position:absolute;top:10px;right:10px;font-size:1.5rem;background:none;border:none;">&times;</button>
-                                <iframe src="/admin/cms/media?embed=1" style="width:100%;height:75vh;border:none;border-radius:8px;"></iframe>
+                                <iframe src="/admin/media/media-library?embed=1" style="width:100%;height:75vh;border:none;border-radius:8px;"></iframe>
                             </div>
                         </div>
                         <script>

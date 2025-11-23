@@ -47,10 +47,8 @@ class SiteController
             $sites = $siteModel->getAll();
             include __DIR__ . '/../views/admin/sites_list.php';
         } catch (\Throwable $e) {
-            error_log("SiteController::index error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred loading the sites list.';
             header('Location: /admin/cms');
-            exit;
         }
     }
 
@@ -63,10 +61,8 @@ class SiteController
         try {
             include __DIR__ . '/../views/admin/site_create.php';
         } catch (\Throwable $e) {
-            error_log("SiteController::create error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred loading the create site form.';
             header('Location: /admin/cms/sites');
-            exit;
         }
     }
 
@@ -83,18 +79,14 @@ class SiteController
             if (!$name) {
                 $_SESSION['error'] = 'Site name is required.';
                 header('Location: /admin/cms/sites/create');
-                exit;
             }
             $apiKey = bin2hex(random_bytes(32));
             $siteModel->create($name, $apiKey);
             $_SESSION['success'] = 'Site created!';
             header('Location: /admin/cms/sites');
-            exit;
         } catch (\Throwable $e) {
-            error_log("SiteController::store error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred creating the site.';
             header('Location: /admin/cms/sites/create');
-            exit;
         }
     }
 
@@ -112,12 +104,9 @@ class SiteController
             $siteModel->updateApiKey($id, $apiKey);
             $_SESSION['success'] = 'API key regenerated!';
             header('Location: /admin/cms/sites');
-            exit;
         } catch (\Throwable $e) {
-            error_log("SiteController::regenerateKey error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred regenerating the API key.';
             header('Location: /admin/cms/sites');
-            exit;
         }
     }
 
@@ -137,12 +126,9 @@ class SiteController
                 $_SESSION['error'] = 'Failed to delete site.';
             }
             header('Location: /admin/cms/sites');
-            exit;
         } catch (\Throwable $e) {
-            error_log("SiteController::delete error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred deleting the site.';
             header('Location: /admin/cms/sites');
-            exit;
         }
     }
 }
