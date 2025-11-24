@@ -499,7 +499,6 @@ h1, h2, h3, h4, h5, h6 {
             return $navigation;
 
         } catch (\Exception $e) {
-            error_log("Navigation loading error: " . $e->getMessage());
             // Fallback navigation if database fails
             return [
                 ['title' => 'Home', 'url' => '/', 'slug' => '', 'is_home' => true, 'children' => []]

@@ -1,7 +1,6 @@
 <?php
 // Enhanced CMS Page Form Template with Tabbed Interface
 if (!defined('STRPHP_ROOT')) {
-    exit('Direct access not allowed');
 }
 
 $isEdit = isset($page) && $page;

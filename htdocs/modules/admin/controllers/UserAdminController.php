@@ -31,7 +31,6 @@ class UserAdminController
             $totalPages = ceil($totalUsers / $perPage);
             include __DIR__ . '/../users/views/list.php';
         } catch (\Exception $e) {
-            error_log("Error listing users: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error loading users</h1>';
         }
@@ -75,7 +74,6 @@ class UserAdminController
             }
             include __DIR__ . '/../users/views/add.php';
         } catch (\Exception $e) {
-            error_log("Error adding user: " . $e->getMessage());
             $error = 'Error creating user. Please try again.';
             include __DIR__ . '/../users/views/add.php';
         }
@@ -133,7 +131,6 @@ class UserAdminController
                 include __DIR__ . '/../users/views/edit.php';
             }
         } catch (\Exception $e) {
-            error_log("Error editing user $id: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error editing user</h1>';
         }
@@ -161,7 +158,6 @@ class UserAdminController
             header('Location: /admin/users');
             exit;
         } catch (\Exception $e) {
-            error_log("Error suspending user $id: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error suspending user</h1>';
         }
@@ -189,7 +185,6 @@ class UserAdminController
             header('Location: /admin/users');
             exit;
         } catch (\Exception $e) {
-            error_log("Error unsuspending user $id: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error unsuspending user</h1>';
         }
@@ -220,7 +215,6 @@ class UserAdminController
             header('Location: /admin/users');
             exit;
         } catch (\Exception $e) {
-            error_log("Error deleting user $id: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error deleting user</h1>';
         }

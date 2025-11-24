@@ -30,7 +30,6 @@ class AdminSessionsController
         $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$admin_id, $admin_id]);
             include __DIR__ . '/../views/sessions.php';
         } catch (\Exception $e) {
-            error_log("Error loading admin sessions: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error loading sessions</h1>';
         }
@@ -58,7 +57,6 @@ class AdminSessionsController
             header('Location: /admin/sessions');
             exit;
         } catch (\Exception $e) {
-            error_log("Error revoking session: " . $e->getMessage());
             header('Location: /admin/sessions');
             exit;
         }
@@ -90,7 +88,6 @@ class AdminSessionsController
             header('Location: /admin/sessions');
             exit;
         } catch (\Exception $e) {
-            error_log("Error updating device info: " . $e->getMessage());
             header('Location: /admin/sessions');
             exit;
         }

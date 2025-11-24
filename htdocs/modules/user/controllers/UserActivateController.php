@@ -54,7 +54,6 @@ class UserActivateController
         $success = 'Your account has been activated! You can now <a href="/user/login">login</a>.';
         include __DIR__ . '/../views/activate.php';
         } catch (\Exception $e) {
-            error_log('User activation error: ' . $e->getMessage());
             $error = 'An unexpected error occurred during activation. Please try again.';
             $success = '';
             include __DIR__ . '/../views/activate.php';

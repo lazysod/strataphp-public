@@ -1,6 +1,4 @@
 <?php
-// DEBUG: Show all errors for troubleshooting
-// App::debug(true);
 $config = include dirname(__DIR__, 3) . '/app/config.php';
 $sessionPrefix = $config['session_prefix'] ?? 'app_';
 if (isset($_SESSION[$sessionPrefix . 'user_id'])) {

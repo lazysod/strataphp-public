@@ -26,7 +26,6 @@ try {
     $sessionPrefix = $config['session_prefix'] ?? 'app_';
     if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
         http_response_code(403);
-        error_log('UPLOAD DEBUG: Unauthorized access. Session: ' . print_r($_SESSION, true));
         echo json_encode(['error' => 'Unauthorized access']);
         exit;
     }
@@ -34,7 +33,6 @@ try {
     // Check if file was uploaded
     if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
         http_response_code(400);
-        error_log('UPLOAD DEBUG: No file uploaded or upload error. FILES: ' . print_r($_FILES, true));
         echo json_encode(['error' => 'No file uploaded or upload error']);
         exit;
     }
@@ -60,14 +58,12 @@ try {
         ]);
     } else {
         http_response_code(400);
-        error_log('UPLOAD DEBUG: Upload failed. Error: ' . $result['error'] . ' FILE: ' . print_r($_FILES['file'], true));
         echo json_encode([
             'error' => $result['error']
         ]);
     }
 
 } catch (Exception $e) {
-    error_log("Image upload error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'error' => 'Internal server error'

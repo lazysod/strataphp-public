@@ -61,7 +61,6 @@ class UserThemeWrapper
             // Include the correct CMS theme template
             include __DIR__ . '/themes/modern/templates/default.php';
         } catch (\Throwable $e) {
-            error_log("UserThemeWrapper::renderUserPage error: " . $e->getMessage());
             echo '<div class="alert alert-danger">An error occurred rendering the user page.</div>';
         }
     }

@@ -79,7 +79,6 @@ namespace App\Modules\Cms\Controllers;
                 header('Location: /admin/cms/pages/' . $id . '/edit');
                 exit;
             } catch (\Exception $e) {
-                error_log('CmsController setHome error: ' . $e->getMessage());
                 $_SESSION['error'] = 'Failed to set home page.';
                 header('Location: /admin/cms/pages/' . $id . '/edit');
                 exit;
@@ -110,7 +109,6 @@ namespace App\Modules\Cms\Controllers;
             
             include __DIR__ . '/../views/index.php';
         } catch (\Exception $e) {
-            error_log("CmsController index error: " . $e->getMessage());
             http_response_code(500);
             echo 'An error occurred while loading the cms.';
         }
@@ -128,7 +126,6 @@ namespace App\Modules\Cms\Controllers;
             
             include __DIR__ . '/../views/create.php';
         } catch (\Exception $e) {
-            error_log("CmsController create error: " . $e->getMessage());
             http_response_code(500);
             echo 'An error occurred while loading the create form.';
         }
@@ -174,7 +171,6 @@ namespace App\Modules\Cms\Controllers;
             header('Location: /cms');
             exit;
         } catch (\Exception $e) {
-            error_log("CmsController store error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while creating the cms';
             header('Location: /cms/create');
             exit;
@@ -209,7 +205,6 @@ namespace App\Modules\Cms\Controllers;
             
             include __DIR__ . '/../views/edit.php';
         } catch (\Exception $e) {
-            error_log("CmsController edit error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while loading the edit form';
             header('Location: /cms');
             exit;
@@ -263,7 +258,6 @@ namespace App\Modules\Cms\Controllers;
             header('Location: /cms');
             exit;
         } catch (\Exception $e) {
-            error_log("CmsController update error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while updating the cms';
             header('Location: /cms');
             exit;
@@ -300,7 +294,6 @@ namespace App\Modules\Cms\Controllers;
             header('Location: /cms');
             exit;
         } catch (\Exception $e) {
-            error_log("CmsController delete error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while deleting the cms';
             header('Location: /cms');
             exit;
@@ -324,7 +317,6 @@ namespace App\Modules\Cms\Controllers;
             ]);
             exit;
         } catch (\Exception $e) {
-            error_log("CmsController apiIndex error: " . $e->getMessage());
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,

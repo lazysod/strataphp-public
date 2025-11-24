@@ -1,7 +1,6 @@
 <?php
 // CMS Page Template
 if (!defined('STRPHP_ROOT')) {
-    exit('Direct access not allowed');
 }
 ?>
 <!DOCTYPE html>

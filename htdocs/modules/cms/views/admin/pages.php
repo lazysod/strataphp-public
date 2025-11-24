@@ -1,7 +1,6 @@
 <?php
 // CMS Pages Management Template
 if (!defined('STRPHP_ROOT')) {
-    exit('Direct access not allowed');
 }
 
 // Check for session messages

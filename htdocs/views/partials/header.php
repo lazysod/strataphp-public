@@ -49,7 +49,6 @@ $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $gaData = json_decode(file_get_contents($gaSettingsPath), true);
         if (!empty($gaData['measurement_id'])) {
             $measurementId = htmlspecialchars($gaData['measurement_id']);
-            // Debug output for admin: show measurement ID in HTML comment
             echo "\n<!-- Google Analytics Measurement ID: $measurementId -->\n";
             if (preg_match('/^G-[A-Z0-9]+$/', $gaData['measurement_id'])) {
                 echo "<!-- Google Analytics -->\n";

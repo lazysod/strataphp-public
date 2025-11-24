@@ -63,7 +63,6 @@ class ModuleInstallerController
         
         try {
             // Debug: Log $_FILES information
-            error_log('Upload attempt - $_FILES: ' . print_r($_FILES, true));
             
             // Check if file was uploaded
             if (!isset($_FILES['module_zip'])) {

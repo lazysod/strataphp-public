@@ -151,7 +151,6 @@ return function($db) {
         ");
         
     } catch (Exception $e) {
-        error_log("CMS migration error: " . $e->getMessage());
         throw new Exception("Failed to create CMS tables: " . $e->getMessage());
     }
 };

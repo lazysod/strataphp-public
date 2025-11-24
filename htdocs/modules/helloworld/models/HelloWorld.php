@@ -30,7 +30,6 @@ class HelloWorld
             }
             return $this->messages[0];
         } catch (\Exception $e) {
-            error_log("Error getting hello world message: " . $e->getMessage());
             return "Error loading message";
         }
     }

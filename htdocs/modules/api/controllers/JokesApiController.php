@@ -21,7 +21,6 @@ class JokesApiController extends ApiController
         try {
             $this->error('Bad Request', 400);
         } catch (\Exception $e) {
-            error_log("Error in jokes index: " . $e->getMessage());
             $this->error('Internal server error', 500);
         }
     }
@@ -42,7 +41,6 @@ class JokesApiController extends ApiController
             $random = $jokes[array_rand($jokes)];
             $this->json($random);
         } catch (\Exception $e) {
-            error_log("Error getting random joke: " . $e->getMessage());
             $this->error('Error retrieving joke', 500);
         }
     }
@@ -75,7 +73,6 @@ class JokesApiController extends ApiController
                 $this->json(ApiHelper::error('Joke not found', 404), 404);
             }
         } catch (\Exception $e) {
-            error_log("Error getting joke $id: " . $e->getMessage());
             $this->error('Error retrieving joke', 500);
         }
     }
@@ -107,7 +104,6 @@ class JokesApiController extends ApiController
             ];
             $this->json(ApiHelper::success($newJoke), 201);
         } catch (\Exception $e) {
-            error_log("Error adding joke: " . $e->getMessage());
             $this->error('Error adding joke', 500);
         }
     }

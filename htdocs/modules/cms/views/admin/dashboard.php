@@ -22,7 +22,6 @@
 <?php
 // CMS Dashboard Template
 if (!defined('STRPHP_ROOT')) {
-    exit('Direct access not allowed');
 }
 require_once __DIR__ . '/../../../../app/helpers.php';
 ?>

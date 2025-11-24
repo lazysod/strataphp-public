@@ -180,7 +180,6 @@ function initializeRichTextEditor() {
   // Update textarea when content changes
   editor.addEventListener("input", function () {
     textarea.value = editor.innerHTML;
-    console.log("Editor content updated");
   });
 
   editor.addEventListener("blur", function () {
@@ -258,7 +257,6 @@ function initializeRichTextEditor() {
     sourceMode: false,
   };
 
-  console.log("Rich text editor initialized successfully");
 
   // Focus the editor
   setTimeout(() => {
@@ -268,12 +266,10 @@ function initializeRichTextEditor() {
 
 // Editor command functions
 function execCmd(cmd, value = null) {
-  console.log("execCmd called with:", cmd, "value:", value);
   console.trace(); // This will show us the call stack
 
   if (window.richEditor && !window.richEditor.sourceMode) {
     if (cmd === "createLink") {
-      console.log(
         "createLink command detected - this is what causes the URL prompt"
       );
       value = prompt("Enter URL:");
@@ -471,7 +467,6 @@ function toggleSource() {
 
 // Tab functionality
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM Content Loaded - initializing tabs and editor");
 
   // Initialize rich text editor
   initializeRichTextEditor();
@@ -479,11 +474,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const tabButtons = document.querySelectorAll(".tab-button");
   const tabPanes = document.querySelectorAll(".tab-pane");
 
-  console.log("Found tab buttons:", tabButtons.length);
-  console.log("Found tab panes:", tabPanes.length);
 
   tabButtons.forEach((button, index) => {
-    console.log(`Tab button ${index}:`, button.getAttribute("data-target"));
     button.addEventListener("click", function () {
       const targetId = this.getAttribute("data-target");
       console.log("Tab clicked:", targetId);
@@ -497,7 +489,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const targetPane = document.getElementById(targetId);
       if (targetPane) {
         targetPane.classList.add("active");
-        console.log("Tab switched to:", targetId);
       } else {
         console.error("Target pane not found:", targetId);
       }
@@ -572,9 +563,7 @@ document.getElementById("pageForm").addEventListener("submit", function (e) {
 
   // Log all form data
   const formData = new FormData(this);
-  console.log("Form data:");
   for (let [key, value] of formData.entries()) {
-    console.log(key + ":", value);
   }
 });
 
@@ -592,7 +581,6 @@ function uploadOgImageButtonClick() {
 
   const fileInput = document.getElementById("og_image_file");
   if (fileInput) {
-    console.log("File input found, triggering click");
     fileInput.click();
   } else {
     console.error("File input not found");

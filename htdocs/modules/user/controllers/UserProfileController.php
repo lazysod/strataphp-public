@@ -107,7 +107,6 @@ class UserProfileController
     $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
     include $viewPath;
         } catch (\Exception $e) {
-            error_log('User profile error: ' . $e->getMessage());
             $error = 'An unexpected error occurred. Please try again.';
             $success = '';
             $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');

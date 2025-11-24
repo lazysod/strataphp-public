@@ -23,7 +23,6 @@ class ApiController
             header('Content-Type: application/json');
             echo json_encode($data);
         } catch (\Exception $e) {
-            error_log("Error sending JSON response: " . $e->getMessage());
             http_response_code(500);
             echo json_encode(['error' => true, 'message' => 'Internal server error']);
         }
@@ -45,7 +44,6 @@ class ApiController
                 'message' => $message
             ], $status);
         } catch (\Exception $e) {
-            error_log("Error sending error response: " . $e->getMessage());
             http_response_code(500);
             echo json_encode(['error' => true, 'message' => 'Internal server error']);
         }

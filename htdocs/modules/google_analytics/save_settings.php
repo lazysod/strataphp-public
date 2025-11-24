@@ -26,7 +26,6 @@ if (strpos(realpath(dirname($debugLog)), realpath(dirname(__DIR__, 3) . '/storag
 try {
 
     // Safe: $debugLog is a fixed path, not user-controlled
-    file_put_contents($debugLog, "==== POST DATA ====".PHP_EOL.print_r($_POST, true), FILE_APPEND);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $measurementId = isset($_POST['measurement_id']) ? trim($_POST['measurement_id']) : '';

@@ -94,7 +94,6 @@ class UserRegisterController
             include __DIR__ . '/../views/register.php';
         }
         } catch (\Exception $e) {
-            error_log('User registration error: ' . $e->getMessage());
             $error = 'An unexpected error occurred during registration. Please try again.';
             $success = '';
             

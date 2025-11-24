@@ -20,7 +20,6 @@ class HelloWorldController
         try {
             include __DIR__ . '/../views/hello.php';
         } catch (\Exception $e) {
-            error_log("Error in HelloWorld index: " . $e->getMessage());
             echo '<h1>Error loading Hello World page</h1>';
         }
     }

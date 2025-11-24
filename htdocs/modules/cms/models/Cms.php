@@ -27,7 +27,6 @@ class Cms
             $sql = "SELECT * FROM `" . $this->table . "` ORDER BY created_at DESC";
             return $this->db->fetchAll($sql);
         } catch (\Exception $e) {
-            error_log("Cms model getAll error: " . $e->getMessage());
             return [];
         }
     }
@@ -41,7 +40,6 @@ class Cms
             $sql = "SELECT * FROM `" . $this->table . "` WHERE id = ?";
             return $this->db->fetch($sql, [$id]);
         } catch (\Exception $e) {
-            error_log("Cms model getById error: " . $e->getMessage());
             return null;
         }
     }
@@ -59,7 +57,6 @@ class Cms
             
             return $this->db->query($sql, $data);
         } catch (\Exception $e) {
-            error_log("Cms model create error: " . $e->getMessage());
             return false;
         }
     }
@@ -81,7 +78,6 @@ class Cms
             
             return $this->db->query($sql, $data);
         } catch (\Exception $e) {
-            error_log("Cms model update error: " . $e->getMessage());
             return false;
         }
     }
@@ -95,7 +91,6 @@ class Cms
             $sql = "DELETE FROM `" . $this->table . "` WHERE id = ?";
             return $this->db->query($sql, [$id]);
         } catch (\Exception $e) {
-            error_log("Cms model delete error: " . $e->getMessage());
             return false;
         }
     }
@@ -113,7 +108,6 @@ class Cms
             $searchTerm = '%' . $query . '%';
             return $this->db->fetchAll($sql, [$searchTerm, $searchTerm]);
         } catch (\Exception $e) {
-            error_log("Cms model search error: " . $e->getMessage());
             return [];
         }
     }
@@ -135,7 +129,6 @@ class Cms
             
             return $this->db->fetchAll($sql, [$perPage, $offset]);
         } catch (\Exception $e) {
-            error_log("Cms model paginate error: " . $e->getMessage());
             return [];
         }
     }
@@ -150,7 +143,6 @@ class Cms
             $result = $this->db->fetch($sql);
             return $result ? (int)$result['count'] : 0;
         } catch (\Exception $e) {
-            error_log("Cms model getCount error: " . $e->getMessage());
             return 0;
         }
     }

@@ -86,7 +86,6 @@ class UserResetController
         $viewPath = CmsHelper::getViewPath('user/reset.php', __DIR__ . '/../views/reset.php');
         include $viewPath;
         } catch (\Exception $e) {
-            error_log('User reset error: ' . $e->getMessage());
             $error = 'An unexpected error occurred. Please try again.';
             $success = '';
             $viewPath = CmsHelper::getViewPath('user/reset.php', __DIR__ . '/../views/reset.php');

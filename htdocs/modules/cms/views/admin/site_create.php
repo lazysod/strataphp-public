@@ -1,7 +1,6 @@
 <?php
 // Admin: Create new site form
 if (!defined('STRPHP_ROOT')) {
-    exit('Direct access not allowed');
 }
 $success_message = $_SESSION['success'] ?? null;
 $error_message = $_SESSION['error'] ?? null;
