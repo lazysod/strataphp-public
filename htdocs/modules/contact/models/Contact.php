@@ -30,7 +30,6 @@ class Contact
             $contacts = $db->fetchAll('SELECT * FROM users');
             return $contacts;
         } catch (Exception $e) {
-            error_log('Error fetching contacts: ' . $e->getMessage());
             throw new Exception('Failed to retrieve contacts: ' . $e->getMessage());
         }
     }
@@ -53,7 +52,6 @@ class Contact
             $result = $db->query($sql, [$name, $email, $avatar]);
             return $result;
         } catch (Exception $e) {
-            error_log('Error adding contact: ' . $e->getMessage());
             throw new Exception('Failed to add contact: ' . $e->getMessage());
         }
     }

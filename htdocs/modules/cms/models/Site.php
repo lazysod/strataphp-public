@@ -16,7 +16,6 @@ class Site
         try {
             return $this->db->query("DELETE FROM sites WHERE id = ?", [$id]);
         } catch (\Throwable $e) {
-            error_log("Site::delete error: " . $e->getMessage());
             return false;
         }
     }
@@ -39,7 +38,6 @@ class Site
         try {
             return $this->db->fetchAll("SELECT * FROM sites ORDER BY created_at DESC");
         } catch (\Throwable $e) {
-            error_log("Site::getAll error: " . $e->getMessage());
             return [];
         }
     }
@@ -52,7 +50,6 @@ class Site
         try {
             return $this->db->query("INSERT INTO sites (name, api_key, status) VALUES (?, ?, 'active')", [$name, $apiKey]);
         } catch (\Throwable $e) {
-            error_log("Site::create error: " . $e->getMessage());
             return false;
         }
     }
@@ -65,7 +62,6 @@ class Site
         try {
             return $this->db->query("UPDATE sites SET api_key = ?, updated_at = NOW() WHERE id = ?", [$apiKey, $id]);
         } catch (\Throwable $e) {
-            error_log("Site::updateApiKey error: " . $e->getMessage());
             return false;
         }
     }
@@ -78,7 +74,6 @@ class Site
         try {
             return $this->db->fetch("SELECT * FROM sites WHERE api_key = ? AND status = 'active'", [$apiKey]);
         } catch (\Throwable $e) {
-            error_log("Site::getByApiKey error: " . $e->getMessage());
             return null;
         }
     }

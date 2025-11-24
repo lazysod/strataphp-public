@@ -31,7 +31,6 @@ class GoogleAnalyticsController
             
             include __DIR__ . '/../views/index.php';
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController index error: " . $e->getMessage());
             http_response_code(500);
             echo 'An error occurred while loading the google_analytics.';
         }
@@ -49,7 +48,6 @@ class GoogleAnalyticsController
             
             include __DIR__ . '/../views/create.php';
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController create error: " . $e->getMessage());
             http_response_code(500);
             echo 'An error occurred while loading the create form.';
         }
@@ -95,7 +93,6 @@ class GoogleAnalyticsController
             header('Location: /google_analytics');
             exit;
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController store error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while creating the google_analytics';
             header('Location: /google_analytics/create');
             exit;
@@ -131,7 +128,6 @@ class GoogleAnalyticsController
             
             include __DIR__ . '/../views/show.php';
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController show error: " . $e->getMessage());
             http_response_code(500);
             echo 'An error occurred while loading the google_analytics.';
         }
@@ -165,7 +161,6 @@ class GoogleAnalyticsController
             
             include __DIR__ . '/../views/edit.php';
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController edit error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while loading the edit form';
             header('Location: /google_analytics');
             exit;
@@ -219,7 +214,6 @@ class GoogleAnalyticsController
             header('Location: /google_analytics');
             exit;
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController update error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while updating the google_analytics';
             header('Location: /google_analytics');
             exit;
@@ -256,7 +250,6 @@ class GoogleAnalyticsController
             header('Location: /google_analytics');
             exit;
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController delete error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while deleting the google_analytics';
             header('Location: /google_analytics');
             exit;
@@ -280,7 +273,6 @@ class GoogleAnalyticsController
             ]);
             exit;
         } catch (\Exception $e) {
-            error_log("GoogleAnalyticsController apiIndex error: " . $e->getMessage());
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,

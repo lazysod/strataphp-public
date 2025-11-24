@@ -15,7 +15,6 @@ class ModuleAutoDiscovery
     {
         $modules = [];
         if (!is_dir($modulesDir)) {
-            error_log('[ModuleAutoDiscovery] Directory not found: ' . $modulesDir);
             return $modules;
         }
         foreach (scandir($modulesDir) as $moduleName) {
@@ -25,7 +24,6 @@ class ModuleAutoDiscovery
             if (is_dir($modulePath) && file_exists($indexFile)) {
                 $meta = include $indexFile;
                 if (!is_array($meta)) {
-                    error_log('[ModuleAutoDiscovery] Invalid metadata for module: ' . $moduleName);
                     continue;
                 }
                 $modules[$moduleName] = [
@@ -35,7 +33,6 @@ class ModuleAutoDiscovery
             }
         }
         if (empty($modules)) {
-            error_log('[ModuleAutoDiscovery] No modules discovered in: ' . $modulesDir);
         }
         return $modules;
     $modules = [];

@@ -27,7 +27,6 @@ class ApiHelper
             }
             return $missing;
         } catch (\Exception $e) {
-            error_log("Error validating parameters: " . $e->getMessage());
             return $required; // Return all as missing on error
         }
     }
@@ -48,7 +47,6 @@ class ApiHelper
                 'data' => $data
             ];
         } catch (\Exception $e) {
-            error_log("Error formatting success response: " . $e->getMessage());
             return ['success' => false, 'message' => 'Error formatting response'];
         }
     }
@@ -69,7 +67,6 @@ class ApiHelper
                 'message' => $message
             ];
         } catch (\Exception $e) {
-            error_log("Error formatting error response: " . $e->getMessage());
             return ['success' => false, 'message' => 'Internal error'];
         }
     }

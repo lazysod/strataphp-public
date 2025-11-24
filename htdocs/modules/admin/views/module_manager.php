@@ -30,7 +30,17 @@ if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     exit;
 }
 
-require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
+require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
+// Show module update messages at the top
+if (!empty($_SESSION['module_update_success'])) {
+    echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['module_update_success']) . '</div>';
+    unset($_SESSION['module_update_success']);
+}
+if (!empty($_SESSION['module_update_error'])) {
+    echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['module_update_error']) . '</div>';
+    unset($_SESSION['module_update_error']);
+}
+?>
 <section class="py-5">
     <div class="container px-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -180,7 +190,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
         </div>
         <?php endif; ?>
         
-        <form method="post" action="/admin/modules">
+        <form method="post" action="/admin/modules/save.php">
             <!-- Table View -->
             <div id="tableViewContainer">
                 <table class="table table-bordered" id="modulesTable">
@@ -214,7 +224,10 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                             require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Services/ModuleValidator.php';
                             $moduleValidator = class_exists('App\\Services\\ModuleValidator') ? new \App\Services\ModuleValidator() : null;
                             ?>
-                            <?php foreach ($modules as $modName => $modInfo): ?>
+                            <?php
+                            require_once $_SERVER['DOCUMENT_ROOT'] . '/app/ModuleUpdater.php';
+                            $coreModules = include $_SERVER['DOCUMENT_ROOT'] . '/app/core_modules.php';
+                            foreach ($modules as $modName => $modInfo): ?>
                                 <?php
                                 // Get module metadata
                                 $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
@@ -245,8 +258,16 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         $validationStatus = $validationResults['valid'];
                                     }
                                 }
-                                $isCore = ($modName === 'admin' || $modName === 'home');
+                                $isCore = array_key_exists($modName, $coreModules);
                                 $isEnabled = !empty($modInfo['enabled']);
+                                $updateAvailable = false;
+                                if ($isCore) {
+                                    $localJsonPath = $modulePath . '/module.json';
+                                    $remoteJsonUrl = $coreModules[$modName]['json'] ?? '';
+                                    if (file_exists($localJsonPath) && $remoteJsonUrl) {
+                                        $updateAvailable = ModuleUpdater::checkUpdate($modName, $localJsonPath, $remoteJsonUrl);
+                                    }
+                                }
                                 ?>
                                 <tr class="module-row" 
                                     data-module-name="<?= htmlspecialchars(strtolower($modName)) ?>"
@@ -266,6 +287,18 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         <?php endif; ?>
                                         <?php if ($version): ?>
                                             <small class="text-muted">v<?= htmlspecialchars($version) ?></small>
+                                        <?php endif; ?>
+                                        <?php if ($isCore && $updateAvailable): ?>
+                                            <form method="post" action="/admin/modules/update.php" style="display:inline; margin-top:5px;">
+                                                <input type="hidden" name="module" value="<?= htmlspecialchars($modName) ?>">
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Update Available">
+                                                    <i class="fas fa-sync-alt"></i> Update
+                                                </button>
+                                            </form>
+                                        <?php elseif ($isCore): ?>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Up to date" style="margin-top:5px;">
+                                                <i class="fas fa-check"></i> Up to date
+                                            </button>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -344,6 +377,18 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                                     <i class="fas fa-external-link-alt"></i> Open Module
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($isCore && $updateAvailable): ?>
+                                                <form method="post" action="/admin/modules/update.php" style="display:inline;">
+                                                    <input type="hidden" name="module" value="<?= htmlspecialchars($modName) ?>">
+                                                    <button type="submit" class="btn btn-warning btn-sm" title="Update Available">
+                                                        <i class="fas fa-sync-alt"></i> Update
+                                                    </button>
+                                                </form>
+                                            <?php elseif ($isCore): ?>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Up to date">
+                                                    <i class="fas fa-check"></i> Up to date
+                                                </button>
+                                            <?php endif; ?>
                                             <?php if ($moduleValidator): ?>
                                                 <button type="button" 
                                                         class="btn btn-outline-secondary btn-sm" 
@@ -366,6 +411,12 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
+                </table>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i>Save Changes
+                    </button>
+                </div>
                 </table>
             </div>
 
@@ -557,7 +608,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                 <?php endif; ?>
             </div>
             <div class="mb-3">
-                <!-- Debug panels removed -->
+                
                 <label for="default_module" class="form-label"><strong>Default Module (Root Page)</strong></label>
                 <select id="default_module" name="default_module" class="form-select">
                     <?php
@@ -575,7 +626,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             <button type="submit" class="btn btn-success">Save Changes</button>
         </form>
         
-        <!-- Debug Output -->
+        
 
         
         <!-- Bulk Actions -->

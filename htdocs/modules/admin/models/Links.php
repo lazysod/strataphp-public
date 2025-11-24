@@ -52,7 +52,6 @@ class Links
                 $this->db->query('UPDATE links SET `order` = ? WHERE id = ?', [$order1, $id2]);
             }
         } catch (Exception $e) {
-            error_log('Error swapping link order: ' . $e->getMessage());
             throw new Exception('Failed to swap link order: ' . $e->getMessage());
         }
     }
@@ -68,7 +67,6 @@ class Links
         try {
             return $this->db->fetchAll('SELECT * FROM links ORDER BY `order` ASC');
         } catch (Exception $e) {
-            error_log('Error fetching all links: ' . $e->getMessage());
             throw new Exception('Failed to retrieve links: ' . $e->getMessage());
         }
     }
@@ -85,7 +83,6 @@ class Links
         try {
             return $this->db->fetch('SELECT * FROM links WHERE id = ?', [$id]);
         } catch (Exception $e) {
-            error_log('Error fetching link by ID: ' . $e->getMessage());
             throw new Exception('Failed to retrieve link: ' . $e->getMessage());
         }
     }
@@ -108,7 +105,6 @@ class Links
             }
             $this->db->query('INSERT INTO links (title, url, icon, nsfw) VALUES (?, ?, ?, ?)', [$title, $url, $icon, $nsfw]);
         } catch (Exception $e) {
-            error_log('Error adding link: ' . $e->getMessage());
             throw new Exception('Failed to add link: ' . $e->getMessage());
         }
     }
@@ -132,7 +128,6 @@ class Links
             }
             $this->db->query('UPDATE links SET title = ?, url = ?, icon = ?, nsfw = ? WHERE id = ?', [$title, $url, $icon, $nsfw, $id]);
         } catch (Exception $e) {
-            error_log('Error updating link: ' . $e->getMessage());
             throw new Exception('Failed to update link: ' . $e->getMessage());
         }
     }
@@ -149,7 +144,6 @@ class Links
         try {
             $this->db->query('DELETE FROM links WHERE id = ?', [$id]);
         } catch (Exception $e) {
-            error_log('Error deleting link: ' . $e->getMessage());
             throw new Exception('Failed to delete link: ' . $e->getMessage());
         }
     }

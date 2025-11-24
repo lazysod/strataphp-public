@@ -81,7 +81,6 @@ class FileUpload
             }
 
         } catch (\Exception $e) {
-            error_log("File upload error: " . $e->getMessage());
             return ['success' => false, 'error' => 'Upload failed: ' . $e->getMessage()];
         }
     }

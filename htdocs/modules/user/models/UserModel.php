@@ -40,7 +40,6 @@ class UserModel
         try {
             return $this->db->fetch("SELECT * FROM users WHERE id = ?", [$userId]);
         } catch (\Exception $e) {
-            error_log('Error fetching user by ID: ' . $e->getMessage());
             return null;
         }
     }
@@ -56,7 +55,6 @@ class UserModel
         try {
             return $this->db->fetch("SELECT * FROM users WHERE email = ?", [$email]);
         } catch (\Exception $e) {
-            error_log('Error fetching user by email: ' . $e->getMessage());
             return null;
         }
     }
@@ -91,7 +89,6 @@ class UserModel
             
             return $this->db->query($sql, $values) !== false;
         } catch (\Exception $e) {
-            error_log('Error updating user profile: ' . $e->getMessage());
             return false;
         }
     }
@@ -109,7 +106,6 @@ class UserModel
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             return $this->db->query("UPDATE users SET password = ? WHERE id = ?", [$hashedPassword, $userId]) !== false;
         } catch (\Exception $e) {
-            error_log('Error updating user password: ' . $e->getMessage());
             return false;
         }
     }
@@ -157,7 +153,6 @@ class UserModel
                 return ['status' => 'error', 'message' => 'Failed to create user'];
             }
         } catch (\Exception $e) {
-            error_log('Error creating user: ' . $e->getMessage());
             return ['status' => 'error', 'message' => 'Database error occurred'];
         }
     }
@@ -184,7 +179,6 @@ class UserModel
             
             return ['status' => 'success', 'message' => 'Authentication successful', 'user' => $user];
         } catch (\Exception $e) {
-            error_log('Error authenticating user: ' . $e->getMessage());
             return ['status' => 'error', 'message' => 'Authentication error occurred'];
         }
     }
@@ -213,7 +207,6 @@ class UserModel
                 'last_login' => $user['last_login'] ?? 'Never'
             ];
         } catch (\Exception $e) {
-            error_log('Error getting user stats: ' . $e->getMessage());
             return [];
         }
     }

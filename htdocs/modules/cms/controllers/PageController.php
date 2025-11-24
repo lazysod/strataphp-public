@@ -62,7 +62,6 @@ class PageController
             
             $this->renderPage($data);
         } catch (\Exception $e) {
-            error_log("PageController home error: " . $e->getMessage());
             $this->showError('Unable to load the home page.');
         }
     }
@@ -98,7 +97,6 @@ class PageController
             
             $this->renderPage($data);
         } catch (\Exception $e) {
-            error_log("PageController show error: " . $e->getMessage());
             $this->showError('Unable to load the requested page.');
         }
     }

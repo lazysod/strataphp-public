@@ -1,7 +1,6 @@
 
 
 'use strict';
-console.log('Default theme scripts loaded');
 
 // Cookie Consent Banner
 function setCookie(name, value, days) {

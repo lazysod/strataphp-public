@@ -25,7 +25,6 @@ class Page
             }
             return $this->db->fetchAll($sql, $params);
         } catch (\Exception $e) {
-            error_log("Page model getAllBySite error: " . $e->getMessage());
             return [];
         }
     }
@@ -49,7 +48,6 @@ class Page
                 $this->db = new \App\DB($config);
             }
         } catch (\Exception $e) {
-            error_log("Page model database connection error: " . $e->getMessage());
             throw new \Exception("Failed to initialize database connection");
         }
     }
@@ -123,7 +121,6 @@ class Page
                 $sanitizedData['site_id']
             ]);
         } catch (\Exception $e) {
-            error_log("Page model create error: " . $e->getMessage());
             throw new \Exception("Failed to create page: " . $e->getMessage());
         }
     }
@@ -168,7 +165,6 @@ class Page
             
             return $result;
         } catch (\Exception $e) {
-            error_log("Page model update error: " . $e->getMessage());
             throw new \Exception("Failed to update page: " . $e->getMessage());
         }
     }
@@ -185,7 +181,6 @@ class Page
             }
             return $this->db->fetchAll($sql);
         } catch (\Exception $e) {
-            error_log("Page model getAll error: " . $e->getMessage());
             return [];
         }
     }
@@ -198,7 +193,6 @@ class Page
         try {
             return $this->db->query("DELETE FROM cms_pages WHERE id = ?", [$id]);
         } catch (\Exception $e) {
-            error_log("Page model delete error: " . $e->getMessage());
             throw new \Exception("Failed to delete page: " . $e->getMessage());
         }
     }

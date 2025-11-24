@@ -34,7 +34,6 @@ class LinksController
             $show_adult_warning = false; // Set true to show adult warning
             include __DIR__ . '/../views/links.php';
         } catch (\Exception $e) {
-            error_log('Error loading links: ' . $e->getMessage());
             $links = [];
             $show_adult_warning = false;
             include __DIR__ . '/../views/links.php';
@@ -55,7 +54,6 @@ class LinksController
             $bio = 'This is a sample bio. You can edit this in the controller or load from DB.';
             include __DIR__ . '/../views/about.php';
         } catch (\Exception $e) {
-            error_log('Error loading about page: ' . $e->getMessage());
             $bio = 'Error loading bio information.';
             include __DIR__ . '/../views/about.php';
         }

@@ -76,7 +76,6 @@ class UserLoginController
         $viewPath = CmsHelper::getViewPath('user/login.php', __DIR__ . '/../views/login.php');
         include $viewPath;
         } catch (\Exception $e) {
-            error_log('User login error: ' . $e->getMessage());
             $error = 'An unexpected error occurred. Please try again.';
             // Use CmsHelper for error view as well
             $viewPath = CmsHelper::getViewPath('user/login.php', __DIR__ . '/../views/login.php');

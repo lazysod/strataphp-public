@@ -21,7 +21,6 @@ class AdminController
             header('Location: /admin/cms/pages');
             exit;
         } catch (\Exception $e) {
-            error_log('AdminController setHomePage error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to set home page.';
             header('Location: /admin/cms/pages');
             exit;
@@ -87,7 +86,6 @@ class AdminController
             
             $this->renderAdminView('dashboard', $data);
         } catch (\Exception $e) {
-            error_log("AdminController dashboard error: " . $e->getMessage());
             $this->showError('Unable to load the CMS dashboard.');
         }
     }
@@ -115,7 +113,6 @@ class AdminController
             ];
             $this->renderAdminView('pages', $data);
         } catch (\Exception $e) {
-            error_log("AdminController pages error: " . $e->getMessage());
             $this->showError('Unable to load pages.');
         }
     }
@@ -181,7 +178,6 @@ class AdminController
                 throw new \Exception('Failed to create page.');
             }
         } catch (\Exception $e) {
-            error_log("AdminController storePage error: " . $e->getMessage());
             $_SESSION['error'] = $e->getMessage();
             header('Location: /admin/cms/pages/create');
         }
@@ -214,7 +210,6 @@ class AdminController
             ];
             $this->renderAdminView('page_form', $data);
         } catch (\Exception $e) {
-            error_log("AdminController editPage error: " . $e->getMessage());
             $this->showError('Unable to load page for editing.');
         }
     }    /**
@@ -259,7 +254,6 @@ class AdminController
                 throw new \Exception('Failed to update page.');
             }
         } catch (\Exception $e) {
-            error_log("AdminController updatePage error: " . $e->getMessage());
             $_SESSION['error'] = $e->getMessage();
             header('Location: /admin/cms/pages/' . $id . '/edit');
         }
@@ -281,7 +275,6 @@ class AdminController
                 $_SESSION['error'] = 'Failed to delete page.';
             }
         } catch (\Exception $e) {
-            error_log("AdminController deletePage error: " . $e->getMessage());
             $_SESSION['error'] = 'An error occurred while deleting the page.';
         }
         
@@ -483,7 +476,6 @@ class AdminController
                 'totalPages' => $totalPages
             ]);
         } catch (\Exception $e) {
-            error_log("Media library error: " . $e->getMessage());
             $this->renderAdminView('error', ['message' => 'Failed to load media library']);
         }
     }

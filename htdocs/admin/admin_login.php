@@ -68,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } catch (Exception $e) {
             $error = 'Database connection error. Please try again.';
-            error_log("Admin login DB error: " . $e->getMessage());
         }
     }
 }

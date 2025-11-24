@@ -10,7 +10,6 @@ class ImageController {
 		 */
 		public function mediaLibrary()
 		{
-			error_log('[DEBUG] Entered ImageController::mediaLibrary()', 3, __DIR__ . '/../../../storage/logs/app.log');
 			// Gather images from the uploads directory
 			$images = [];
 			$uploadDir = $this->uploadDir;
@@ -36,10 +35,8 @@ class ImageController {
 			$viewFile = __DIR__ . '/../views/media_library.php';
 			if (file_exists($viewFile)) {
 				// Make $images available to the view
-				error_log('[DEBUG] Rendering media_library.php view', 3, __DIR__ . '/../../../storage/logs/app.log');
 				include $viewFile;
 			} else {
-				error_log('[ERROR] Media Library view not found.', 3, __DIR__ . '/../../../storage/logs/app.log');
 				echo '<h2>Media Library view not found.</h2>';
 			}
 		}

@@ -32,7 +32,6 @@ try {
         }
     }
 } catch (\Throwable $e) {
-    error_log("CMS theme default.php error: " . $e->getMessage());
     echo '<div class="alert alert-danger">An error occurred preparing the page meta data.</div>';
 }
 ?>

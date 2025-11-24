@@ -359,10 +359,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
             
             // Add the file if selected
             if (fileInput.files.length > 0) {
-                console.log('File selected:', fileInput.files[0].name, fileInput.files[0].size);
                 formData.append('module_zip', fileInput.files[0]);
             } else {
-                console.log('No file selected');
                 alert('Please select a file first');
                 currentOperation = null;
                 uploadButton.disabled = false;

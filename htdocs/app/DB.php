@@ -54,17 +54,14 @@ class DB
         try {
             $stmt = $this->pdo->prepare($sql);
             if (!$stmt) {
-                error_log("DB: Failed to prepare statement: " . $sql);
                 return null;
             }
             $result = $stmt->execute($params);
             if (!$result) {
-                error_log("DB: Failed to execute statement: " . $sql . " with params: " . json_encode($params));
                 return null;
             }
             return $stmt;
         } catch (PDOException $e) {
-            error_log("DB query error: " . $e->getMessage() . " SQL: " . $sql);
             return null;
         }
     }
