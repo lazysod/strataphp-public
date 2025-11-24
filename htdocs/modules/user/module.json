@@ -1,75 +1,7 @@
 {
     "name": "user",
-    "displayName": "User Management Module",
-    "description": "Comprehensive user authentication and management system with registration, login, profiles, and password reset",
-    "version": "1.0.0",
-    "author": "StrataPHP",
-    "license": "MIT",
-    "category": "authentication",
-    "tags": ["user", "authentication", "registration", "login", "profile", "security"],
-    "type": "module",
-    "framework": "strataphp",
-    "frameworkVersion": ">=1.0.0",
-    {
-      "name": "user",
-      "version": "1.0.0"
-    }
-            "enabled": true,
-            "token_expiry": 3600
-        }
-    },
-    
-    "permissions": {
-        "public": true,
-        "authentication": true,
-        "roles": ["user", "admin"],
-        "self_registration": true
-    },
-    
-    "files": {
-        "controllers": [
-            "controllers/EmailTestController.php",
-            "controllers/UserActivateController.php",
-            "controllers/UserLoginController.php",
-            "controllers/UserProfileController.php",
-            "controllers/UserRegisterController.php",
-            "controllers/UserResetController.php",
-            "controllers/UserResetRequestController.php",
-            "controllers/UserSessionsController.php"
-        ],
-        "views": ["views/"],
-        "routes": ["routes.php"],
-        "entry": ["index.php"]
-    },
-    
-    "authentication": {
-        "methods": ["session"],
-        "password_hashing": "bcrypt",
-        "session_management": true,
-        "csrf_protection": true,
-        "rate_limiting": false
-    },
-    
-    "user_features": [
-        "User registration",
-        "Email verification",
-        "Secure login/logout",
-        "Profile management",
-        "Password reset via email",
-        "Session tracking",
-        "Device fingerprinting",
-        "Remember me functionality"
-    ],
-    
-    "security_features": [
-        "Password hashing with bcrypt",
-        "CSRF token protection",
-        "Input sanitization",
-        "SQL injection prevention",
-        "Session hijacking protection",
-        "IP address tracking",
-        "Failed login tracking"
-    ],
+    "version": "1.0.0"
+}
     
     "testing": {
         "unit_tests": false,

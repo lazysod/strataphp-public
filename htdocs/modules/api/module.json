@@ -1,59 +1,7 @@
 {
-    {
-      "name": "api",
-      "version": "1.0.0"
-    }
-        }
-    ],
-    
-    "dependencies": {
-        "php": ">=7.4",
-        "strataphp": ">=1.0.0"
-    },
-    
-    "config": {
-        "enabled": true,
-        "api_version": "v1",
-        "rate_limiting": false
-    },
-    
-    "permissions": {
-        "public": true,
-        "authentication": false,
-        "roles": []
-    },
-    
-    "files": {
-        "controllers": [
-            "controllers/ApiController.php",
-            "controllers/ApiHelper.php",
-            "controllers/JokesApiController.php"
-        ],
-        "routes": ["routes.php"],
-        "config": ["config/"],
-        "views": ["views/"]
-    },
-    
-    "testing": {
-        "unit_tests": false,
-        "integration_tests": false,
-        "api_tests": false
-    },
-    
-    "documentation": {
-        "readme": "README.md",
-        "api_docs": false,
-        "examples": false
-    },
-    
-    "quality": {
-        "code_style": "PSR-12",
-        "static_analysis": false,
-        "security_scan": false
-    },
-    
-    "performance": {
-        "caching": false,
+    "name": "api",
+    "version": "1.0.0"
+}
         "database_queries": 0,
         "external_requests": false
     },
