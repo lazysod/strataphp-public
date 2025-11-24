@@ -1,3 +1,24 @@
+        <!-- Dynamic Module Links -->
+        <div class="actions" style="margin-bottom: 30px;">
+        <?php
+        $modulesConfig = include dirname(__DIR__, 4) . '/app/modules.php';
+        foreach ($modulesConfig['modules'] as $modName => $modInfo) {
+            if (is_array($modInfo) && !empty($modInfo['enabled'])) {
+                $metaFile = dirname(__DIR__, 4) . '/modules/' . $modName . '/module.json';
+                if (file_exists($metaFile)) {
+                    $meta = json_decode(file_get_contents($metaFile), true);
+                    if (!empty($meta['admin_url'])) {
+                        echo '<div class="action-card">';
+                        echo '<h3>' . htmlspecialchars($meta['title'] ?? ucfirst($modName)) . '</h3>';
+                        echo '<p>' . htmlspecialchars($meta['description'] ?? '') . '</p>';
+                        echo '<a href="' . htmlspecialchars($meta['admin_url']) . '" class="btn btn-info">Open ' . htmlspecialchars($meta['title'] ?? ucfirst($modName)) . '</a>';
+                        echo '</div>';
+                    }
+                }
+            }
+        }
+        ?>
+        </div>
 <?php
 // CMS Dashboard Template
 if (!defined('STRPHP_ROOT')) {

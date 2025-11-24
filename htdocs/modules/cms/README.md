@@ -1,3 +1,20 @@
+# ⚠️ Media Module Dependency
+
+The CMS module requires the Media module to be enabled for all image and media management features (uploads, media library, modal integration, etc.).
+
+If the Media module is disabled:
+- Media features in the CMS will be unavailable
+- A warning will be shown in the admin panel
+- All other CMS features will continue to work
+
+**To enable:**
+- Set `'media' => ['enabled' => true]` in `app/modules.php`
+- Ensure the Media module is listed in the CMS `module.json` under `requires`
+
+**Integration points:**
+- Media manager modal in page editor
+- Image uploads and selection
+- Media library UI
 
 # StrataPHP CMS Module
 
