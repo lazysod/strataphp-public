@@ -32,7 +32,6 @@ class AdminLinksController
                 exit;
             }
         } catch (Exception $e) {
-            error_log('Error in admin authentication check: ' . $e->getMessage());
             header('Location: /admin/admin_login.php');
             exit;
         }
@@ -68,7 +67,6 @@ class AdminLinksController
                 }
             }
         } catch (Exception $e) {
-            error_log('Error in link ordering: ' . $e->getMessage());
         }
         header('Location: /admin/links');
         exit;
@@ -90,7 +88,6 @@ class AdminLinksController
             $links = $linksModel->getAll();
             include __DIR__ . '/../links/views/list.php';
         } catch (Exception $e) {
-            error_log('Error displaying links list: ' . $e->getMessage());
             $links = [];
             include __DIR__ . '/../links/views/list.php';
         }
@@ -121,7 +118,6 @@ class AdminLinksController
             }
             include __DIR__ . '/../links/views/add.php';
         } catch (Exception $e) {
-            error_log('Error in add link operation: ' . $e->getMessage());
             include __DIR__ . '/../links/views/add.php';
         }
     }
@@ -153,7 +149,6 @@ class AdminLinksController
             }
             include __DIR__ . '/../links/views/edit.php';
         } catch (Exception $e) {
-            error_log('Error in edit link operation: ' . $e->getMessage());
             $link = null;
             include __DIR__ . '/../links/views/edit.php';
         }
@@ -176,7 +171,6 @@ class AdminLinksController
             $linksModel = new Links($db, $config);
             $linksModel->deleteLink($id);
         } catch (Exception $e) {
-            error_log('Error deleting link: ' . $e->getMessage());
         }
         header('Location: /admin/links');
         exit;

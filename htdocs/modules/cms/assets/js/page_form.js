@@ -386,7 +386,6 @@ function uploadImageForEditor(file, range) {
           // Update textarea
           window.richEditor.textarea.value =
             window.richEditor.element.innerHTML;
-          console.log("Image inserted successfully:", data);
         } else {
           // Remove loading text
           const loadingSpan = window.richEditor.element.querySelector("span");
@@ -478,7 +477,6 @@ document.addEventListener("DOMContentLoaded", function () {
   tabButtons.forEach((button, index) => {
     button.addEventListener("click", function () {
       const targetId = this.getAttribute("data-target");
-      console.log("Tab clicked:", targetId);
 
       // Remove active class from all buttons and panes
       tabButtons.forEach((btn) => btn.classList.remove("active"));
@@ -559,7 +557,6 @@ document.getElementById("pageForm").addEventListener("submit", function (e) {
     }
   }
 
-  console.log("Enhanced form submitting to:", this.action);
 
   // Log all form data
   const formData = new FormData(this);
@@ -569,7 +566,6 @@ document.getElementById("pageForm").addEventListener("submit", function (e) {
 
 // Simple OG image upload handler
 function uploadOgImageButtonClick() {
-  console.log(
     "uploadOgImageButtonClick called - this should NOT show URL prompt"
   );
 
@@ -594,7 +590,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const ogImageFileInput = document.getElementById("og_image_file");
   if (ogImageFileInput) {
     ogImageFileInput.addEventListener("change", function (e) {
-      console.log("OG Image file selected:", e.target.files[0]);
       const file = e.target.files[0];
       if (!file) return;
 

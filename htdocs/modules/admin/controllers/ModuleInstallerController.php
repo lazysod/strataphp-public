@@ -133,7 +133,6 @@ class ModuleInstallerController
             
             // Clean up temporary files (including uploaded ZIP)
             $this->cleanupTempDirectory($tempDir);
-            error_log("Module installation cleanup: removed temporary files from $tempDir");
             
             return $this->jsonResponse([
                 'success' => true,
@@ -145,7 +144,6 @@ class ModuleInstallerController
             // Clean up on error (including uploaded ZIP)
             if (isset($tempDir)) {
                 $this->cleanupTempDirectory($tempDir);
-                error_log("Module installation error cleanup: removed temporary files from $tempDir");
             }
             
             return $this->jsonResponse([
@@ -419,7 +417,6 @@ class ModuleInstallerController
         if (!mkdir($tempDir, 0755, true)) {
             throw new \Exception('Failed to create temporary directory');
         }
-        error_log("Created temporary directory for module installation: $tempDir");
         return $tempDir;
     }
     
@@ -447,7 +444,6 @@ class ModuleInstallerController
         }
         
         if ($cleanedCount > 0) {
-            error_log("Cleaned up $cleanedCount old temporary directories");
         }
     }
     
@@ -542,7 +538,6 @@ class ModuleInstallerController
                 }
             }
         } catch (\Exception $e) {
-            error_log("Error reading .strataphp-modules file: " . $e->getMessage());
         }
         
         return null;
@@ -806,7 +801,6 @@ class ModuleInstallerController
         }
         
         rmdir($tempDir);
-        error_log("Cleanup completed: removed $fileCount files and directories from $tempDir");
     }
     
     /**

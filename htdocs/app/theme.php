@@ -27,14 +27,12 @@ function load_theme_config($themeName = 'default')
     try {
         if (!file_exists($themeConfigPath)) {
             $msg = "Theme config file not found: $themeConfigPath";
-            error_log($msg);
             throw new ThemeConfigException($msg);
         }
         $json = file_get_contents($themeConfigPath);
         $config = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $msg = "Theme config JSON decode error: " . json_last_error_msg();
-            error_log($msg);
             throw new ThemeConfigException($msg);
         }
         return $config;
@@ -44,7 +42,6 @@ function load_theme_config($themeName = 'default')
             echo '<div class="alert alert-danger">Theme configuration error: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
     } catch (\Throwable $e) {
-        error_log("Error loading theme config: " . $e->getMessage());
         if (php_sapi_name() !== 'cli') {
             echo '<div class="alert alert-danger">An unexpected error occurred loading the theme configuration.</div>';
         }

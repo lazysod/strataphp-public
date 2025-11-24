@@ -7,7 +7,6 @@ class App
     public static function dump($var)
     {
         echo '<pre>';
-        print_r($var);
         echo '</pre>';
     }
 
@@ -46,7 +45,6 @@ class App
         if (func_num_args() > 0) {
             self::dump($var);
             // Log debug output
-            $output = print_r($var, true);
             self::log('[DEBUG] ' . $output);
         }
     }

@@ -30,7 +30,6 @@ class ModuleManagerController {
             // Include the view directly with variables available
             include __DIR__ . '/../views/module_manager.php';
         } catch (\Exception $e) {
-            error_log("Error loading module manager: " . $e->getMessage());
             http_response_code(500);
             echo '<h1>Error loading module manager</h1>';
         }
@@ -80,7 +79,6 @@ class ModuleManagerController {
             header('Location: /admin/modules');
             exit;
         } catch (\Exception $e) {
-            error_log("Error updating module configuration: " . $e->getMessage());
             $_SESSION['error'] = 'Error updating module configuration: ' . $e->getMessage();
             header('Location: /admin/modules');
             exit;
@@ -224,7 +222,6 @@ class ModuleManagerController {
             }
             
         } catch (\Exception $e) {
-            error_log("Module deletion error: " . $e->getMessage());
             $this->jsonResponse(['success' => false, 'message' => 'An error occurred during deletion']);
         }
     }
@@ -448,7 +445,6 @@ class ModuleManagerController {
         // This is optional and dangerous - only drop if explicitly requested
         // Implementation would depend on your database structure
         // For now, just log the intention
-        error_log("Note: Database tables for module '{$moduleName}' not automatically dropped. Manual cleanup may be required.");
     }
     
     /**

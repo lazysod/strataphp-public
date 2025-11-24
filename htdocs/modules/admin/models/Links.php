@@ -128,7 +128,6 @@ class Links
             }
             $this->db->query('UPDATE links SET title = ?, url = ?, icon = ?, nsfw = ? WHERE id = ?', [$title, $url, $icon, $nsfw, $id]);
         } catch (Exception $e) {
-            error_log('Error updating link: ' . $e->getMessage());
             throw new Exception('Failed to update link: ' . $e->getMessage());
         }
     }
@@ -145,7 +144,6 @@ class Links
         try {
             $this->db->query('DELETE FROM links WHERE id = ?', [$id]);
         } catch (Exception $e) {
-            error_log('Error deleting link: ' . $e->getMessage());
             throw new Exception('Failed to delete link: ' . $e->getMessage());
         }
     }
