@@ -16,50 +16,10 @@
             "App\\Modules\\Admin\\": ""
         }
     },
-    
-    "routes": {
-        "prefix": "/admin",
-        "middleware": ["admin_auth"],
-        "routes": [
-            {
-                "method": "GET",
-                "path": "/",
-                "controller": "AdminController@index",
-                "name": "admin.dashboard"
-            },
-            {
-                "method": "GET",
-                "path": "/modules",
-                "controller": "ModuleManagerController@index",
-                "name": "admin.modules"
-            },
-            {
-                "method": "POST",
-                "path": "/modules/update",
-                "controller": "ModuleManagerController@update",
-                "name": "admin.modules.update"
-            },
-            {
-                "method": "GET",
-                "path": "/users",
-                "controller": "UserAdminController@index",
-                "name": "admin.users"
-            },
-            {
-                "method": "GET",
-                "path": "/links",
-                "controller": "AdminLinksController@index",
-                "name": "admin.links"
-            }
-        ]
-    },
-    
-    "permissions": [
-        "admin.access",
-        "admin.modules.manage",
-        "admin.users.manage",
-        "admin.links.manage"
-    ],
+    {
+      "name": "admin",
+      "version": "1.0.0"
+    }
     
     "dependencies": {
         "php": ">=8.0",

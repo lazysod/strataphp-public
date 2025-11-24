@@ -51,47 +51,10 @@
         "roles": [],
         "admin_management": true
     },
-    
-    "files": {
-        "controllers": [
-            "controllers/LinksController.php"
-        ],
-        "views": [
-            "views/links.php",
-            "views/about.php"
-        ],
-        "routes": ["routes.php"],
-        "entry": ["index.php"]
-    },
-    
-    "admin_integration": {
-        "manageable": true,
-        "model": "App\\Modules\\Admin\\Models\\Links",
-        "crud_operations": ["create", "read", "update", "delete", "reorder"]
-    },
-    
-    "testing": {
-        "unit_tests": false,
-        "integration_tests": false,
-        "database_tests": false
-    },
-    
-    "documentation": {
-        "readme": "README.md",
-        "examples": true,
-        "admin_guide": true
-    },
-    
-    "quality": {
-        "code_style": "PSR-12",
-        "static_analysis": false,
-        "security_scan": false
-    },
-    
-    "performance": {
-        "caching": false,
-        "database_queries": 1,
-        "external_requests": false,
+    {
+      "name": "links",
+      "version": "1.0.0"
+    }
         "mobile_optimized": true
     },
     

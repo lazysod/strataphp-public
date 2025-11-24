@@ -1,1 +1,0 @@
-[EXCEPTION] Cannot use a scalar value as an array[EXCEPTION] Cannot use a scalar value as an array[EXCEPTION] Cannot use a scalar value as an array[ERROR] Implicit conversion from float -INF to int loses precision in /Users/barry/MAMP_SITES/strata-holding/strataphp-dev/htdocs/modules/Admin/views/module-details.php on line 290
