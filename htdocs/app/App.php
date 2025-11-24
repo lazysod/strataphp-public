@@ -7,6 +7,7 @@ class App
     public static function dump($var)
     {
         echo '<pre>';
+        print_r($var);
         echo '</pre>';
     }
 
@@ -36,7 +37,7 @@ class App
         return preg_replace('/\s+/', '', $string);
     }
 
-        // Enable debug mode and optionally dump a variable
+    // Enable debug mode and optionally dump a variable
     public static function debug($var = null)
     {
         ini_set('display_errors', 1);
@@ -44,8 +45,6 @@ class App
         error_reporting(E_ALL);
         if (func_num_args() > 0) {
             self::dump($var);
-            // Log debug output
-            self::log('[DEBUG] ' . $output);
         }
     }
 
