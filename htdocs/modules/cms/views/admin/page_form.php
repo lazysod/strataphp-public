@@ -12,7 +12,7 @@ $success_message = isset($_SESSION['success']) ? $_SESSION['success'] : null;
 $error_message = isset($_SESSION['error']) ? $_SESSION['error'] : null;
 if (isset($_SESSION['success'])) unset($_SESSION['success']);
 if (isset($_SESSION['error'])) unset($_SESSION['error']);
-<?php
+
 // Warn if Media module is not enabled
 $mediaEnabled = false;
 if (isset($config['modules']['media'])) {
@@ -258,7 +258,7 @@ if (!$mediaEnabled) {
                                                     if ($p['id'] == $currentId || in_array($p['id'], $excludeIds)) continue;
                                                     if ($p['parent_id'] != $parentId) continue;
                                                     $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
-                                                    $selected = (isset($page['parent_id']) && $page['parent_id'] == $p['id']) ? 'selected' : '';
+                                                    $selected = (isset($page) && isset($page['parent_id']) && $page['parent_id'] == $p['id']) ? 'selected' : '';
                                                     echo '<option value="' . htmlspecialchars($p['id']) . '" ' . $selected . '>' . $indent . htmlspecialchars($p['title']) . '</option>';
                                                     // Prevent circular reference by adding this id to excludeIds
                                                     renderParentOptions($pages, $currentId, $p['id'], $level + 1, array_merge($excludeIds, [$currentId]));
