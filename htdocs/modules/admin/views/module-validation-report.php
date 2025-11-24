@@ -195,11 +195,26 @@ $invalidModules = $totalModules - $validModules;
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="/admin/modules/details/<?= urlencode($moduleName) ?>" 
-                                       class="btn btn-sm btn-outline-primary" 
-                                       title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="/admin/modules/details/<?= urlencode($moduleName) ?>" 
+                                           class="btn btn-outline-primary btn-sm" 
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <?php
+                                        // Add dynamic Open Module button if enabled and admin_url exists
+                                        $modulesConfig = include dirname(__DIR__, 3) . '/app/modules.php';
+                                        if (isset($modulesConfig['modules'][$moduleName]) && is_array($modulesConfig['modules'][$moduleName]) && !empty($modulesConfig['modules'][$moduleName]['enabled'])) {
+                                            $metaFile = dirname(__DIR__, 3) . '/modules/' . $moduleName . '/module.json';
+                                            if (file_exists($metaFile)) {
+                                                $meta = json_decode(file_get_contents($metaFile), true);
+                                                if (!empty($meta['admin_url'])) {
+                                                    echo '<a href="' . htmlspecialchars($meta['admin_url']) . '" class="btn btn-outline-success btn-sm" title="Open Module"><i class="fas fa-external-link-alt"></i></a>';
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

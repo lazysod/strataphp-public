@@ -1,5 +1,6 @@
 {
     "name": "links",
+    "title": "Links Module",
     "displayName": "Links Module",
     "description": "Linktree-style landing page for displaying organized collections of links",
     "version": "1.0.0",
@@ -10,7 +11,6 @@
     "type": "module",
     "framework": "strataphp",
     "frameworkVersion": ">=1.0.0",
-    
     "autoload": {
         "psr-4": {
             "App\\Modules\\Links\\": ""
@@ -132,6 +132,7 @@
         "structured_data": false,
         "sitemap": false
     },
+    "admin_url": "/admin/links",
     
     "created_at": "2024-01-01T00:00:00Z",
     "updated_at": "2024-01-01T00:00:00Z"

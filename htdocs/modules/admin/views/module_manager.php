@@ -235,6 +235,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                 $description = $metadata['description'] ?? '';
                                 $version = $metadata['version'] ?? '1.0.0';
                                 $author = $metadata['author'] ?? '';
+                                $adminUrl = $metadata['admin_url'] ?? '';
+                                $adminTitle = $metadata['title'] ?? $modName;
                                 // Get validation status for each module
                                 $validationStatus = null;
                                 if ($moduleValidator) {
@@ -337,6 +339,11 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                                title="View Details">
                                                 <i class="fas fa-info-circle"></i>
                                             </a>
+                                            <?php if ($isEnabled && !empty($adminUrl)): ?>
+                                                <a href="<?= htmlspecialchars($adminUrl) ?>" class="btn btn-outline-success btn-sm" title="Open <?= htmlspecialchars($adminTitle) ?>">
+                                                    <i class="fas fa-external-link-alt"></i> Open Module
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($moduleValidator): ?>
                                                 <button type="button" 
                                                         class="btn btn-outline-secondary btn-sm" 
@@ -400,6 +407,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                             $description = $metadata['description'] ?? '';
                             $version = $metadata['version'] ?? '1.0.0';
                             $author = $metadata['author'] ?? '';
+                            $adminUrl = $metadata['admin_url'] ?? '';
+                            $adminTitle = $metadata['title'] ?? $modName;
                             
                             // Get validation status
                             $validationStatus = null;
@@ -509,6 +518,11 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                                class="btn btn-outline-primary">
                                                 <i class="fas fa-info-circle me-1"></i>Details
                                             </a>
+                                            <?php if ($isEnabled && !empty($adminUrl)): ?>
+                                                <a href="<?= htmlspecialchars($adminUrl) ?>" class="btn btn-outline-success" title="Open <?= htmlspecialchars($adminTitle) ?>">
+                                                    <i class="fas fa-external-link-alt me-1"></i>Open Module
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($moduleValidator): ?>
                                                 <button type="button" 
                                                         class="btn btn-outline-secondary" 

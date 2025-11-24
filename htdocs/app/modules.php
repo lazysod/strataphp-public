@@ -14,7 +14,7 @@ return array (
     ),
     'cms' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
     ),
     'contact' => 
@@ -44,7 +44,7 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => true,
     ),
     'user' => 
@@ -54,20 +54,20 @@ return array (
     ),
     'media' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
       'category' => 'media',
       'name' => 'Media',
       'version' => '1.0.0',
       'author' => 'lazysod',
       'license' => 'MIT',
-      'homepage' => 'https://github.com/lazysod/strataphp-dev',
+      'homepage' => 'https://github.com/lazysod/strataphp-public',
       'module_type' => 'core',
       'framework_version' => '2.0.0',
-      'repository' => 'https://github.com/lazysod/strataphp-dev',
+      'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
   ),
-  'default_module' => 'links',
+  'default_module' => 'home',
   'module_directory' => 
   array (
     'enabled' => false,
