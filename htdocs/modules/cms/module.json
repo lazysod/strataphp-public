@@ -1,12 +1,4 @@
 {
   "name": "cms",
-  "title": "Content Management System",
-  "description": "Core CMS module for managing pages, sites, and content.",
-  "version": "2.0.0",
-  "author": "lazysod",
-  "controllers": ["AdminController", "CmsController", "PageController", "SiteController"],
-  "views": ["dashboard", "pages", "page_form", "sites_list", "site_create", "media_library"],
-  "models": ["Cms", "Page", "Site"],
-  "routes": "routes.php",
-  "requires": ["media"]
+  "version": "2.0.0"
 }

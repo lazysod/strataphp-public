@@ -37,48 +37,10 @@
                     "validation": "email"
                 },
                 "phone": {
-                    "type": "tel",
-                    "required": false,
-                    "validation": "string|max:20"
-                },
-                "subject": {
-                    "type": "text",
-                    "required": true,
-                    "validation": "string|max:255"
-                },
-                "message": {
-                    "type": "textarea",
-                    "required": true,
-                    "validation": "string|min:10"
-                }
-            },
-            "csrf_protection": true
-        }
-    ],
-    
-    "dependencies": {
-        "php": ">=7.4",
-        "strataphp": ">=1.0.0",
-        "phpmailer/phpmailer": "^6.0"
-    },
-    
-    "config": {
-        "enabled": true,
-        "mail": {
-            "required": true,
-            "fields": ["host", "username", "password", "port", "from_email", "to_email"]
-        }
-    },
-    
-    "permissions": {
-        "public": true,
-        "authentication": false,
-        "roles": []
-    },
-    
-    "files": {
-        "controllers": [
-            "controllers/ContactFormController.php"
+                    {
+                      "name": "contact",
+                      "version": "1.0.0"
+                    }
         ],
         "models": [
             "models/Contact.php"
