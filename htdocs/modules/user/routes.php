@@ -26,8 +26,6 @@ if (!empty(App::config('modules')['user'])) {
     $router->post('/user/reset-request', [\App\Modules\User\Controllers\UserResetRequestController::class, 'index']);
     $router->get('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
     $router->post('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
-    $router->get('/user/email-test', [EmailTestController::class, 'index']);
-    $router->post('/user/email-test', [EmailTestController::class, 'index']);
     $router->get('/user/activate', ['UserActivateController', 'index']);
     $router->get('/user/sessions', [\App\Modules\User\Controllers\UserSessionsController::class, 'index']);
     $router->post('/user/sessions/revoke', [\App\Modules\User\Controllers\UserSessionsController::class, 'revoke']);
