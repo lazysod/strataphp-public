@@ -1,4 +1,6 @@
 <?php
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
+
 use App\Token;
 use App\Logger;
 use App\Modules\Admin\Controllers\ModuleManagerController;
@@ -6,6 +8,17 @@ use App\Modules\Admin\Controllers\AdminLinksController;
 use App\Modules\Admin\Controllers\UserAdminController;
 use App\Controllers\AdminController;
 // Load config early for session prefix
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..'); // if start.php is in htdocs/app/
+$dotenv->load();
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    include_once __DIR__ . '/../vendor/autoload.php';
+    if (class_exists('Dotenv\\Dotenv')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
+        error_log('TINYMCE_API_KEY after Dotenv: ' . getenv('TINYMCE_API_KEY'));
+    }
+}
+$config = require __DIR__ . '/config.php';
 if (function_exists('opcache_invalidate')) {
     opcache_invalidate(__DIR__ . '/config.php', true);
 }
@@ -67,14 +80,8 @@ if (isset($router) && $router instanceof Router) {
                            strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
             $isApiCall = strpos($path, '/admin/modules/') === 0;
             
-            if ($isAjax || $isJsonRequest || $isApiCall) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => 'Authentication required']);
-                exit;
-            } else {
-                header('Location: /admin');
-                exit;
-            }
+            header('Location: /admin/admin_login.php');
+            exit;
         }
         return $next($request);
     });

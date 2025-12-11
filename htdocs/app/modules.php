@@ -54,7 +54,7 @@ return array (
     ),
     'media' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
       'category' => 'media',
       'name' => 'Media',
@@ -66,6 +66,10 @@ return array (
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
+    'blog' => [
+        'enabled' => true,
+        'path' => __DIR__ . '/../modules/blog/',
+    ],
   ),
   'default_module' => 'home',
   'module_directory' => 

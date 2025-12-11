@@ -17,6 +17,7 @@ if (!empty(App::config('modules')['media']['enabled'])) {
     $router->post('/admin/media/upload/image', [ImageController::class, 'upload']);
     $router->post('/admin/media/media/delete', [ImageController::class, 'deleteMedia']);
     $router->get('/admin/media/media-library', [ImageController::class, 'mediaLibrary']);
+    $router->get('/admin/media/manager', [ImageController::class, 'mediaLibrary']);
     $router->get('/admin/media/dashboard', [AdminController::class, 'dashboard']);
     // Add dashboard or other admin routes as needed
 }

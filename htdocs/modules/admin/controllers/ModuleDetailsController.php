@@ -86,13 +86,12 @@ class ModuleDetailsController
      * Validate a specific module via AJAX
      */
     public function validate($module) {
-        header('Content-Type: application/json');
-        
-        // Check admin authentication
-        if (!$this->isAuthenticated()) {
-            echo json_encode(['success' => false, 'message' => 'Authentication required']);
-            exit;
-        }
+                // Check admin authentication
+                if (!$this->isAuthenticated()) {
+                    header('Location: /admin/admin_login.php');
+                    exit;
+                }
+                header('Content-Type: application/json');
         
         try {
             // Decode URL-encoded module name
