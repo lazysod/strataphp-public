@@ -12,6 +12,14 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
     exit;
 }
 
+// Prepare CSRF token and formatted file size for view
+$csrfToken = isset($controller) && method_exists($controller, 'getCsrfToken')
+    ? $controller->getCsrfToken()
+    : ($_SESSION['csrf_token'] ?? '');
+$maxFileSizeFormatted = isset($controller) && method_exists($controller, 'formatBytes')
+    ? $controller->formatBytes($maxFileSize)
+    : (function($bytes){if($bytes==0)return'0 Bytes';$k=1024;$sizes=['Bytes','KB','MB','GB'];$i=floor(log($bytes)/log($k));return round($bytes/pow($k,$i),2).' '.$sizes[$i];})($maxFileSize);
+
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
 
 <style>
@@ -73,13 +81,13 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="zipUploadForm" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken); ?>">
                             
                             <div class="upload-area" id="uploadArea">
                                 <div class="upload-content">
                                     <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                                     <h5>Drop ZIP file here or click to browse</h5>
-                                    <p class="text-muted">Maximum file size: <?php echo $controller->formatBytes($maxFileSize); ?></p>
+                                    <p class="text-muted">Maximum file size: <?php echo htmlspecialchars($maxFileSizeFormatted); ?></p>
                                     <input type="file" id="moduleZip" name="module_zip" accept=".zip" class="d-none">
                                 </div>
                             </div>
@@ -107,7 +115,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="urlInstallForm">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken); ?>">
                             
                             <div class="mb-3">
                                 <label for="sourceUrl" class="form-label">Source URL</label>
@@ -152,7 +160,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                     </div>
                     <div class="card-body">
                         <form id="generateForm">
-                            <input type="hidden" name="csrf_token" value="<?php echo $controller->getCsrfToken(); ?>">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken); ?>">
                             
                             <div class="mb-3">
                                 <label for="moduleName" class="form-label">Module Name</label>

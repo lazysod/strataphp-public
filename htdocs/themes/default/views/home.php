@@ -1,7 +1,7 @@
 <?php 
 use App\App;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
-require __DIR__ . '/partials/header.php'; 
+require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php'; 
 ?>
             <header class="bg-dark py-5">
                 <div class="container px-5">
@@ -35,8 +35,35 @@ require __DIR__ . '/partials/header.php';
                     </div>
                 </div>
             </header>
-
+            <!-- Features section-->
+            <section class="py-5" id="features">
+                <div class="container px-5 my-5">
+                    <div class="row mb-5">
+                        <div class="col-lg-12 mb-5 mb-lg-0"><h2 class="text-center fw-bolder mb-0">A better way to start building.</h2></div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-lg-12">
+                            <div class="row gx-5 row-cols-1 row-cols-md-2">
+                                <div class="col mb-5 h-100">
+                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-2"><i class="bi bi-collection"></i></div>
+                                    <h2 class="h5">Modular architecture</h2>
+                                    <p class="mb-0">Easily add or remove modules (user system, forum, etc.)</p>
+                                </div>
+                                <div class="col mb-5 h-100">
+                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-2"><i class="bi bi-building"></i></div>
+                                    <h2 class="h5">Unified DB class</h2>
+                                    <p class="mb-0">Easily interact with the database using a unified API.</p>
+                                </div>
+                                <div class="col mb-5 mb-md-0 h-100">
+                                    <div class="feature bg-primary bg-gradient text-white rounded-3 mb-2"><i class="bi bi-toggles2"></i></div>
+                                    <h2 class="h5">Admin & user systems are independent</h2>
+                                    <p class="mb-0">Easily manage admin and user systems separately.</p>
+                                </div>
+                                <!-- ...existing code... -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
-
-<?php require __DIR__ . '/partials/footer.php'; ?>
+            <!-- ...existing code... -->
+<?php require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>

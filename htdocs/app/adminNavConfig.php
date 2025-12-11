@@ -60,12 +60,6 @@ return [
         'url' => '#example',
         'show' => true,
         'order' => 4
-    ],
-    'blog' => [
-        'label' => 'Blog',
-        'icon' => 'fa-blog',
-        'url' => '/admin/blog',
-        'visible' => isset($modules['modules']['blog']['enabled']) ? $modules['modules']['blog']['enabled'] : false,
     ]
     // ...other items
 ];

@@ -121,30 +121,42 @@ $sessionPrefix = $config['session_prefix'] ?? 'app_';
                                 echo '</li>';
                             }
                             ?>
-                            <?php if (!empty(App::config('modules')['user'])) : ?>
+                            <?php if (!empty(App::config('modules')['user']['enabled'])) : ?>
                                 <?php if (!empty($_SESSION[$sessionPrefix . 'user_id'])) : ?>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[$sessionPrefix . 'first_name'] ?? 'User'); ?>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        <?php if(isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0 ) : ?>
-                                        <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
-                                        <?php endif; ?>
-                                        <?php if (!empty(App::config('modules')['user'])) : ?>
-                                        <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
-                                        <li><a class="dropdown-item" href="/user/sessions">Device & Sessions</a></li>
-                                        <?php elseif (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) : ?>
-                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
-                                        <?php endif; ?>
-                                        <li><a class="dropdown-item" href="/logout.php">Logout</a></li>
-                                    </ul>
-                                </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[$sessionPrefix . 'first_name'] ?? 'User'); ?>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                            <?php if(isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0 ) : ?>
+                                                <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
+                                            <?php endif; ?>
+                                            <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
+                                            <li><a class="dropdown-item" href="/user/sessions">Device & Sessions</a></li>
+                                            <li><a class="dropdown-item" href="/logout.php">Logout</a></li>
+                                        </ul>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="nav-item"><a class="nav-link" href="/user/login">Login</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="/user/register">Register</a></li>
+                                <?php endif; ?>
                             <?php else: ?>
-                                <li class="nav-item"><a class="nav-link" href="/user/login">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/user/register">Register</a></li>
+                            <?php if(isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0 ): ?>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[$sessionPrefix . 'first_name'] ?? 'User'); ?>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                            <?php if(isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0 ) : ?>
+                                                <li><a class="dropdown-item" href="/admin">Admin Panel</a></li>
+                                            <?php endif; ?>
+                                            <li><a class="dropdown-item" href="/admin/dashboard/profile">Profile</a></li>
+                                            <li><a class="dropdown-item" href="/admin/dashboard/sessions">Device & Sessions</a></li>
+                                            <li><a class="dropdown-item" href="/logout.php">Logout</a></li>
+                                        </ul>
+                                    </li>
                             <?php endif; ?>
-                            <?php endif; ?>
+                             <?php endif; ?>
                         <?php } ?>
                     </ul>
                 </div>
