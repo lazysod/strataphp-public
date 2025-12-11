@@ -44,12 +44,12 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => true,
     ),
     'user' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
     ),
     'media' => 
@@ -67,7 +67,6 @@ return array (
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
   ),
-  // to use another module as the main default module, change this value
   'default_module' => 'home',
   'module_directory' => 
   array (
