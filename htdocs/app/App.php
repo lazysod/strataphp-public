@@ -48,4 +48,27 @@ class App
         }
     }
 
+
+    // Theme-aware view loader
+    public static function loadView($view, $vars = [])
+    {
+        $configFile = __DIR__ . '/config.php';
+        $config = file_exists($configFile) ? include $configFile : [];
+        $themePath = $config['theme_path'] ?? '/themes/default';
+        $themeView = $_SERVER['DOCUMENT_ROOT'] . $themePath . '/views/' . $view . '.php';
+        $coreView = $_SERVER['DOCUMENT_ROOT'] . '/views/' . $view . '.php';
+
+        // Extract variables for use in view
+        if (!empty($vars)) {
+            extract($vars);
+        }
+
+        if (file_exists($themeView)) {
+            include $themeView;
+        } elseif (file_exists($coreView)) {
+            include $coreView;
+        } else {
+            echo "<div style='color:red'>View not found: $view</div>";
+        }
+    }
 }

@@ -37,6 +37,7 @@ return array(
         'from_email' => getenv('MAIL_FROM_ADDRESS') ?: 'your-smtp-user@example.com',
         'from_name' => getenv('MAIL_FROM_NAME') ?: 'StrataPHP',
     ),
+    'version' => '1.0.0',
     'debug' => true,
     'timezone' => 'Europe/London',
     'session_lifetime' => 3600,
@@ -69,54 +70,9 @@ return array(
     'uploads_path' => '/storage/uploads',
     'prefix' => 'framework',
     'token_expiry' => 3600,
-    'modules' =>
-    array(
-        'home' =>
-        array(
-            'enabled' => true,
-            'suitable_as_default' => true,
-        ),
-        'user' =>
-        array(
-            'enabled' => true,
-            'suitable_as_default' => false,
-        ),
-        'contact' =>
-        array(
-            'enabled' => false,
-            'suitable_as_default' => true,
-        ),
-        'links' =>
-        array(
-            'enabled' => true,
-            'suitable_as_default' => true,
-        ),
-        'admin' =>
-        array(
-            'enabled' => true,
-            'suitable_as_default' => false,
-        ),
-        'helloworld' =>
-        array(
-            'enabled' => false,
-            'suitable_as_default' => false,
-        ),
-        'api' =>
-        array(
-            'enabled' => false,
-            'suitable_as_default' => false,
-        ),
-        'test-module' =>
-        array(
-            'enabled' => false,
-            'suitable_as_default' => false,
-        ),
-        'cms' =>
-        array(
-            'enabled' => false,
-            'suitable_as_default' => false,
-        ),
-    ),
+    // 'modules' are loaded dynamically from modules.php
+    // Example: $modulesConfig = include __DIR__ . '/modules.php';
+    // 'modules' => $modulesConfig['modules'],
     'session_prefix' => 'app_',
     'csrf_token' => true,
     'login_redirect' => '/',

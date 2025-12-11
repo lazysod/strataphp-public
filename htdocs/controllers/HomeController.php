@@ -4,9 +4,11 @@ class HomeController
 {
     public function index()
     {
-    $title = 'New Framework';
-    $pageJs = 'home';
-    extract(['title' => $title, 'pageJs' => $pageJs]);
-    include __DIR__ . '/../views/home.php';
+        $title = 'New Framework';
+        $pageJs = 'home';
+        \App\App::loadView('home', [
+            'title' => $title,
+            'pageJs' => $pageJs
+        ]);
     }
 }

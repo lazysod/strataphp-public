@@ -3,17 +3,24 @@
 return [
     'Home' => [
         'label' => 'Home',
-        'show' => false,
+        'show' => true,
         'order' => 1,
         'new_tab' => false,
         'url' => '/',
     ],
     'About' => [
         'label' => 'About',
-        'show' => false,
+        'show' => true,
         'order' => 2,
         'new_tab' => false,
         'url' => '/about',
+    ],
+    'Links' => [
+        'label' => 'Links',
+        'show' => true,
+        'order' => 3,
+        'new_tab' => false,
+        'url' => '/links',
     ],
     'strata_home' => [
         'label' => 'StrataPHP.org',

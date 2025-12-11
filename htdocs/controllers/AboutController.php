@@ -20,9 +20,8 @@ class AboutController
             // Render Twig template (about.twig)
             $view->render('about.twig', $data);
         } else {
-            // Render classic PHP view (about.php)
-            extract($data);
-            include __DIR__ . '/../views/about.php';
+            // Render classic PHP view (about.php) with theme support
+            \App\App::loadView('about', $data);
         }
     }
 

@@ -15,7 +15,7 @@ return array (
     'cms' => 
     array (
       'enabled' => false,
-      'suitable_as_default' => false,
+      'suitable_as_default' => true,
     ),
     'contact' => 
     array (
@@ -44,7 +44,7 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => true,
     ),
     'user' => 

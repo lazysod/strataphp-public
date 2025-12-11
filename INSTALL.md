@@ -13,7 +13,13 @@
      ```
    - This will create only essential tables (no users/admins/demo data). Session management is now device-based and legacy tables are not included.
 
-3. **Run migrations (recommended)**
+3. **Install Composer dependencies**
+   - From the project root (where composer.json is):
+     ```sh
+     composer install
+     ```
+
+4. **Run migrations (recommended)**
    - To apply any new schema changes or updates:
      ```sh
      php bin/migrate.php
@@ -23,7 +29,7 @@
      php bin/test_migrations.php
      ```
 
-4. **Create your first admin user**
+5. **Create your first admin user**
    - Use the CLI tool:
      ```sh
      php bin/create_admin.php

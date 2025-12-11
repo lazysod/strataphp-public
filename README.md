@@ -18,13 +18,13 @@
 
 ## Installation
 
+
 _How to set up StrataPHP for the first time (2025 update)._ 
 
 1. Clone or download this repository.
-2. Change directory to the project root.
+2. Change directory to the project root (where composer.json is).
 3. Install Composer dependencies:
   ```sh
-  cd htdocs
   composer install
   ```
 4. Set up your web server to use `htdocs` as the document root.

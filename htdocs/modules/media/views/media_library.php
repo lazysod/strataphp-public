@@ -207,9 +207,27 @@
 	<script>
 	// Insert media into parent window (for modal/iframe usage)
 	function insertMediaUrl(url) {
-		if (window.parent && window.parent !== window) {
-			window.parent.postMessage({ mediaUrl: url }, window.location.origin);
+		// Try TinyMCE file picker callback first
+		if (window.opener && window.opener.tinymceFilePickerCallback) {
+			window.opener.tinymceFilePickerCallback(url);
+			window.close();
+			return;
 		}
+		// Fallback: try to set input field in parent
+		if (window.opener) {
+			var field = new URLSearchParams(window.location.search).get('field');
+			if (field) {
+				var input = window.opener.document.getElementById(field);
+				if (input) {
+					input.value = url;
+					window.close();
+					return;
+				}
+			}
+		}
+		// If all else fails, just copy to clipboard
+		navigator.clipboard.writeText(url);
+		alert('Image URL copied to clipboard. Paste it into your form.');
 	}
 	</script>
 					</div>
