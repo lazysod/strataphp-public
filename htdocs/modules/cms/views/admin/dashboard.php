@@ -41,6 +41,7 @@
 if (!defined('STRPHP_ROOT')) {
 }
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -248,7 +249,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';
         <?php endif; ?>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
-            <p>StrataPHP CMS Module - Version <?php echo htmlspecialchars(config('version') ?? ''); ?></p>
+            <p>StrataPHP CMS Module - Version <?php echo htmlspecialchars(Version::get() ?? ''); ?></p>
             <p><a href="/admin" style="color: #3498db;">← Back to Admin Panel</a></p>
         </div>
     </div>
