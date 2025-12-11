@@ -3,7 +3,7 @@
  * CMS-Themed User Registration Page
  */
 
-require_once __DIR__ . '/../../../../app/helpers.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';
 if (!config('modules')['cms']['enabled']) {
     require __DIR__ . '/../../../user/views/register.php';
     return;

@@ -1,12 +1,29 @@
-        <!-- Dynamic Module Links -->
+<!-- Dynamic Module Links -->
         <div class="actions" style="margin-bottom: 30px;">
         <?php
         $modulesConfig = include dirname(__DIR__, 4) . '/app/modules.php';
+        // SAFE: Only reads validated, local module.json files. See safe_file_get_contents().
+        // Safe file_get_contents wrapper
+        function safe_file_get_contents($file) {
+            // Only allow reading files within the modules directory
+            $modulesDir = realpath(dirname(__DIR__, 4) . '/modules');
+            $realFile = realpath($file);
+            if ($realFile && strpos($realFile, $modulesDir) === 0 && is_readable($realFile)) {
+                return file_get_contents($realFile);
+            }
+            return false;
+        }
+
         foreach ($modulesConfig['modules'] as $modName => $modInfo) {
+            // Only allow valid module names: letters, numbers, underscores, hyphens
+            if (!preg_match('/^[a-zA-Z0-9_-]+$/', $modName)) {
+                continue;
+            }
             if (is_array($modInfo) && !empty($modInfo['enabled'])) {
                 $metaFile = dirname(__DIR__, 4) . '/modules/' . $modName . '/module.json';
                 if (file_exists($metaFile)) {
-                    $meta = json_decode(file_get_contents($metaFile), true);
+                    $metaJson = safe_file_get_contents($metaFile);
+                    $meta = $metaJson ? json_decode($metaJson, true) : [];
                     if (!empty($meta['admin_url'])) {
                         echo '<div class="action-card">';
                         echo '<h3>' . htmlspecialchars($meta['title'] ?? ucfirst($modName)) . '</h3>';
@@ -23,7 +40,7 @@
 // CMS Dashboard Template
 if (!defined('STRPHP_ROOT')) {
 }
-require_once __DIR__ . '/../../../../app/helpers.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -231,7 +248,7 @@ require_once __DIR__ . '/../../../../app/helpers.php';
         <?php endif; ?>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px;">
-            <p>StrataPHP CMS Module - Version <?php echo htmlspecialchars(config('version')); ?></p>
+            <p>StrataPHP CMS Module - Version <?php echo htmlspecialchars(config('version') ?? ''); ?></p>
             <p><a href="/admin" style="color: #3498db;">← Back to Admin Panel</a></p>
         </div>
     </div>

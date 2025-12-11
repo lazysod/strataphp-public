@@ -1,4 +1,3 @@
-
 // Alignment logic for selected image
 function alignSelectedImage(alignment) {
   if (!window.richEditor) return;
@@ -270,8 +269,7 @@ function execCmd(cmd, value = null) {
 
   if (window.richEditor && !window.richEditor.sourceMode) {
     if (cmd === "createLink") {
-        "createLink command detected - this is what causes the URL prompt"
-      );
+      console.log("createLink command detected - this is what causes the URL prompt");
       value = prompt("Enter URL:");
       if (!value) return;
     }
@@ -511,7 +509,7 @@ document.getElementById("title").addEventListener("input", function () {
   const title = this.value;
   const slug = title
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/[^\w\s\-]/g, "") // Remove special characters (escaped hyphen)
     .replace(/\s+/g, "-") // Replace spaces with hyphens
     .replace(/-+/g, "-") // Replace multiple hyphens with single
     .trim();
@@ -565,14 +563,11 @@ document.getElementById("pageForm").addEventListener("submit", function (e) {
 });
 
 // Simple OG image upload handler
-function uploadOgImageButtonClick() {
-    "uploadOgImageButtonClick called - this should NOT show URL prompt"
-  );
-
+function uploadOgImageButtonClick(event) {
   // Prevent any default action or event bubbling
-  if (window.event) {
-    window.event.preventDefault();
-    window.event.stopPropagation();
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   const fileInput = document.getElementById("og_image_file");

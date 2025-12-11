@@ -15,7 +15,7 @@ return array (
     'cms' => 
     array (
       'enabled' => false,
-      'suitable_as_default' => false,
+      'suitable_as_default' => true,
     ),
     'contact' => 
     array (
@@ -44,17 +44,17 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => true,
     ),
     'user' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
     ),
     'media' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
       'category' => 'media',
       'name' => 'Media',
@@ -66,12 +66,8 @@ return array (
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
-    'blog' => 
-    array (
-      'enabled' => true,
-      'path' => '/Users/barry/MAMP_SITES/strata-holding/strataphp-dev/htdocs/app/../modules/blog/',
-    ),
   ),
+  // to use another module as the main default module, change this value
   'default_module' => 'home',
   'module_directory' => 
   array (

@@ -3,7 +3,7 @@
  * CMS-Themed User Login Page
  */
 
-require_once __DIR__ . '/../../../../app/helpers.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';
 
 use App\Modules\Cms\UserThemeWrapper;
 

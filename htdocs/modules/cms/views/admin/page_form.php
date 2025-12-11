@@ -2,7 +2,9 @@
 // Enhanced CMS Page Form Template with Tabbed Interface
 if (!defined('STRPHP_ROOT')) {
 }
-
+if (!isset($config)) {
+    $config = \App\App::config('modules') ? ['modules' => \App\App::config('modules')] : [];
+}
 $isEdit = isset($page) && $page;
 $pageTitle = $isEdit ? 'Edit Page' : 'Create New Page';
 $formAction = $isEdit ? "/admin/cms/pages/{$page['id']}/edit" : "/admin/cms/pages/create";
@@ -351,7 +353,7 @@ if (!$mediaEnabled) {
                                                    placeholder="https://example.com/image.jpg">
                                             <div class="upload-controls">
                                                 <input type="file" id="og_image_file" accept="image/*" style="display: none;">
-                                                <button type="button" onclick="uploadOgImageButtonClick(); return false;">Upload Image</button>
+                                                <button type="button" onclick="uploadOgImageButtonClick(event); return false;">Upload Image</button>
                                                 <button type="button" onclick="clearOgImage()">Clear</button>
                                             </div>
                                             <div id="og_image_preview" class="image-preview">

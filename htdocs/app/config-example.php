@@ -37,6 +37,7 @@ return array(
         'from_email' => getenv('MAIL_FROM_ADDRESS') ?: 'your-smtp-user@example.com',
         'from_name' => getenv('MAIL_FROM_NAME') ?: 'StrataPHP',
     ),
+    'version' => '1.0.0',
     'debug' => true,
     'timezone' => 'Europe/London',
     'session_lifetime' => 3600,
