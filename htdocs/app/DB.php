@@ -51,6 +51,9 @@ class DB
 
     public function query($sql, $params = [])
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         try {
             $stmt = $this->pdo->prepare($sql);
             if (!$stmt) {
@@ -62,12 +65,16 @@ class DB
             }
             return $stmt;
         } catch (PDOException $e) {
+            // Optionally log the error here
             return null;
         }
     }
 
     public function fetchAll($sql, $params = [])
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         $stmt = $this->query($sql, $params);
         if (!$stmt) {
             return [];
@@ -77,47 +84,74 @@ class DB
 
     public function fetch($sql, $params = [])
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         $stmt = $this->query($sql, $params);
-        return $stmt->fetch();
+        return $stmt ? $stmt->fetch() : false;
     }
 
     public function beginTransaction()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->beginTransaction();
     }
 
     public function commit()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->commit();
     }
 
     public function rollBack()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->rollBack();
     }
 
     public function insertId()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->lastInsertId();
     }
 
     public function affectedRows($stmt)
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $stmt->rowCount();
     }
 
     public function escapeString($str)
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return substr($this->pdo->quote($str), 1, -1);
     }
 
     public function errorInfo()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->errorInfo();
     }
 
     public function errorCode()
     {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo->errorCode();
     }
 }
