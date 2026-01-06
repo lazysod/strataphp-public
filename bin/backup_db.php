@@ -26,7 +26,16 @@ $backupDir = __DIR__ . '/../storage/backups/';
 if (!is_dir($backupDir)) mkdir($backupDir, 0777, true);
 $backupFile = $backupDir . "backup_{$dbname}_{$date}.sql";
 
-$cmd = "mysqldump -h {$host} -u {$user} --password='{$pass}' {$dbname} > {$backupFile}";
+
+// Use MAMP socket if host is localhost
+$socket = '';
+if ($host === 'localhost') {
+    $mampSocket = '/Applications/MAMP/tmp/mysql/mysql.sock';
+    if (file_exists($mampSocket)) {
+        $socket = "--socket={$mampSocket} ";
+    }
+}
+$cmd = "mysqldump -h {$host} -u {$user} --password='{$pass}' {$socket}{$dbname} > {$backupFile}";
 
 system($cmd, $retval);
 if ($retval === 0) {

@@ -22,7 +22,7 @@ return array(
     'logo_small' => '/assets/images/logo_small.png',
     'db' =>
     array(
-        'host' => getenv('DB_HOST') ?: '127.0.0.1',
+        'host' => getenv('DB_HOST') ?: 'localhost',
         'username' => getenv('DB_USERNAME') ?: 'your_db_user',
         'password' => getenv('DB_PASSWORD') ?: 'your_db_password',
         'database' => getenv('DB_DATABASE') ?: 'your_db_name',
