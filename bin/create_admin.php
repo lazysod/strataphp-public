@@ -57,4 +57,20 @@ $userModel->createUser([
     'active' => 1
 ]);
 
-echo "Admin user created successfully!\n";
+// Get the new user's ID
+$userId = null;
+$userRow = $db->fetchAll("SELECT id FROM users WHERE email = ? ORDER BY id DESC LIMIT 1", [$email]);
+if ($userRow && isset($userRow[0]['id'])) {
+    $userId = $userRow[0]['id'];
+}
+
+if ($userId) {
+    // Insert rank record for admin
+    $db->query(
+        "INSERT INTO rank (user_id, title, level, admin) VALUES (?, ?, ?, ?)",
+        [$userId, 'Administrator', 10, 1]
+    );
+    echo "Admin user and rank created successfully!\n";
+} else {
+    echo "Admin user created, but could not create rank record (user ID not found).\n";
+}

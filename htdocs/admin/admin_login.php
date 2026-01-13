@@ -54,7 +54,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 $error = 'Invalid admin credentials.';
-                session_destroy();
+                // Unset only user-related session variables, preserve CSRF token
+                $userSessionKeys = [
+                    $sessionPrefix . 'admin',
+                    $sessionPrefix . 'email',
+                    $sessionPrefix . 'user_id',
+                    $sessionPrefix . 'sec_hash',
+                    $sessionPrefix . 'first_name',
+                    $sessionPrefix . 'second_name',
+                    $sessionPrefix . 'last_log',
+                    $sessionPrefix . 'avatar',
+                    $sessionPrefix . 'user',
+                    $sessionPrefix . 'rank_title',
+                    $sessionPrefix . 'rank_level'
+                ];
+                foreach ($userSessionKeys as $key) {
+                    if (isset($_SESSION[$key])) {
+                        unset($_SESSION[$key]);
+                    }
+                }
                 $logger = new Logger($config);
                 $logger->warning(
                     'Failed admin login',
