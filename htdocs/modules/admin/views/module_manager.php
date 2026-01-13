@@ -5,7 +5,7 @@ if (!isset($siteConfig)) {
 }
 
 // Always merge discovered modules with config for the UI
-$modules = $siteConfig['modules'];
+$modules = isset($someArray["modules"]) ? $someArray["modules"] : [];
 $modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
 if (is_dir($modulesPath)) {
     $moduleDirectories = array_filter(glob($modulesPath . '/*'), 'is_dir');
