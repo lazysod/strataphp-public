@@ -4,8 +4,7 @@ if (!isset($siteConfig)) {
     $siteConfig = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
 }
 
-// Always merge discovered modules with config for the UI
-$modules = isset($someArray["modules"]) ? $someArray["modules"] : [];
+$modules = isset($modules) ? $modules : [];
 $modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
 if (is_dir($modulesPath)) {
     $moduleDirectories = array_filter(glob($modulesPath . '/*'), 'is_dir');

@@ -10,7 +10,9 @@ if (!defined('LOG_PATH')) {
 // Example config file for Strata Framework
 require_once __DIR__ . '/theme.php';
 
-// date_default_timezone_set('Europe/London');
+// Load modules dynamically from modules.php
+$modulesConfig = include __DIR__ . '/modules.php';
+
 return array(
     'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
@@ -89,4 +91,5 @@ return array(
     'default_module' => 'home',
     'update_url' => '', // Optional: URL to check for updates
     'registration_enabled' => true,
+    'modules' => $modulesConfig['modules'],
 );
