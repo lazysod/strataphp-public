@@ -1,5 +1,7 @@
 <?php
-if (empty($_SESSION[PREFIX . 'admin'])) {
+$localConfig = include dirname(__DIR__, 4) . '/app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin');
     exit;
 }
@@ -27,9 +29,9 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                 <th>ID</th>
                                 <th>Display Name</th>
                                 <th>First Name</th>
-                                <th>Last Name</th>
+                                <th>Second Name</th>
                                 <th>Email</th>
-                                <th>Role</th>
+                                <th>Verified</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -40,10 +42,10 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($user['id']) ?></td>
                                     <td><?php echo htmlspecialchars($user['display_name'] ?? '') ?></td>
-                                    <td><?php echo htmlspecialchars($user['first_name']) ?></td>
-                                    <td><?php echo htmlspecialchars($user['second_name']) ?></td>
+                                    <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
+                                    <td><?php echo htmlspecialchars($user['second_name'] ?? '') ?></td>
                                     <td><?php echo htmlspecialchars($user['email']) ?></td>
-                                    <td><?php echo isset($user['is_admin']) && $user['is_admin'] ? 'Admin' : 'User' ?></td>
+                                    <td><?php echo isset($user['verified']) && $user['verified'] ? 'Yes' : 'No' ?></td>
                                     <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
                                     <td>
                                         <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>

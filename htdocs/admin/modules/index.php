@@ -1,11 +1,10 @@
 <?php
-session_start();
-$siteConfig = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
-$sessionPrefix = $siteConfig['session_prefix'] ?? ($siteConfig['prefix'] ?? 'framework');
+require_once dirname(__DIR__, 2) . '/bootstrap.php';
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin/admin_login.php');
     exit;
 }
-$modulesConfig = include $_SERVER['DOCUMENT_ROOT'] . '/app/modules.php';
+$modulesConfig = include dirname(__DIR__, 2) . '/app/modules.php';
 $modules = $modulesConfig['modules'];
-require $_SERVER['DOCUMENT_ROOT'] . '/modules/admin/views/module_manager.php';
+require dirname(__DIR__, 2) . '/modules/admin/views/module_manager.php';

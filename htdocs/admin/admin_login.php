@@ -5,6 +5,7 @@ use App\User;
 use App\Logger;
 use App\TokenManager;
 $tm = new TokenManager($config);
+$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
     header('Location: /admin/dashboard');
     exit;
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         try {
-            $db = new DB($config);
+            $db = new DB($config['db']);
             $user = new User($db, $config);
             $loginResult = $user->login(['email' => $email, 'pwd' => $password]);
             
@@ -28,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION[$sessionPrefix . 'admin'] = $_SESSION[$sessionPrefix . 'user_id'];
                 // Create session in user_sessions for admin
                 require_once __DIR__ . '/../app/SessionManager.php';
-                $db = new DB($config);
+                $db = new DB($config['db']);
                 $sessionManager = new App\SessionManager($db, $config);
                 $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], false);
                 header('Location: /admin/dashboard');

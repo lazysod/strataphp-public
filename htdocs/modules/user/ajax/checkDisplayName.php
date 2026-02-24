@@ -1,0 +1,36 @@
+<?php
+// AJAX endpoint to check display name validity and uniqueness
+header('Content-Type: application/json');
+require_once dirname(__DIR__, 4) . '/bootstrap.php';
+global $config;
+
+if (empty($_GET['display_name'])) {
+    echo json_encode(['valid' => false, 'message' => 'Display name is required.']);
+    exit;
+}
+$displayName = trim($_GET['display_name']);
+
+if (!preg_match('/^[a-zA-Z0-9_-]+$/', $displayName)) {
+    echo json_encode(['valid' => false, 'message' => 'Only letters, numbers, underscores, and hyphens allowed.']);
+    exit;
+}
+
+$db = new \App\DB($config['db']);
+
+// Check if display name is taken
+$sql = "SELECT COUNT(*) as cnt FROM profile WHERE profile_name = ?";
+$row = $db->fetch($sql, [$displayName]);
+if ($row && $row['cnt'] > 0) {
+    echo json_encode(['valid' => false, 'message' => 'Display name is already taken.']);
+    exit;
+}
+
+// Check if display name is a bad word
+$sql = "SELECT COUNT(*) as cnt FROM bad_words WHERE name = ?";
+$row = $db->fetch($sql, [$displayName]);
+if ($row && $row['cnt'] > 0) {
+    echo json_encode(['valid' => false, 'message' => 'Display name is not allowed.']);
+    exit;
+}
+
+echo json_encode(['valid' => true, 'message' => 'Display name is available!']);

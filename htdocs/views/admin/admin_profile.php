@@ -1,19 +1,13 @@
 <?php
 use App\App;
 use App\DB;
-$startPath = dirname(__DIR__, 2) . '/app/start.php';
-if (file_exists($startPath)) {
-    $config = include dirname(__DIR__, 2) . '/app/config.php';
-    include_once $startPath;
-}
-
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
     header('Location: /admin/admin_login.php');
     exit;
 }
 
-$db = new \App\DB($config);
+$db = new \App\DB($config['db']);
 $adminId = $_SESSION[$sessionPrefix . 'admin'] ?? null;
 $admin = null;
 if ($db && $adminId) {

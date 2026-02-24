@@ -1,9 +1,10 @@
 <?php
+require_once dirname(__DIR__, 4) . '/bootstrap.php';
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 <section class="py-5">
     <div class="container px-5">
-        <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
+        <div class="bg-dark rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-5">
                
                 <h1 class="fw-bolder"><i class="bi bi-person-plus"></i> User Registration</h1>
@@ -12,25 +13,56 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
                         <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
-                            <?php echo $success ?>
+                            <?php echo $success; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
                     <?php if (!empty($error)) : ?>
                         <div class="alert alert-danger text-center alert-dismissible fade show" role="alert">
-                            <?php echo $error ?>
+                            <?php echo $error; ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
                     <form id="userRegisterForm" method="post" action="" class="">
                         <input type="hidden" name="token" value="<?php echo htmlspecialchars(\App\TokenManager::csrf()); ?>">
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="display_name" name="display_name" type="text" placeholder="Display Name" required />
-                            <label for="display_name">Display Name</label>
+                            <input class="form-control" id="display_name" value="<?php if( isset($_POST['display_name'])){ echo htmlspecialchars($_POST['display_name']); } ?>" name="display_name" type="text" placeholder="Display Name" required />
+                            <label for="display_name"><span class="text-danger">*</span>Display Name</label>
+                            <div id="displayNameFeedback" class="form-text"></div>
                         </div>
+                        <script>
+                        // Live display name validation
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const displayNameInput = document.getElementById('display_name');
+                            const feedback = document.getElementById('displayNameFeedback');
+                            let lastValue = '';
+                            let timeout = null;
+                            displayNameInput.addEventListener('input', function() {
+                                const value = displayNameInput.value.trim();
+                                if (value === lastValue) return;
+                                lastValue = value;
+                                feedback.textContent = '';
+                                if (timeout) clearTimeout(timeout);
+                                if (!value) return;
+                                timeout = setTimeout(function() {
+                                    fetch('/modules/User/ajax/checkDisplayName.php?display_name=' + encodeURIComponent(value))
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            feedback.textContent = data.message;
+                                            feedback.style.color = data.valid ? 'green' : 'red';
+                                        })
+                                        .catch(() => {
+                                            feedback.textContent = 'Could not validate display name.';
+                                            feedback.style.color = 'red';
+                                        });
+                                }, 300);
+                            });
+                        });
+                        </script>
+
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" required />
-                            <label for="email">Email address</label>
+                            <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" value="<?php if(isset($_POST['email'])){ echo htmlspecialchars($_POST['email']); } ?>" required />
+                            <label for="email"><span class="text-danger">*</span>Email address</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input class="form-control" id="password" name="password" type="password" placeholder="Enter password" required />

@@ -1,12 +1,22 @@
 <?php
-// Module metadata for Multi Users module
+// Module metadata for User Management module
 return [
-    'name' => 'Multi Users',
-    'slug' => 'multi-users',
+    'name' => 'User Management',
+    'slug' => 'user',
     'version' => '1.0.0',
-    'description' => 'A module for managing multiple user profiles and links.',
-    'author' => 'Your Name',
-    'category' => 'Social',
+    'description' => 'Comprehensive user authentication and management system with registration, login, profiles, and password reset',
+    'author' => 'StrataPHP Framework',
+    'category' => 'Security',
+    'license' => 'MIT',
+    'framework_version' => '1.0.0',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'homepage' => 'https://github.com/lazysod/strataphp-public',
+    'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
+    'structure_requirements' => [
+        'controllers' => true,  // Needs controllers for auth logic
+        'views' => true,        // Needs views for login/register forms
+        'models' => true        // Needs models for user data
+    ],
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true
 ];

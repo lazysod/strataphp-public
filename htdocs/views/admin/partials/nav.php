@@ -6,8 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
 // use App\App;
 // App::dump($_SESSION);
 if (!defined('PREFIX')) {
-    $config = include dirname(__DIR__, 3) . '/app/config.php';
-    define('PREFIX', $config['session_prefix'] ?? 'app_');
+  global $config;
+  define('PREFIX', $config['session_prefix'] ?? 'app_');
 }
 
 if (empty($_SESSION[PREFIX . 'admin']) || $_SESSION[PREFIX . 'admin'] < 1) {
@@ -18,7 +18,7 @@ if (!isset($modules)) {
   $modules = include dirname(__DIR__, 3) . '/app/modules.php';
 }
 $navConfig = include dirname(__DIR__, 3) . '/app/adminNavConfig.php';
-$config = include __DIR__ . '/../../../app/config.php';
+global $config;
 $sessionPrefix = $config['session_prefix'];
 
 ?>

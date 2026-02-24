@@ -27,11 +27,6 @@ return array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'google_analytics' => 
-    array (
-      'enabled' => false,
-      'suitable_as_default' => false,
-    ),
     'helloworld' => 
     array (
       'enabled' => false,
@@ -44,10 +39,15 @@ return array (
     ),
     'links' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => true,
     ),
     'user' => 
+    array (
+      'enabled' => true,
+      'suitable_as_default' => false,
+    ),
+    'google-analytics' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,
@@ -65,6 +65,16 @@ return array (
       'module_type' => 'core',
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
+    ),
+    'oauth_clients' => 
+    array (
+      'enabled' => false,
+      'suitable_as_default' => false,
+      'category' => 'Admin',
+      'name' => 'OAuth Clients',
+      'version' => '1.0.0',
+      'author' => 'lazysod',
+      'license' => 'MIT',
     ),
   ),
   'default_module' => 'home',

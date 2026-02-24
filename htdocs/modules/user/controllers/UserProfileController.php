@@ -5,36 +5,49 @@ use App\DB;
 use App\App;
 use App\User;
 // User profile controller for updating user details
+/**
+ * User Profile Controller
+ * 
+ * Manages user profile viewing and editing functionality
+ * Handles profile updates, password changes, and user data management
+ */
 class UserProfileController
 {
+    /**
+     * Handle user profile requests
+     * 
+     * Displays user profile and processes profile update requests
+     * Includes validation, security checks, and error handling
+     * 
+     * @return void
+     */
     public function index()
     {
-        // Use bootstrap.php for initialization and config
-        include_once dirname(__DIR__, 3) . '/bootstrap.php';
-        global $config;
-        // DEBUG: Output session and config info for troubleshooting
-        if (isset($_GET['debug'])) {
-            echo '<pre>SESSION: ' . print_r($_SESSION, true) . "\n\nCONFIG: " . print_r($config, true) . '</pre>';
-            exit;
-        }
-        if (empty($config['modules']['user']['enabled'])) {
-            header('Location: /');
-            exit;
-        }
-        $sessionPrefix = $config['session_prefix'] ?? '';
-        if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
-            header('Location: /user/login');
-            exit;
-        }
-        $error = '';
+        try {
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
+            global $config;
+            if (empty($config['modules']['user'])) {
+                header('Location: /');
+                exit;
+            }
+            $sessionPrefix = $config['session_prefix'] ?? 'app_';
+            if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
+                header('Location: /user/login');
+                exit;
+            }
+            $error = '';
         $success = '';
-        $db = new DB($config);
+        $db = new DB($config['db']);
         $userModel = new User($db, $config);
         $userId = $_SESSION[$sessionPrefix . 'user_id'];
         // Fetch current user info
-        $sql = "SELECT * FROM users WHERE id = ?";
-        $rows = $db->fetchAll($sql, [$userId]);
-        $user = $rows[0] ?? [];
+        $sql = "SELECT * FROM users 
+        left join profile on users.id = profile.user_id
+        WHERE id = ?";
+        $row = $db->fetchAll($sql, [$userId]);
+        $user = $row[0] ?? [];
+        // App::dump($user, 'Current User Data');
+        // die();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($_POST['pwd']) && $_POST['pwd'] != $_POST['pwd2']) {
                 $error = 'Passwords do not match.';
@@ -53,17 +66,24 @@ class UserProfileController
                 $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
                 if (isset($allowedTypes[$fileType])) {
                     $ext = $allowedTypes[$fileType];
-                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/uploads/users/' . $userId . '/';
+                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/app/uploads/img/' . $userId . '/';
                     if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
-                    // Remove existing avatar files
-                    foreach (['png', 'jpg', 'jpeg', 'webp'] as $oldExt) {
-                        $oldFile = $uploadDir . 'avatar.' . $oldExt;
-                        if (file_exists($oldFile)) @unlink($oldFile);
+                    // Remove all files in avatar directory
+                    $files = glob($uploadDir . '*');
+                    if ($files) {
+                        foreach ($files as $oldFile) {
+                            if (is_file($oldFile)) @unlink($oldFile);
+                        }
                     }
-                    $fileName = 'avatar.' . $ext;
+                    $fileName = time() . '.' . $ext;
                     $destPath = $uploadDir . $fileName;
                     if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destPath)) {
-                        $avatarPath = '/storage/uploads/users/' . $userId . '/' . $fileName;
+                        // Always store only user_id/filename in DB and session
+                        $avatarDbPath = $userId . '/' . $fileName;
+                        $avatarPath = $avatarDbPath;
+                        $_SESSION[$sessionPrefix . 'avatar'] = $avatarDbPath;
+                        // Update users table immediately
+                        $db->query("UPDATE users SET avatar = ? WHERE id = ?", [$avatarDbPath, $userId]);
                     } else {
                         $error = 'Failed to save avatar.';
                     }
@@ -74,8 +94,8 @@ class UserProfileController
             if ($error == '') {
                 $updateInfo = [
                     'id' => $userId,
-                    'first_name' => trim($_POST['first_name'] ?? ($user['first_name'] ?? '')),
-                    'second_name' => trim($_POST['second_name'] ?? ($user['second_name'] ?? '')),
+                    // 'first_name' => trim($_POST['first_name'] ?? ($user['first_name'] ?? '')),
+                    // 'second_name' => trim($_POST['second_name'] ?? ($user['second_name'] ?? '')),
                     'display_name' => trim($_POST['display_name'] ?? ($user['display_name'] ?? '')),
                     'email' => trim($_POST['email'] ?? ($user['email'] ?? '')),
                     'pwd' => $_POST['pwd'] ?? '',
@@ -89,11 +109,24 @@ class UserProfileController
                     // Always refresh user info after update
                     $rows = $db->fetchAll($sql, [$userId]);
                     $user = $rows[0] ?? [];
+                    // Force session avatar update
+                    if (!empty($avatarPath)) {
+                        $_SESSION[$sessionPrefix . 'avatar'] = $avatarPath;
+                    } elseif (!empty($user['avatar'])) {
+                        $_SESSION[$sessionPrefix . 'avatar'] = $user['avatar'];
+                    }
                 } else {
                     $error = $result['message'];
                 }
             }
         }
-        include __DIR__ . '/../views/profile.php';
+    $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
+    include $viewPath;
+        } catch (\Exception $e) {
+            $error = 'An unexpected error occurred. Please try again.';
+            $success = '';
+            $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
+            include $viewPath;
+        }
     }
 }

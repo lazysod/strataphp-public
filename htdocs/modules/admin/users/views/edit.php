@@ -1,5 +1,7 @@
 <?php
-if (empty($_SESSION[PREFIX . 'admin'])) {
+$localConfig = include dirname(__DIR__, 4) . '/app/config.php';
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin');
     exit;
 }
@@ -26,17 +28,32 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         <!-- Display Name removed -->
                         <div class="mb-3">
                             <label for="display_name" class="form-label">Display Name</label>
-                            <input type="text" class="form-control" id="display_name" name="display_name" value="<?php echo htmlspecialchars($user['display_name'] ?? ''); ?>" required>
+                            <input type="text" class="form-control" id="display_name" name="display_name" value="<?php echo htmlspecialchars($user['profile_name'] ?? ''); ?>">
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="second_name" class="form-label">Second Name</label>
+                            <input type="text" class="form-control" id="second_name" name="second_name" value="<?php echo htmlspecialchars($user['second_name'] ?? ''); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required>
+</div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" name="role">
                                 <option value="user" <?php if (($user['is_admin'] ?? '') === 0) echo 'selected'; ?>>User</option>
                                 <option value="admin" <?php if (($user['is_admin'] ?? '') === 1) echo 'selected'; ?>>Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verified" class="form-label">Verified</label>
+                            <select class="form-select" id="verified" name="verified">
+                                <option value="1" <?php if (($user['verified'] ?? '') === 1) echo 'selected'; ?>>Yes</option>
+                                <option value="0" <?php if (($user['verified'] ?? '') === 0) echo 'selected'; ?>>No</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -56,6 +73,7 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>
 <?php include __DIR__ . '/../../../../views/partials/footer.php'; ?>

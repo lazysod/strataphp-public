@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\CookieBanner;
+namespace App\Modules\cookiebanner;
 
 /**
  * CookieBanner Module

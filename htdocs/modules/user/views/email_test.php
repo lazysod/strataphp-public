@@ -11,10 +11,10 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
-                        <div class="alert alert-success text-center"><?php echo $success ?></div>
+                        <div class="alert alert-success text-center"><?php echo htmlspecialchars($success ?? '', ENT_QUOTES, 'UTF-8') ?></div>
                     <?php endif; ?>
                     <?php if (!empty($error)) : ?>
-                        <div class="alert alert-danger text-center"><?php echo $error ?></div>
+                        <div class="alert alert-danger text-center"><?php echo htmlspecialchars($error ?? '', ENT_QUOTES, 'UTF-8') ?></div>
                     <?php endif; ?>
                     <form method="post" action="">
                         <div class="form-floating mb-3">

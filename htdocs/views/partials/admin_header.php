@@ -1,5 +1,5 @@
 <?php 
-$config = include __DIR__ . '/../../app/config.php';
+global $config;
 require_once __DIR__ . '/../../app/App.php';
 use App\App;
 $controllersDir = __DIR__ . '/../../controllers/';

@@ -134,7 +134,7 @@ public function index()
 // controllers/HomeController.php
 public function index()
 {
-    $db = new DB($config);
+    $db = new DB($config['db']);
     $recent_posts = $db->query("SELECT * FROM posts ORDER BY created_at DESC LIMIT 3");
     $featured_content = $db->query("SELECT * FROM content WHERE featured = 1");
     

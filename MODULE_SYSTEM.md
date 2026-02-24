@@ -319,7 +319,7 @@ class BlogController
     public function __construct()
     {
         $this->config = include dirname(__DIR__, 3) . '/app/config.php';
-        $this->db = new DB($this->config);
+        $this->db = new DB($this->config['db']);
     }
     
     // CRUD methods...
