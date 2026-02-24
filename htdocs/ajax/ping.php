@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/bootstrap.php';
 // Simple AJAX endpoint for testing
 header('Content-Type: application/json');
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

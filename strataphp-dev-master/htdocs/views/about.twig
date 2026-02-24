@@ -1,0 +1,17 @@
+{% extends 'base.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="py-5" id="features">
+    <div class="container px-5 my-5">
+        <div class="row gx-5">
+            <div class="col-lg-8 mx-auto mb-5 mb-lg-0">
+                <h1>{{ title }}</h1>
+                <p class="lead">{{ content }}</p>
+                <p class="lead">Site name: {{ site_name }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

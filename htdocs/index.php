@@ -1,11 +1,28 @@
+
 <?php
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once __DIR__ . '/app/start.php'; // config, autoload, etc.
+require_once __DIR__ . '/bootstrap.php';
 use App\DB;
 use App\User;
+use App\Router;
 
 $config = require __DIR__ . '/app/config.php';
+
+// Initialize the router
+$router = new Router();
+
+// Load all enabled module route files
+if (!empty($config['modules']) && is_array($config['modules'])) {
+    foreach ($config['modules'] as $moduleName => $moduleInfo) {
+        if (!empty($moduleInfo['enabled'])) {
+            $routeFile = __DIR__ . "/modules/{$moduleName}/routes.php";
+            if (file_exists($routeFile)) {
+                require_once $routeFile;
+            }
+        }
+    }
+}
+
 
 // Ensure session prefix and PREFIX constant are set before use
 if (!defined('SESSION_PREFIX')) {
@@ -140,7 +157,7 @@ if (isset($router) && $router instanceof Router) {
 } else {
     // If router is not available, show 404
     include_once __DIR__ . '/controllers/NotFoundController.php';
-    $controller = new NotFoundController();
+        $controller = new App\Controllers\NotFoundController();
     $controller->index();
 }
 

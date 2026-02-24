@@ -23,6 +23,11 @@ class SessionManager
         // Insert session into DB (now with ip_address)
         $sql = "INSERT INTO user_sessions (user_id, device_id, device_type, ip_address, session_token, revoked, last_seen, created_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?)";
         $this->db->query($sql, [$user_id, $device_id, $device_type, $ip_address, $session_token, $now, $now]);
+        $session_id = $this->db->insertId();
+
+        // Set session_id in $_SESSION for tracking current session
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        $_SESSION[$sessionPrefix . 'session_id'] = $session_id;
 
         // Only set persistent cookies if both 'remember' and cookie consent are true
         $cookieConsent = isset($_COOKIE['cookie_consent']) && $_COOKIE['cookie_consent'] === '1';

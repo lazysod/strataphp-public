@@ -1,28 +1,9 @@
 <?php
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once __DIR__ . '/../bootstrap.php';
 use App\DB;
 use App\User;
 use App\Logger;
-require_once __DIR__ . '/../app/App.php';
-// TokenManager is now autoloaded via Composer
 use App\TokenManager;
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Load config and bootstrap
-$config = include __DIR__ . '/../app/config.php';
-$startPath = __DIR__ . '/../app/start.php';
-if (file_exists($startPath)) {
-    include_once $startPath;
-}
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
-if (!defined('PREFIX')) {
-    define('PREFIX', $sessionPrefix);
-}
 $tm = new TokenManager($config);
 if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
     header('Location: /admin/dashboard');

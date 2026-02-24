@@ -1,5 +1,6 @@
 <?php 
 use App\App;
+use App\Version;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php'; 
 ?>

@@ -1,4 +1,8 @@
 <?php
+
+namespace App\Models;
+use App\DB;
+
 class Contact
 {
     public function getAllContacts()

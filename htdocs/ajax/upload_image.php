@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/bootstrap.php';
 /**
  * Image Upload Handler for TinyMCE
  * 
@@ -11,8 +12,7 @@ if (!defined('STRPHP_ROOT')) {
     define('STRPHP_ROOT', dirname(__DIR__, 2));
 }
 
-require_once STRPHP_ROOT . '/htdocs/app/start.php';
-require_once STRPHP_ROOT . '/htdocs/app/FileUpload.php';
+
 
 use App\FileUpload;
 

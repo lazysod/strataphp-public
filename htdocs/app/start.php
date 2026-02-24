@@ -140,7 +140,9 @@ if (is_dir($modulesDir)) {
 }
 
 // Dependency Injection Container setup
-require_once __DIR__ . '/Container.php';
+global $container;
+require_once __DIR__ . '/App/Container.php';
+use App\App\Container;
 global $container;
 $container = new Container();
 

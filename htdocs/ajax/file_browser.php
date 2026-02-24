@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/bootstrap.php';
 /**
  * File Browser for TinyMCE
  * 
@@ -10,7 +11,7 @@ if (!defined('STRPHP_ROOT')) {
     define('STRPHP_ROOT', dirname(__DIR__, 2));
 }
 
-require_once STRPHP_ROOT . '/htdocs/app/start.php';
+
 
 // Check if user is authenticated admin
 session_start();

@@ -1,0 +1,9 @@
+{
+  "name": "Default Theme",
+  "author": "Strata Team",
+  "version": "1.0",
+  "logo": "/assets/images/logo_small.png",
+  "favicon": "/assets/images/favicon.ico",
+  "css": "/css/styles.css",
+  "js": "/js/scripts.js"
+}

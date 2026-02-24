@@ -1,4 +1,5 @@
 <?php
+namespace App;
 
 /**
  * StrataPHP Framework Version Manager

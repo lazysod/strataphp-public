@@ -1,7 +1,7 @@
 <?php
 $title = 'About - New Framework';
 $pageJs = 'about';
-require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
+// ...header is now handled by controller or view system
 ?>
 <section class="py-5" id="features">
     <div class="container px-5 my-5">
@@ -15,4 +15,4 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
         </div>
     </div>
 </section>
-<?php require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>
+// ...footer is now handled by controller or view system

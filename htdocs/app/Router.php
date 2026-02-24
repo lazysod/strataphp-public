@@ -1,4 +1,6 @@
 <?php
+namespace App;
+use App\Controllers\NotFoundController;
 // Minimal Router class for modular route registration
 class Router
 {
@@ -139,7 +141,9 @@ class Router
                 if (!isset($h1)) { $h1 = 'Page Not Found'; }
                 if (!isset($message)) { $message = 'Sorry, the page you requested could not be found.'; }
                 if (!isset($homeLink)) { $homeLink = $_ENV['BASE_URL'] ?? '/'; }
+                include dirname(__DIR__) . '/views/partials/header.php';
                 include $custom404;
+                include dirname(__DIR__) . '/views/partials/footer.php';
             } else {
                 echo '404 Not Found';
             }

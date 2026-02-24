@@ -5,33 +5,23 @@ use App\DB;
 use App\App;
 use App\User;
 // User profile controller for updating user details
-/**
- * User Profile Controller
- * 
- * Manages user profile viewing and editing functionality
- * Handles profile updates, password changes, and user data management
- */
 class UserProfileController
 {
-    /**
-     * Handle user profile requests
-     * 
-     * Displays user profile and processes profile update requests
-     * Includes validation, security checks, and error handling
-     * 
-     * @return void
-     */
     public function index()
     {
-        try {
-            include_once dirname(__DIR__, 3) . '/app/start.php';
-            $config = include dirname(__DIR__, 3) . '/app/config.php';
-            if (empty($config['modules']['user'])) {
-                header('Location: /');
-                exit;
-            }
-            
-        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        // Use bootstrap.php for initialization and config
+        include_once dirname(__DIR__, 3) . '/bootstrap.php';
+        global $config;
+        // DEBUG: Output session and config info for troubleshooting
+        if (isset($_GET['debug'])) {
+            echo '<pre>SESSION: ' . print_r($_SESSION, true) . "\n\nCONFIG: " . print_r($config, true) . '</pre>';
+            exit;
+        }
+        if (empty($config['modules']['user']['enabled'])) {
+            header('Location: /');
+            exit;
+        }
+        $sessionPrefix = $config['session_prefix'] ?? '';
         if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
             header('Location: /user/login');
             exit;
@@ -104,13 +94,6 @@ class UserProfileController
                 }
             }
         }
-    $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
-    include $viewPath;
-        } catch (\Exception $e) {
-            $error = 'An unexpected error occurred. Please try again.';
-            $success = '';
-            $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/profile.php', __DIR__ . '/../views/profile.php');
-            include $viewPath;
-        }
+        include __DIR__ . '/../views/profile.php';
     }
 }

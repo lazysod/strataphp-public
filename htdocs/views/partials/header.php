@@ -2,7 +2,7 @@
 $controllersDir = __DIR__ . '/../../controllers/';
 $controllerFiles = glob($controllersDir . '*Controller.php');
 $navConfig = include __DIR__ . '/../../app/navConfig.php';
-$config = include __DIR__ . '/../../app/config.php';
+$config = $config ?? [];
 $sessionPrefix = $config['session_prefix'] ?? 'app_';
 ?>
 <!DOCTYPE html>

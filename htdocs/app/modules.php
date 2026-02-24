@@ -49,7 +49,7 @@ return array (
     ),
     'user' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
     ),
     'media' => 

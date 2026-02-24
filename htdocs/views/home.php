@@ -1,7 +1,7 @@
 <?php 
 use App\App;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
-require __DIR__ . '/partials/header.php'; 
+use App\Version;
+// ...header and Version.php are now handled by controller or view system
 ?>
             <header class="bg-dark py-5">
                 <div class="container px-5">
