@@ -22,9 +22,9 @@ class UserSessionsController
     public function index()
     {
         try {
-            require_once dirname(__DIR__, 4) . '/bootstrap.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $sessionPrefix = $config['session_prefix'] ?? 'app_';
             $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
             if (!$user_id) {
@@ -52,9 +52,9 @@ class UserSessionsController
      */
     public function revoke()
     {
-        require_once dirname(__DIR__, 4) . '/bootstrap.php';
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
         global $config;
-        $db = new DB($config['db']);
+        $db = new DB($config);
         
         $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
@@ -79,9 +79,9 @@ class UserSessionsController
     // Allow user to update device name for current session
     public function updateDevice()
     {
-        require_once dirname(__DIR__, 4) . '/bootstrap.php';
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
         global $config;
-        $db = new DB($config['db']);
+        $db = new DB($config);
         
         $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;

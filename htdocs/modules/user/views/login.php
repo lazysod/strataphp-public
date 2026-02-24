@@ -1,11 +1,11 @@
 <?php
-require_once dirname(__DIR__, 4) . '/bootstrap.php';
+require_once dirname(__DIR__, 3) . '/bootstrap.php';
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 
 <section class="py-5">
     <div class="container px-5">
-        <div class="bg-dark rounded-3 py-5 px-4 px-md-5 mb-5">
+        <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-5">
 
                 <h1 class="fw-bolder"><i class="bi bi-person"></i> User Login</h1>

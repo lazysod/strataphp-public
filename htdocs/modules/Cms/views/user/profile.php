@@ -1,6 +1,6 @@
 <?php
 /**
- * CMS-Themed User Profile Page
+ * User Profile Page
  */
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/helpers.php';

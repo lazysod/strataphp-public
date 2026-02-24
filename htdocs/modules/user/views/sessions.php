@@ -1,10 +1,10 @@
 <?php
-require_once dirname(__DIR__, 4) . '/bootstrap.php';
+require_once dirname(__DIR__, 3) . '/bootstrap.php';
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 <section class="py-5">
     <div class="container px-5">
-        <div class="bg-dark rounded-3 py-5 px-4 px-md-5 mb-5">
+        <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-5">
                 <h1 class="fw-bolder">Session Management</h1>
                 <p class="text-center ">
@@ -16,7 +16,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-12 col-xl-12">
                     <h2>Your Active Sessions</h2>
-                    <table class="table table-dark table-bordered">
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Device</th>

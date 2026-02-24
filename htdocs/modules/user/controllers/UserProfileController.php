@@ -37,13 +37,11 @@ class UserProfileController
             }
             $error = '';
         $success = '';
-        $db = new DB($config['db']);
+        $db = new DB($config);
         $userModel = new User($db, $config);
         $userId = $_SESSION[$sessionPrefix . 'user_id'];
         // Fetch current user info
-        $sql = "SELECT * FROM users 
-        left join profile on users.id = profile.user_id
-        WHERE id = ?";
+        $sql = "SELECT * FROM users WHERE id = ?";
         $row = $db->fetchAll($sql, [$userId]);
         $user = $row[0] ?? [];
         // App::dump($user, 'Current User Data');
@@ -66,24 +64,17 @@ class UserProfileController
                 $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
                 if (isset($allowedTypes[$fileType])) {
                     $ext = $allowedTypes[$fileType];
-                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/app/uploads/img/' . $userId . '/';
+                    $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/uploads/users/' . $userId . '/';
                     if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
-                    // Remove all files in avatar directory
-                    $files = glob($uploadDir . '*');
-                    if ($files) {
-                        foreach ($files as $oldFile) {
-                            if (is_file($oldFile)) @unlink($oldFile);
-                        }
+                    // Remove existing avatar files
+                    foreach (['png', 'jpg', 'jpeg', 'webp'] as $oldExt) {
+                        $oldFile = $uploadDir . 'avatar.' . $oldExt;
+                        if (file_exists($oldFile)) @unlink($oldFile);
                     }
-                    $fileName = time() . '.' . $ext;
+                    $fileName = 'avatar.' . $ext;
                     $destPath = $uploadDir . $fileName;
                     if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destPath)) {
-                        // Always store only user_id/filename in DB and session
-                        $avatarDbPath = $userId . '/' . $fileName;
-                        $avatarPath = $avatarDbPath;
-                        $_SESSION[$sessionPrefix . 'avatar'] = $avatarDbPath;
-                        // Update users table immediately
-                        $db->query("UPDATE users SET avatar = ? WHERE id = ?", [$avatarDbPath, $userId]);
+                        $avatarPath = '/storage/uploads/users/' . $userId . '/' . $fileName;
                     } else {
                         $error = 'Failed to save avatar.';
                     }
@@ -94,8 +85,8 @@ class UserProfileController
             if ($error == '') {
                 $updateInfo = [
                     'id' => $userId,
-                    // 'first_name' => trim($_POST['first_name'] ?? ($user['first_name'] ?? '')),
-                    // 'second_name' => trim($_POST['second_name'] ?? ($user['second_name'] ?? '')),
+                    'first_name' => trim($_POST['first_name'] ?? ($user['first_name'] ?? '')),
+                    'second_name' => trim($_POST['second_name'] ?? ($user['second_name'] ?? '')),
                     'display_name' => trim($_POST['display_name'] ?? ($user['display_name'] ?? '')),
                     'email' => trim($_POST['email'] ?? ($user['email'] ?? '')),
                     'pwd' => $_POST['pwd'] ?? '',

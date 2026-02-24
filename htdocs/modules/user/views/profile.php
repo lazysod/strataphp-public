@@ -1,18 +1,12 @@
 <?php
-require_once dirname(__DIR__, 4) . '/bootstrap.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 use App\App;
 
 ?>
 <section class="py-5">
     <div class="container px-5">
-        <div class="bg-dark rounded-3 py-5 px-4 px-md-5 mb-5">
-            <div class="text-center mb-5">
-                <h1 class="fw-bolder">Your Account Profile</h1>
-                <p class="text-center text-muted">
-                    This is your account profile page where you can view and update your personal information, change your password, and manage your avatar. Account information and profile information are now different. You can access your profile settings here <a href="/user/profile_settings">dashboard</a>.
-                </p>
-            </div>
+        <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-8 col-xl-6">
                     <?php if (!empty($success)) : ?>
@@ -31,19 +25,13 @@ use App\App;
                         <div class="mb-3 text-center">
                             <label class="form-label text-white">Account Avatar</label><br>
                             <?php
-                            $sessionPrefix = $config['session_prefix'] ?? 'app_';
-                            $sessionAvatar = $_SESSION[$sessionPrefix . 'avatar'] ?? '';
-                            $dbAvatar = $user['avatar'] ?? '';
-                            $avatarToShow = $sessionAvatar ?: $dbAvatar;
-                            // Remove any leading slash for user_id/filename
-                            // Remove any duplicate /app/uploads/img/ from avatarToShow
-                            $avatarToShow = preg_replace('#^/?app/uploads/img/#', '', $avatarToShow);
-                            $fullAvatarPath = $avatarToShow ? '/app/uploads/img/' . $avatarToShow : '';
-                            if ($avatarToShow && file_exists($_SERVER['DOCUMENT_ROOT'] . $fullAvatarPath)) {
-                                echo '<img src="' . htmlspecialchars($fullAvatarPath) . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+                            $avatarPath = $user['avatar'] ?? '';
+                            if ($avatarPath && file_exists($_SERVER['DOCUMENT_ROOT'] . $avatarPath)) {
+                                echo '<img src="' . htmlspecialchars($avatarPath) . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
                             } else {
-                                $fallbackAvatar = !empty($config['base_url']) ? $config['base_url'] . '/assets/images/blank-avatar.png' : '/assets/images/blank-avatar.png';
-                                echo '<img src="' . htmlspecialchars($fallbackAvatar, ENT_QUOTES, 'UTF-8') . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+                                // fallback to gravatar
+                                $gravatar = 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($user['email'] ?? ''))) . '?s=80&r=g&d=mm';
+                                echo '<img src="' . htmlspecialchars($gravatar, ENT_QUOTES, 'UTF-8') . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
                             }
                             ?>
                             <input type="file" name="avatar" accept="image/png,image/jpeg,image/jpg,image/webp" class="form-control mt-2" style="max-width:300px;margin:auto;">
@@ -52,6 +40,14 @@ use App\App;
                         <div class="form-floating mb-3">
                             <input class="form-control" id="display_name" name="display_name" type="text" value="<?php echo htmlspecialchars($user['display_name'] ?? '') ?>"  />
                             <label for="display_name">Account Display Name <span style="color:red">*</span></label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="first" name="first_name" type="text" value="<?php echo htmlspecialchars($user['first_name'] ?? '') ?>" required />
+                            <label for="first">First Name <span style="color:red">*</span></label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="last" name="second_name" type="text" value="<?php echo htmlspecialchars($user['second_name'] ?? '') ?>" required />
+                            <label for="last">Second Name <span style="color:red">*</span></label>
                         </div>
                         <div class="form-floating mb-3">
                             <input class="form-control" id="email" name="email" type="email" value="<?php echo htmlspecialchars($user['email'] ?? '') ?>" required />

@@ -1,4 +1,8 @@
 <?php
+
+$router->get('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
+$router->post('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
+
 // Manual CORS preflight handler for /oauth/userinfo
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' && strpos($_SERVER['REQUEST_URI'], '/oauth/userinfo') !== false) {
 	header('Access-Control-Allow-Origin: *');

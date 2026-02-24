@@ -55,14 +55,14 @@ if (!isset($router)) {
 }
 
 // Register core admin routes
-$router->get('/admin/dashboard/profile', [AdminController::class, 'profile']);
+$router->get('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
 $router->get('/admin', [AdminController::class, 'index']);
 $router->get('/admin/dashboard', [AdminController::class, 'dashboard']);
 $router->get('/admin/reset-password', [AdminController::class, 'resetRequest']);
 $router->post('/admin/reset-password', [AdminController::class, 'resetRequest']);
 $router->get('/admin/reset-password/confirm', [AdminController::class, 'resetPassword']);
 $router->post('/admin/reset-password/confirm', [AdminController::class, 'resetPassword']);
-$router->post('/admin/dashboard/profile', [AdminController::class, 'profile']);
+$router->post('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
 
 // Register admin links routes
 if (isset($router) && $router instanceof Router) {

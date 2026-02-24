@@ -28,7 +28,7 @@ class UserLoginController
     public function index()
     {
         try {
-            require_once dirname(__DIR__, 4) . '/bootstrap.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
             if (empty($config['modules']['user'])) {
                 header('Location: /');
@@ -67,7 +67,7 @@ class UserLoginController
                     include $viewPath;
                     return;
                 } else {
-                    $db = new DB($config['db']);
+                    $db = new DB($config);
                     $user = new User($db, $config);
                     $loginInfo = [
                         'email' => trim($_POST['email'] ?? ''),
@@ -89,7 +89,7 @@ class UserLoginController
                             header('Location: ' . $redirect);
                             exit;
                         }
-                        header('Location: /dashboard');
+                        header('Location: /');
                         exit;
                     } else {
                         $error = 'Login failed: ' . htmlspecialchars($result['message']);
