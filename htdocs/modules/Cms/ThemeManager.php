@@ -407,10 +407,11 @@ h1, h2, h3, h4, h5, h6 {
     public function getNavigationPages()
     {
         try {
+            global $config;
             // Load config and create database connection
             $localConfig = include dirname(__DIR__, 2) . '/app/config.php';
             // error_log('DEBUG: ThemeManager.php DB config: ' . print_r($config['db'], true));
-            $db = new \App\DB($config['db']);
+            $db = new \App\DB($config);
 
             // Get published pages for navigation (with parent_id)
             $pages = $db->fetchAll("

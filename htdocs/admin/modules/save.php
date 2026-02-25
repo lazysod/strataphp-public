@@ -18,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enabled_present'])) {
             $modInfo['enabled'] = in_array($modName, $enabledModules);
         }
     }
+    // Update default_module if set
+    if (isset($_POST['default_module'])) {
+        $modulesConfig['default_module'] = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['default_module']);
+    }
     // Save updated config
     $export = var_export($modulesConfig, true);
     file_put_contents($modulesConfigPath, "<?php\nreturn $export;\n");

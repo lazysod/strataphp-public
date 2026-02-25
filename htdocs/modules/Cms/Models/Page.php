@@ -12,6 +12,30 @@ use App\HtmlSanitizer;
 class Page
 {
     /**
+     * Find a page by ID
+     */
+    public function findById($id)
+    {
+        try {
+            return $this->db->fetch("SELECT * FROM cms_pages WHERE id = ? AND status = 'published' LIMIT 1", [$id]);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Search published pages by title (LIKE %title%)
+     */
+    public function searchByTitle($title, $limit = 10)
+    {
+        try {
+            $sql = "SELECT * FROM cms_pages WHERE status = 'published' AND title LIKE ? ORDER BY created_at DESC LIMIT " . (int)$limit;
+            return $this->db->fetchAll($sql, ["%$title%"]);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+    /**
      * @var DB Database connection
      */
     private $db;
@@ -75,12 +99,10 @@ class Page
      */
     public function getAllPublished()
     {
+        $limit = func_num_args() > 0 ? (int)func_get_arg(0) : 10;
         try {
-            return $this->db->fetchAll("
-                SELECT * FROM cms_pages 
-                WHERE status = 'published'
-                ORDER BY menu_order ASC, created_at DESC
-            ");
+            $sql = "SELECT * FROM cms_pages WHERE status = 'published' ORDER BY menu_order ASC, created_at DESC LIMIT " . (int)$limit;
+            return $this->db->fetchAll($sql);
         } catch (\Throwable $e) {
             return [];
         }

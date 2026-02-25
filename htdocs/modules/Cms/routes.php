@@ -46,4 +46,7 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     
     // Fallback route for dynamic pages (must be last)
     $router->get('/{slug}', [PageController::class, 'dynamicPage']);
+
+    // $router->post('/admin/modules/set-default', [ModuleDefaultController::class, 'setDefault']);
+    $router->post('/admin/modules/set-default', [\App\Modules\Admin\Controllers\ModuleDefaultController::class, 'setDefault']);
 }

@@ -11,6 +11,45 @@ use App\Modules\Cms\Models\Cms;
  */
 class CmsController
 {
+    /**
+     * API endpoint: Return all published CMS pages as JSON
+     */
+    public function apiPages()
+    {
+        try {
+            require_once __DIR__ . '/../models/Page.php';
+            $pageModel = new \App\Modules\Cms\Models\Page($this->config);
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            if ($limit < 1 || $limit > 100) $limit = 10;
+
+            $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+            $title = isset($_GET['title']) ? trim($_GET['title']) : null;
+
+            // Filtering logic
+            if ($id) {
+                $pages = $pageModel->findById($id);
+                $pages = $pages ? [$pages] : [];
+            } elseif ($title) {
+                $pages = $pageModel->searchByTitle($title, $limit);
+            } else {
+                $pages = $pageModel->getAllPublished($limit);
+            }
+
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'pages' => $pages
+            ]);
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to fetch pages',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
     private $db;
     private $config;
 
