@@ -1,12 +1,20 @@
 <?php
+
 namespace App\Modules\Cms\Controllers;
 
 use App\DB;
 use App\Modules\Cms\Models\Page;
 use App\SessionManager;
 
+/**
+ * Class AdminController
+ *
+ * Handles admin operations for the StrataPHP CMS module.
+ */
 class AdminController
 {
+    private $db;
+    private $config;
     /**
      * Set a page as the root (home) page
      */
@@ -26,23 +34,21 @@ class AdminController
             exit;
         }
     }
-    private $db;
-    private $config;
-    
+
     public function __construct()
     {
         // Define the constant to allow access to CMS view files
         if (!defined('STRPHP_ROOT')) {
             define('STRPHP_ROOT', true);
         }
-        
+
         $this->config = include dirname(__DIR__, 3) . '/app/config.php';
-        $this->db = new DB($this->config['db']);
-        
+        $this->db = new DB($this->config);
+
         // Ensure user is authenticated and has admin access
         $this->requireAuth();
     }
-    
+
     /**
      * Require authentication for admin access
      */
@@ -52,17 +58,17 @@ class AdminController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        
+
         // Get session prefix from config
         $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
-        
+
         // Check if user is logged in as admin using StrataPHP's session structure
         if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
             header('Location: /admin/admin_login.php');
             exit;
         }
     }
-    
+
     /**
      * CMS Dashboard
      */
@@ -70,7 +76,7 @@ class AdminController
     {
         try {
             $pageModel = new Page($this->config);
-            
+
             // Get statistics
             $stats = [
                 'total_pages' => $this->getPageCount(),
@@ -78,18 +84,18 @@ class AdminController
                 'draft_pages' => $this->getPageCount('draft'),
                 'recent_pages' => $pageModel->getAll(5)
             ];
-            
+
             $data = [
                 'title' => 'CMS Dashboard',
                 'stats' => $stats
             ];
-            
+
             $this->renderAdminView('dashboard', $data);
         } catch (\Exception $e) {
             $this->showError('Unable to load the CMS dashboard.');
         }
     }
-    
+
     /**
      * List all pages
      */
@@ -116,7 +122,7 @@ class AdminController
             $this->showError('Unable to load pages.');
         }
     }
-    
+
     /**
      * Show create page form
      */
@@ -135,7 +141,7 @@ class AdminController
         ];
         $this->renderAdminView('page_form', $data);
     }
-    
+
     /**
      * Store new page
      */
@@ -143,7 +149,7 @@ class AdminController
     {
         try {
             $pageModel = new Page($this->config);
-            
+
             $data = [
                 'title' => $_POST['title'] ?? '',
                 'slug' => $_POST['slug'] ?? '',
@@ -163,14 +169,14 @@ class AdminController
                 'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null,
                 'site_id' => !empty($_POST['site_id']) ? (int)$_POST['site_id'] : null
             ];
-            
+
             // Validate required fields
             if (empty($data['title'])) {
                 throw new \Exception('Page title is required.');
             }
-            
+
             $pageId = $pageModel->create($data);
-            
+
             if ($pageId) {
                 $_SESSION['success'] = 'Page created successfully.';
                 header('Location: /admin/cms/pages');
@@ -183,7 +189,7 @@ class AdminController
         }
         exit;
     }
-    
+
     /**
      * Show edit page form
      */
@@ -192,7 +198,7 @@ class AdminController
         try {
             $pageModel = new Page($this->config);
             $page = $pageModel->getById($id);
-            
+
             if (!$page) {
                 $_SESSION['error'] = 'Page not found.';
                 header('Location: /admin/cms/pages');
@@ -212,14 +218,15 @@ class AdminController
         } catch (\Exception $e) {
             $this->showError('Unable to load page for editing.');
         }
-    }    /**
+    }
+    /**
      * Update existing page
      */
     public function updatePage($id)
     {
         try {
             $pageModel = new Page($this->config);
-            
+
             $data = [
                 'title' => $_POST['title'] ?? '',
                 'slug' => $_POST['slug'] ?? '',
@@ -239,14 +246,14 @@ class AdminController
                 'parent_id' => !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null,
                 'site_id' => !empty($_POST['site_id']) ? (int)$_POST['site_id'] : null
             ];
-            
+
             // Validate required fields
             if (empty($data['title'])) {
                 throw new \Exception('Page title is required.');
             }
-            
+
             $success = $pageModel->update($id, $data);
-            
+
             if ($success) {
                 $_SESSION['success'] = 'Page updated successfully.';
                 header('Location: /admin/cms/pages');
@@ -259,7 +266,7 @@ class AdminController
         }
         exit;
     }
-    
+
     /**
      * Delete page
      */
@@ -268,7 +275,7 @@ class AdminController
         try {
             $pageModel = new Page($this->config);
             $success = $pageModel->delete($id);
-            
+
             if ($success) {
                 $_SESSION['success'] = 'Page deleted successfully.';
             } else {
@@ -277,11 +284,11 @@ class AdminController
         } catch (\Exception $e) {
             $_SESSION['error'] = 'An error occurred while deleting the page.';
         }
-        
+
         header('Location: /admin/cms/pages');
         exit;
     }
-    
+
     /**
      * Get page count by status
      */
@@ -292,17 +299,17 @@ class AdminController
         } else {
             $result = $this->db->fetch("SELECT COUNT(*) as count FROM cms_pages");
         }
-        
+
         return $result ? $result['count'] : 0;
     }
-    
+
     /**
      * Render admin view template
      */
     private function renderAdminView($template, $data = [])
     {
         $templatePath = dirname(__DIR__) . '/views/admin/' . $template . '.php';
-        
+
         if (file_exists($templatePath)) {
             // Extract data for template
             extract($data);
@@ -312,23 +319,23 @@ class AdminController
             echo $this->renderSimpleAdminPage($data);
         }
     }
-    
+
     /**
      * Render simple admin page as fallback
      */
     private function renderSimpleAdminPage($data)
     {
         $title = htmlspecialchars($data['title'] ?? 'CMS Admin');
-        
+
         $content = '<h1>' . $title . '</h1>';
-        
+
         if (isset($data['pages'])) {
             $content .= '<div class="pages-list">';
             $content .= '<a href="/admin/cms/pages/create" class="btn btn-primary">Create New Page</a>';
             $content .= '<table class="table">';
             $content .= '<thead><tr><th>Title</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>';
             $content .= '<tbody>';
-            
+
             foreach ($data['pages'] as $page) {
                 $content .= '<tr>';
                 $content .= '<td>' . htmlspecialchars($page['title']) . '</td>';
@@ -342,11 +349,11 @@ class AdminController
                 $content .= '</td>';
                 $content .= '</tr>';
             }
-            
+
             $content .= '</tbody></table>';
             $content .= '</div>';
         }
-        
+
         return "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -366,73 +373,82 @@ class AdminController
 </body>
 </html>";
     }
-    
+
     /**
      * Show error page
      */
     private function showError($message)
     {
         http_response_code(500);
-        
+
         $data = [
             'title' => 'Admin Error',
             'content' => '<h1>Error</h1><p>' . htmlspecialchars($message) . '</p>'
         ];
-        
+
         echo $this->renderSimpleAdminPage($data);
     }
-    
+
     /**
      * Check if slug is available (AJAX endpoint)
      */
     public function checkSlug()
     {
         header('Content-Type: application/json');
-        
+
         try {
             $slug = $_GET['slug'] ?? '';
             $excludeId = $_GET['exclude_id'] ?? null;
-            
+
             if (empty($slug)) {
                 echo json_encode(['available' => false, 'message' => 'Slug cannot be empty']);
                 return;
             }
-            
+
             $pageModel = new Page($this->config);
-            
+
             // Check for route conflicts with existing static routes
             $conflictRoutes = [
-                'admin', 'user', 'api', 'about', 'contact', 'login', 'logout',
-                'register', 'dashboard', 'modules', 'links', 'forum'
+                'admin',
+                'user',
+                'api',
+                'about',
+                'contact',
+                'login',
+                'logout',
+                'register',
+                'dashboard',
+                'modules',
+                'links',
+                'forum'
             ];
-            
+
             if (in_array($slug, $conflictRoutes)) {
                 echo json_encode([
-                    'available' => false, 
+                    'available' => false,
                     'message' => 'This slug conflicts with system routes'
                 ]);
                 return;
             }
-            
+
             $available = $pageModel->isSlugAvailable($slug, $excludeId);
-            
+
             echo json_encode([
                 'available' => $available,
                 'message' => $available ? 'Slug is available' : 'Slug already exists'
             ]);
-            
         } catch (\Exception $e) {
             echo json_encode(['available' => false, 'message' => 'Error checking slug']);
         }
     }
-    
+
     /**
      * Media Library - manage uploaded images
      */
     public function mediaLibrary()
     {
         $this->requireAuth();
-        
+
         try {
             $uploadDir = __DIR__ . '/../../../../htdocs/storage/uploads/cms/';
             $thumbDir = $uploadDir . 'thumbs/';
@@ -447,8 +463,8 @@ class AdminController
                         $filePath = $fileInfo->getPathname();
                         $file = $fileInfo->getFilename();
                         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-                        if (in_array($ext, ['jpg','jpeg','png','gif','webp','pdf'])) {
-                            $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp']);
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'])) {
+                            $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                             // Get relative path for URL (always relative to /storage/uploads/cms/)
                             $relativeFile = ltrim(str_replace($uploadDir, '', $filePath), '/\\');
                             $url = '/storage/uploads/cms/' . str_replace(DIRECTORY_SEPARATOR, '/', $relativeFile);
@@ -463,7 +479,7 @@ class AdminController
                     }
                 }
                 // Sort by upload date (newest first)
-                usort($images, function($a, $b) {
+                usort($images, function ($a, $b) {
                     return strtotime($b['uploaded']) - strtotime($a['uploaded']);
                 });
                 $total = count($images);

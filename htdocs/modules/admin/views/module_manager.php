@@ -365,7 +365,11 @@ if (!empty($_SESSION['module_update_error'])) {
                                                title="View Details">
                                                 <i class="fas fa-info-circle"></i>
                                             </a>
-                                            <?php if ($isEnabled && !empty($adminUrl)): ?>
+                                            <?php if ($modName === 'cms' && $isEnabled): ?>
+                                                <a href="/admin/cms" class="btn btn-outline-success btn-sm" title="Open CMS Backend">
+                                                    <i class="fas fa-external-link-alt"></i> CMS Backend
+                                                </a>
+                                            <?php elseif ($isEnabled && !empty($adminUrl)): ?>
                                                 <a href="<?= htmlspecialchars($adminUrl) ?>" class="btn btn-outline-success btn-sm" title="Open <?= htmlspecialchars($adminTitle) ?>">
                                                     <i class="fas fa-external-link-alt"></i> Open Module
                                                 </a>

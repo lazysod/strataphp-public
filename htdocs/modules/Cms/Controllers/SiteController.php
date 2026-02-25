@@ -6,9 +6,9 @@ use App\DB;
 use App\Modules\Cms\Models\Site;
 
 /**
- * Controller for managing CMS Sites in the admin panel.
+ * Class SiteController
  *
- * Handles listing, creating, updating, and deleting sites, as well as API key management.
+ * Handles listing, creating, updating, and deleting sites, as well as API key management for the StrataPHP CMS module.
  */
 class SiteController
 {
@@ -31,7 +31,7 @@ class SiteController
             define('STRPHP_ROOT', true);
         }
         $this->config = include dirname(__DIR__, 3) . '/app/config.php';
-        $this->db = new DB($this->config['db']);
+        $this->db = new DB($this->config);
     }
 
     /**

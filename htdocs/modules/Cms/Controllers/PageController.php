@@ -6,6 +6,11 @@ use App\Modules\Cms\Models\Page;
 use App\Modules\Cms\ThemeManager;
 use App\View;
 
+/**
+ * Class PageController
+ *
+ * Handles public and admin page operations for the StrataPHP CMS module.
+ */
 class PageController
 {
     private $db;
@@ -14,7 +19,7 @@ class PageController
     public function __construct()
     {
         $this->config = include dirname(__DIR__, 3) . '/app/config.php';
-        $this->db = new DB($this->config['db']);
+        $this->db = new DB($this->config);
     }
     
     /**

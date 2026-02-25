@@ -4,16 +4,42 @@ namespace App\Modules\Cms\Models;
 use App\DB;
 use App\HtmlSanitizer;
 
-
 /**
- * CMS Page Model
- * 
- * Manages pages and static content for the StrataPHP CMS
+ * Class Page
+ *
+ * Manages pages and static content for the StrataPHP CMS.
  */
 class Page
 {
     /**
-     * Get all pages for a specific site
+     * @var DB Database connection
+     */
+    private $db;
+
+    /**
+     * Page constructor.
+     * @param array|null $config
+     * @throws \Exception
+     */
+    public function __construct($config = null)
+    {
+        try {
+            if ($config) {
+                $this->db = new \App\DB($config);
+            } else {
+                $localConfig = include __DIR__ . '/../../../app/config.php';
+                $this->db = new \App\DB($localConfig);
+            }
+        } catch (\Throwable $e) {
+            throw new \Exception("Failed to initialize database connection");
+        }
+    }
+
+    /**
+     * Get all pages for a specific site.
+     * @param int $siteId
+     * @param int|null $limit
+     * @return array
      */
     public function getAllBySite($siteId, $limit = null)
     {
@@ -24,46 +50,40 @@ class Page
                 $sql .= " LIMIT " . (int)$limit;
             }
             return $this->db->fetchAll($sql, $params);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Log error or handle as needed
             return [];
         }
     }
+
     /**
-     * Get the page marked as home (is_home = 1)
+     * Get the page marked as home (is_home = 1).
+     * @return array|null
      */
     public function getHomePage()
     {
-        return $this->db->fetch("SELECT * FROM cms_pages WHERE is_home = 1 AND status = 'published' LIMIT 1");
-    }
-    private $db;
-    
-    public function __construct($config = null)
-    {
         try {
-            if ($config) {
-                // error_log('DEBUG: Page.php DB config: ' . print_r($config['db'], true));
-                $this->db = new \App\DB($config['db']);
-            } else {
-                // Load config for standalone usage
-                $localConfig = include __DIR__ . '/../../../app/config.php';
-                // error_log('DEBUG: Page.php DB config: ' . print_r($config['db'], true));
-                $this->db = new \App\DB($config['db']);
-            }
-        } catch (\Exception $e) {
-            throw new \Exception("Failed to initialize database connection");
+            return $this->db->fetch("SELECT * FROM cms_pages WHERE is_home = 1 AND status = 'published' LIMIT 1");
+        } catch (\Throwable $e) {
+            return null;
         }
     }
-    
+
     /**
-     * Get all published pages
+     * Get all published pages, ordered by menu_order and created_at.
+     * @return array
      */
     public function getAllPublished()
     {
-        return $this->db->fetchAll("
-            SELECT * FROM cms_pages 
-            WHERE status = 'published'
-            ORDER BY menu_order ASC, created_at DESC
-        ");
+        try {
+            return $this->db->fetchAll("
+                SELECT * FROM cms_pages 
+                WHERE status = 'published'
+                ORDER BY menu_order ASC, created_at DESC
+            ");
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
     
     /**

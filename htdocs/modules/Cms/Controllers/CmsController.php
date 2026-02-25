@@ -1,98 +1,45 @@
 <?php
 namespace App\Modules\Cms\Controllers;
 
-    use App\DB;
-    use App\Modules\Cms\Models\Cms;
+use App\DB;
+use App\Modules\Cms\Models\Cms;
 
-    class CmsController
-    {
-        /**
-         * API: Return all CMS pages as JSON
-         */
-        public function apiPages()
-        {
-            header('Content-Type: application/json');
-            try {
-                // API key authentication using sites table
-                require_once __DIR__ . '/../models/Site.php';
-                $providedKey = $_GET['api_key'] ?? $_SERVER['HTTP_X_API_KEY'] ?? '';
-                $siteModel = new \App\Modules\Cms\Models\Site($this->config);
-                $site = $siteModel->getByApiKey($providedKey);
-                if (!$site) {
-                    http_response_code(403);
-                    echo json_encode([
-                        'success' => false,
-                        'error' => 'Forbidden: Invalid or missing API key.'
-                    ]);
-                    return;
-                }
-
-                require_once __DIR__ . '/../models/Page.php';
-                $pageModel = new \App\Modules\Cms\Models\Page($this->config);
-
-                // Filtering logic (by site_id)
-                $id = isset($_GET['id']) ? intval($_GET['id']) : null;
-                $slug = isset($_GET['slug']) ? trim($_GET['slug']) : null;
-                $status = isset($_GET['status']) ? trim($_GET['status']) : null;
-                $siteId = $site['id'];
-                $pages = [];
-                if ($id) {
-                    $page = $pageModel->getById($id);
-                    if ($page && $page['site_id'] == $siteId) $pages[] = $page;
-                } elseif ($slug) {
-                    $page = $pageModel->getBySlug($slug);
-                    if ($page && $page['site_id'] == $siteId) $pages[] = $page;
-                } elseif ($status && strtolower($status) === 'published') {
-                    $all = $pageModel->getAllPublished();
-                    foreach ($all as $p) {
-                        if ($p['site_id'] == $siteId) $pages[] = $p;
-                    }
-                } else {
-                    $all = $pageModel->getAll();
-                    foreach ($all as $p) {
-                        if ($p['site_id'] == $siteId) $pages[] = $p;
-                    }
-                }
-                echo json_encode([
-                    'success' => true,
-                    'pages' => $pages
-                ]);
-            } catch (\Exception $e) {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'error' => $e->getMessage()
-                ]);
-            }
-        }
-        /**
-         * Set a page as the root (home) page
-         */
-        public function setHome($id)
-        {
-            try {
-                // Unset all other home pages
-                $this->db->query('UPDATE cms_pages SET is_home = 0');
-                // Set this page as home
-                $this->db->query('UPDATE cms_pages SET is_home = 1 WHERE id = ?', [$id]);
-                $_SESSION['success'] = 'Home page updated!';
-                header('Location: /admin/cms/pages/' . $id . '/edit');
-                exit;
-            } catch (\Exception $e) {
-                $_SESSION['error'] = 'Failed to set home page.';
-                header('Location: /admin/cms/pages/' . $id . '/edit');
-                exit;
-            }
-        }
+/**
+ * Class CmsController
+ *
+ * Handles CMS API endpoints for the StrataPHP CMS module.
+ */
+class CmsController
+{
     private $db;
     private $config;
-    
+
     public function __construct()
     {
         $this->config = include dirname(__DIR__, 3) . '/app/config.php';
-        $this->db = new DB($this->config['db']);
+        $this->db = new DB($this->config);
     }
-    
+
+    /**
+     * Set a page as the root (home) page
+     */
+    public function setHome($id)
+    {
+        try {
+            // Unset all other home pages
+            $this->db->query('UPDATE cms_pages SET is_home = 0');
+            // Set this page as home
+            $this->db->query('UPDATE cms_pages SET is_home = 1 WHERE id = ?', [$id]);
+            $_SESSION['success'] = 'Home page updated!';
+            header('Location: /admin/cms/pages/' . $id . '/edit');
+            exit;
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Failed to set home page.';
+            header('Location: /admin/cms/pages/' . $id . '/edit');
+            exit;
+        }
+    }
+
     /**
      * Display a listing of the resource
      */
@@ -101,12 +48,12 @@ namespace App\Modules\Cms\Controllers;
         try {
             $cmsModel = new Cms($this->db);
             $items = $cmsModel->getAll();
-            
+
             $data = [
                 'items' => $items,
                 'title' => 'Cms'
             ];
-            
+
             include __DIR__ . '/../views/index.php';
         } catch (\Exception $e) {
             http_response_code(500);

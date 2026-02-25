@@ -1,3 +1,6 @@
+<?php 
+use App\Version;
+?>
 <!-- Dynamic Module Links -->
         <div class="actions" style="margin-bottom: 30px;">
         <?php

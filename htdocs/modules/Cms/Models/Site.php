@@ -4,58 +4,81 @@ namespace App\Modules\Cms\Models;
 use App\DB;
 
 /**
- * Site Model for API key validation and site info
+ * Class Site
+ *
+ * Handles site management and API key validation for the StrataPHP CMS module.
  */
 class Site
 {
     /**
-     * Delete a site by ID
+     * @var DB Database connection
+     */
+    private $db;
+
+    /**
+     * Site constructor.
+     * @param array|null $config
+     */
+    public function __construct($config = null)
+    {
+        if ($config) {
+            $this->db = new DB($config);
+        } else {
+            $localConfig = include __DIR__ . '/../../../app/config.php';
+            $this->db = new DB($localConfig);
+        }
+    }
+
+    /**
+     * Delete a site by ID.
+     * @param int $id
+     * @return bool
      */
     public function delete($id)
     {
         try {
             return $this->db->query("DELETE FROM sites WHERE id = ?", [$id]);
         } catch (\Throwable $e) {
+            // Log error or handle as needed
             return false;
-        }
-    }
-    private $db;
-    public function __construct($config = null)
-    {
-        if ($config) {
-            $this->db = new DB($config['db']);
-        } else {
-            $localConfig = include __DIR__ . '/../../../app/config.php';
-            $this->db = new DB($config['db']);
         }
     }
 
     /**
-     * Get all sites
+     * Get all sites.
+     * @return array
      */
     public function getAll()
     {
         try {
             return $this->db->fetchAll("SELECT * FROM sites ORDER BY created_at DESC");
         } catch (\Throwable $e) {
+            // Log error or handle as needed
             return [];
         }
     }
 
     /**
-     * Create a new site
+     * Create a new site.
+     * @param string $name
+     * @param string $apiKey
+     * @return bool|int Insert ID or false on failure
      */
     public function create($name, $apiKey)
     {
         try {
             return $this->db->query("INSERT INTO sites (name, api_key, status) VALUES (?, ?, 'active')", [$name, $apiKey]);
         } catch (\Throwable $e) {
+            // Log error or handle as needed
             return false;
         }
     }
 
     /**
-     * Update API key for a site
+     * Update API key for a site.
+     * @param int $id
+     * @param string $apiKey
+     * @return bool
      */
     public function updateApiKey($id, $apiKey)
     {
