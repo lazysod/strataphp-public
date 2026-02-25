@@ -49,7 +49,7 @@ class AdminLinksController
         try {
             $this->requireAdmin();
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id = intval($_POST['id'] ?? 0);
@@ -83,7 +83,7 @@ class AdminLinksController
         try {
             $this->requireAdmin();
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             $links = $linksModel->getAll();
             include __DIR__ . '/../links/views/list.php';
@@ -105,7 +105,7 @@ class AdminLinksController
         try {
             $this->requireAdmin();
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $title = trim($_POST['title'] ?? '');
@@ -135,7 +135,7 @@ class AdminLinksController
         try {
             $this->requireAdmin();
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             $link = $linksModel->getById($id);
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -167,7 +167,7 @@ class AdminLinksController
         try {
             $this->requireAdmin();
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             $linksModel->deleteLink($id);
         } catch (Exception $e) {
