@@ -5,7 +5,7 @@ return [
     'slug' => 'contact-form',
     'version' => '1.0.0',
     'description' => 'A module for managing user contact requests.',
-    'author' => 'Your Name',
+    'author' => 'StrataPHP Framework',
     'category' => 'Social',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true, 
