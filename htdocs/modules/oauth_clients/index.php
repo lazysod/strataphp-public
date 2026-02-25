@@ -7,4 +7,8 @@ return [
     'author' => 'lazysod',
     'license' => 'MIT',
     'admin_url' => '/admin/oauth-clients',
+    'homepage' => 'https://strataphp.org',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'slug' => 'oauth-clients',
+    'support_url' => 'https://strataphp.org'
 ];

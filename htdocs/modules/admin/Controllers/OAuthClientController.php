@@ -10,7 +10,20 @@ class OAuthClientController
     public function __construct()
     {
         global $config;
-        $this->db = new DB($config['db']);
+        // Use global $config if available and valid
+        if (isset($config) && is_array($config) && isset($config['db'])) {
+            $this->db = new DB($config);
+            return;
+        }
+        // Fallback: try to load config file directly
+        $configPath = dirname(__DIR__, 4) . '/app/config.php';
+        $loadedConfig = file_exists($configPath) ? require $configPath : [];
+        if (isset($loadedConfig['db'])) {
+            $this->db = new DB($loadedConfig['db']);
+            return;
+        }
+        // If still missing, throw clear error
+        throw new \Exception('OAuthClientController: Unable to load database config');
     }
 
     public function index()
@@ -60,6 +73,9 @@ class OAuthClientController
 
     public function delete($id)
     {
+        // Debug: Output DB name and query context
+        // Remove related approvals first
+        $this->db->query("DELETE FROM oauth_user_approvals WHERE client_id = ?", [$id]);
         $this->db->query("DELETE FROM oauth_clients WHERE id = ?", [$id]);
         header('Location: /admin/oauth-clients');
         exit;

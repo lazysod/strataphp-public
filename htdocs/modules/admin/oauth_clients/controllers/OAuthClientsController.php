@@ -6,14 +6,35 @@ use App\DB;
 class OAuthClientsController
 {
     protected $db;
-    public function __construct($db)
+    public function __construct($db = null)
     {
-        $this->db = $db;
+        if ($db) {
+            die('OAuthClientsController: using injected DB instance');
+            $this->db = $db;
+        } else {
+            // Try global $config first
+            global $config;
+            if (isset($config) && isset($config['db'])) {
+                error_log('OAuthClientsController: using global $config');
+                $this->db = new DB($config);
+                return;
+            }
+            // fallback: load config from file
+            $configPath = dirname(__DIR__, 4) . '/app/config.php';
+            $configFile = file_exists($configPath) ? require $configPath : [];
+            error_log('OAuthClientsController: loaded config file!: ');
+            if (!isset($configFile['db'])) {
+                error_log('Database config missing in OAuthClientsController');
+                throw new \Exception('Database config missing');
+            }
+            $this->db = new DB($configFile);
+        }
     }
 
     // List all OAuth clients
     public function index()
     {
+
         $clients = $this->db->fetchAll('SELECT * FROM oauth_clients ORDER BY id DESC');
         include __DIR__ . '/../views/list.php';
     }

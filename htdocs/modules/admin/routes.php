@@ -84,6 +84,7 @@ $router->get('/admin/oauth-clients/add', [\App\Modules\Admin\Controllers\OAuthCl
 $router->post('/admin/oauth-clients/add', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'add']);
 $router->get('/admin/oauth-clients/edit/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'edit']);
 $router->post('/admin/oauth-clients/edit/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'edit']);
+$router->get('/admin/oauth-clients/delete/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'delete']);
 $router->post('/admin/oauth-clients/delete/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'delete']);
 
 // OAuth2 endpoints

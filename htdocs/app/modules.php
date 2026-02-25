@@ -68,7 +68,7 @@ return array (
     ),
     'oauth_clients' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
       'category' => 'Admin',
       'name' => 'OAuth Clients',
