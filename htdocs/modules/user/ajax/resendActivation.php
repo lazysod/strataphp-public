@@ -1,4 +1,10 @@
 <?php
+/**
+ * AJAX endpoint to resend activation email.
+ * Handles CSRF protection, user lookup, activation key generation, and email sending.
+ * Returns JSON response.
+ */
+
 // AJAX endpoint to resend activation email
 header('Content-Type: application/json');
 session_start();

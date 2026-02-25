@@ -18,12 +18,12 @@ class AdminSessionsController
     {
         try {
             
-            include_once __DIR__ . '/../../../app/start.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
-            $localConfig = include __DIR__ . '/../../../app/config.php';
+            // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
-            $db = new \App\DB($config['db']);
+            $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             if (!$admin_id) {
                 header('Location: /admin/login');
@@ -45,7 +45,7 @@ class AdminSessionsController
     public function revoke()
     {
         try {
-            include_once __DIR__ . '/../../../app/start.php';
+            include_once __DIR__ . '/../../../app/bootstrap.php';
             $localConfig = include __DIR__ . '/../../../app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
@@ -74,7 +74,7 @@ class AdminSessionsController
     public function updateDevice()
     {
         try {
-            include_once __DIR__ . '/../../../app/start.php';
+            include_once __DIR__ . '/../../../app/bootstrap.php';
             $localConfig = include __DIR__ . '/../../../app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
