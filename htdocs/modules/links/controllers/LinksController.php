@@ -28,7 +28,7 @@ class LinksController
     {
         try {
             global $config;
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $linksModel = new Links($db, $config);
             $links = $linksModel->getAll();
             $show_adult_warning = false; // Set true to show adult warning
