@@ -1,6 +1,6 @@
 <?php
 // /admin/modules/update.php
-$require_once dirname(__DIR__, 2) . '/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/bootstrap.php';
 use App\ModuleUpdater;
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 if (empty($_SESSION[$sessionPrefix . 'admin'])) {

@@ -14,6 +14,7 @@ class SessionManager
 
     public function createSession($user_id, $persistent = false)
     {
+        global $config;
         $device_id = $this->getDeviceId();
         $device_type = $this->detectDeviceType();
         $ip_address = $_SERVER['REMOTE_ADDR'] ?? '';
@@ -36,17 +37,19 @@ class SessionManager
         } else {
             $expire = 0; // Session cookie
         }
-        setcookie(PREFIX . 'session_token', $session_token, $expire, '/');
-        setcookie(PREFIX . 'device_id', $device_id, $expire, '/');
+        $prefix = $this->config['session_prefix'] ?? 'app_';
+        setcookie($prefix . 'session_token', $session_token, $expire, '/');
+        setcookie($prefix . 'device_id', $device_id, $expire, '/');
     }
 
     public function validateSession()
     {
-        if (!isset($_COOKIE[PREFIX . 'session_token']) || !isset($_COOKIE [PREFIX . 'device_id'])) {
+        $prefix = $this->config['session_prefix'] ?? 'app_';
+        if (!isset($_COOKIE[$prefix . 'session_token']) || !isset($_COOKIE[$prefix . 'device_id'])) {
             return false;
         }
-        $session_token = $_COOKIE[PREFIX . 'session_token'];
-        $device_id = $_COOKIE[PREFIX . 'device_id'];
+        $session_token = $_COOKIE[$prefix . 'session_token'];
+        $device_id = $_COOKIE[$prefix . 'device_id'];
         $sql = "SELECT * FROM user_sessions WHERE session_token = ? AND device_id = ? AND revoked = 0";
         $rows = $this->db->fetchAll($sql, [$session_token, $device_id]);
         if (count($rows) < 1) {

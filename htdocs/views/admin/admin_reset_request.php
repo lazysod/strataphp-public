@@ -1,7 +1,7 @@
 <?php
-$startPath = dirname(__DIR__, 2) . '/app/start.php';
-if (file_exists($startPath)) {
-    include_once $startPath;
+$bootstrapPath = dirname(__DIR__, 2) . '/app/bootstrap.php';
+if (file_exists($bootstrapPath)) {
+    include_once $bootstrapPath;
 }
 require __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../app/config.php';
@@ -16,7 +16,7 @@ if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'ad
 <section class="py-5">
     <div class="container px-5">
         <div class="row">
-            <div class="col-md-6 offset-md-3">
+            <div class="col-md-6 mx-auto">
                 <h2>Admin Password Reset</h2>
                 <?php if (!empty($success)) : ?>
                     <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
@@ -33,7 +33,7 @@ if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'ad
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 offset-md-3">
+            <div class="col-md-6 bg-light p-4 mx-auto">
 
                 <form method="post" action="/admin/reset-request">
                     <label for="email">Admin Email:</label>

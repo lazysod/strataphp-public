@@ -5,7 +5,7 @@ class AdminController {
     public function dashboard() {
         // Load config and set up DB
         $config = include dirname(__DIR__, 3) . '/app/config.php';
-        $db = new DB($config['db']);
+        $db = new DB($config);
         $rank_users = $db->fetchAll("SELECT `user_id` FROM `rank`");
         $rank_user_ist = [];
         foreach ($rank_users as $ru) {

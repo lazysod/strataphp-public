@@ -28,6 +28,6 @@ class Container
             $this->services[$name] = $this->factories[$name]($this);
             return $this->services[$name];
         }
-        throw new Exception("Service '{$name}' not found in container.");
+        throw new \Exception("Service '{$name}' not found in container.");
     }
 }

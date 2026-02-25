@@ -19,7 +19,7 @@ class AdminController
             exit;
         }
         $userId = $_SESSION[$sessionPrefix . 'user_id'];
-    $db = new DB($config['db']);
+    $db = new DB($config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // CSRF check
             $csrfValid = isset($_POST['csrf_token']) && isset($_SESSION[$sessionPrefix . 'csrf_token']) && hash_equals($_SESSION[$sessionPrefix . 'csrf_token'], $_POST['csrf_token']);
@@ -86,7 +86,7 @@ class AdminController
         $showNav = false;
         $message = '';
         global $config;
-        $db = new DB($config['db']);
+        $db = new DB($config);
         $userModel = new \App\User($db, $config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             $email = trim($_POST['email']);
@@ -123,7 +123,7 @@ class AdminController
     {
         $showNav = false;
         global $config;
-        $db = new DB($config['db']);
+        $db = new DB($config);
         $message = '';
         $token = $_GET['token'] ?? ($_POST['reset_token'] ?? '');
         if (!$token) {

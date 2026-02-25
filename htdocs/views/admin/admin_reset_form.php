@@ -4,9 +4,9 @@ if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'ad
     header('Location: /admin/dashboard');
     exit;
 }
-$startPath = dirname(__DIR__, 2) . '/app/start.php';
-if (file_exists($startPath)) {
-    include_once $startPath;
+$bootstrapPath = dirname(__DIR__, 2) . '/app/bootstrap.php';
+if (file_exists($bootstrapPath)) {
+    include_once $bootstrapPath;
 }
 // Only allow access if a valid token is present
 $token = $_GET['token'] ?? ($_POST['reset_token'] ?? '');

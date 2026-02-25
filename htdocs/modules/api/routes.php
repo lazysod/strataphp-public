@@ -1,6 +1,5 @@
 <?php
 // API v1 routes for jokes
-// These routes will be loaded by app/start.php if the module is enabled
 
 use App\Modules\Api\Controllers\JokesApiController;
 

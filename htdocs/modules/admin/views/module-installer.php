@@ -3,7 +3,6 @@
 global $config;
 
 // Admin session check
-// Use global $config from start.php
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
     header('Location: /admin/admin_login.php');
@@ -11,12 +10,8 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
 }
 
 // Prepare CSRF token and formatted file size for view
-$csrfToken = isset($controller) && method_exists($controller, 'getCsrfToken')
-    ? $controller->getCsrfToken()
-    : ($_SESSION['csrf_token'] ?? '');
-$maxFileSizeFormatted = isset($controller) && method_exists($controller, 'formatBytes')
-    ? $controller->formatBytes($maxFileSize)
-    : (function($bytes){if($bytes==0)return'0 Bytes';$k=1024;$sizes=['Bytes','KB','MB','GB'];$i=floor(log($bytes)/log($k));return round($bytes/pow($k,$i),2).' '.$sizes[$i];})($maxFileSize);
+$csrfToken = $_SESSION[$sessionPrefix . 'csrf_token'] ?? '';
+$maxFileSizeFormatted = (function($bytes){if($bytes==0)return'0 Bytes';$k=1024;$sizes=['Bytes','KB','MB','GB'];$i=floor(log($bytes)/log($k));return round($bytes/pow($k,$i),2).' '.$sizes[$i];})($maxFileSize);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
 
