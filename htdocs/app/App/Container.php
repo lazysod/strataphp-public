@@ -1,5 +1,6 @@
 <?php
 namespace App\App;
+
 // Simple Dependency Injection Container for StrataPHP
 class Container
 {

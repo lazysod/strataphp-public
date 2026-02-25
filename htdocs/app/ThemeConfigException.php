@@ -1,4 +1,7 @@
 <?php
 namespace App;
 
-class ThemeConfigException extends \Exception {}
+class ThemeConfigException extends \Exception
+{
+
+}

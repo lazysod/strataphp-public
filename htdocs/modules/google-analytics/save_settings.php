@@ -24,13 +24,12 @@ if (strpos(realpath(dirname($debugLog)), realpath(dirname(__DIR__, 3) . '/storag
 }
 
 try {
-
     // Safe: $debugLog is a fixed path, not user-controlled
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $measurementId = isset($_POST['measurement_id']) ? trim($_POST['measurement_id']) : '';
     // Safe: $debugLog is a fixed path, not user-controlled
-    file_put_contents($debugLog, "Measurement ID: $measurementId\n", FILE_APPEND);
+        file_put_contents($debugLog, "Measurement ID: $measurementId\n", FILE_APPEND);
         if ($measurementId !== '') {
             $json = json_encode(['measurement_id' => $measurementId], JSON_PRETTY_PRINT);
             if ($json === false) {

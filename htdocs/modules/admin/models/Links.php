@@ -1,13 +1,14 @@
 <?php
 namespace App\Modules\admin\Models;
+
 use Exception;
 
 /**
  * Links Model
- * 
+ *
  * Handles link management operations for the admin panel including CRUD operations,
  * ordering, and automatic icon detection for social media and popular platforms.
- * 
+ *
  * @package App\Modules\Admin\Models
  * @author  StrataPHP Framework
  * @version 1.0.0
@@ -22,7 +23,7 @@ class Links
 
     /**
      * Constructor
-     * 
+     *
      * @param mixed $db Database connection instance
      * @param array $config Configuration array
      */
@@ -34,7 +35,7 @@ class Links
 
     /**
      * Swap the order of two links
-     * 
+     *
      * @param int $id1 First link ID
      * @param int $id2 Second link ID
      * @return void
@@ -58,7 +59,7 @@ class Links
 
     /**
      * Get all links ordered by their display order
-     * 
+     *
      * @return array List of all links
      * @throws Exception If database query fails
      */
@@ -73,7 +74,7 @@ class Links
 
     /**
      * Get a specific link by ID
-     * 
+     *
      * @param int $id Link ID
      * @return array|null Link data or null if not found
      * @throws Exception If database query fails
@@ -89,7 +90,7 @@ class Links
     
     /**
      * Add a new link
-     * 
+     *
      * @param string $title Link title
      * @param string $url Link URL
      * @param string $icon FontAwesome icon class
@@ -111,7 +112,7 @@ class Links
     
     /**
      * Update an existing link
-     * 
+     *
      * @param int $id Link ID
      * @param string $title Link title
      * @param string $url Link URL
@@ -134,7 +135,7 @@ class Links
     
     /**
      * Delete a link
-     * 
+     *
      * @param int $id Link ID
      * @return void
      * @throws Exception If database operation fails
@@ -150,7 +151,7 @@ class Links
     
     /**
      * Detect appropriate FontAwesome icon based on URL
-     * 
+     *
      * @param string $url The URL to analyze
      * @return string FontAwesome icon class
      */

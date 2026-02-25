@@ -5,14 +5,14 @@ use App\Modules\HelloWorld\Models\HelloWorld;
 
 /**
  * Hello World Controller
- * 
+ *
  * Simple demonstration controller for the Hello World module
  */
 class HelloWorldController
 {
     /**
      * Display the hello world page
-     * 
+     *
      * @return void
      */
     public function index()

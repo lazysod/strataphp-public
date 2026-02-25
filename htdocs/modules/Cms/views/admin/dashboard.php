@@ -1,4 +1,4 @@
-<?php 
+<?php
 use App\Version;
 ?>
 <!-- Dynamic Module Links -->
@@ -7,7 +7,8 @@ use App\Version;
         $modulesConfig = include dirname(__DIR__, 4) . '/app/modules.php';
         // SAFE: Only reads validated, local module.json files. See safe_file_get_contents().
         // Safe file_get_contents wrapper
-        function safe_file_get_contents($file) {
+        function safe_file_get_contents($file)
+        {
             // Only allow reading files within the modules directory
             $modulesDir = realpath(dirname(__DIR__, 4) . '/modules');
             $realFile = realpath($file);
@@ -180,7 +181,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
             <p>Welcome to your StrataPHP Content Management System</p>
         </div>
 
-        <?php if (isset($stats)): ?>
+        <?php if (isset($stats)) : ?>
         <div class="stats-grid">
             <div class="stat-card">
                 <h3><?= $stats['total_pages'] ?? 0 ?></h3>
@@ -230,11 +231,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
             </div>
         </div>
 
-        <?php if (isset($stats['recent_pages']) && !empty($stats['recent_pages'])): ?>
+        <?php if (isset($stats['recent_pages']) && !empty($stats['recent_pages'])) : ?>
         <div class="recent-content">
             <h2>Recent Pages</h2>
             <ul class="content-list">
-                <?php foreach ($stats['recent_pages'] as $page): ?>
+                <?php foreach ($stats['recent_pages'] as $page) : ?>
                 <li>
                     <div>
                         <strong><?= htmlspecialchars($page['title']) ?></strong>

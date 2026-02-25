@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * GoogleOAuthClient
  *
@@ -9,7 +9,8 @@ namespace App\Modules\OAuthClients\Providers;
 
 use App\Modules\OAuthClients\OAuthClientInterface;
 
-class GoogleOAuthClient implements OAuthClientInterface {
+class GoogleOAuthClient implements OAuthClientInterface
+{
     private $clientId;
     private $clientSecret;
     private $redirectUri;
@@ -18,7 +19,8 @@ class GoogleOAuthClient implements OAuthClientInterface {
      * Constructor
      * @param array $config Provider config
      */
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->clientId = $config['google_client_id'];
         $this->clientSecret = $config['google_client_secret'];
         $this->redirectUri = $config['google_redirect_uri'];
@@ -28,7 +30,8 @@ class GoogleOAuthClient implements OAuthClientInterface {
      * Get Google OAuth authorization URL
      * @return string
      */
-    public function getAuthUrl(): string {
+    public function getAuthUrl(): string
+    {
         try {
             $params = http_build_query([
                 'client_id' => $this->clientId,
@@ -49,7 +52,8 @@ class GoogleOAuthClient implements OAuthClientInterface {
      * @param array $params Callback params
      * @return array
      */
-    public function handleCallback(array $params): array {
+    public function handleCallback(array $params): array
+    {
         try {
             // Exchange code for token (simplified, use curl or Guzzle in real code)
             if (!isset($params['code'])) {
@@ -67,7 +71,8 @@ class GoogleOAuthClient implements OAuthClientInterface {
      * @param string $accessToken Access token
      * @return array
      */
-    public function getUserInfo(string $accessToken): array {
+    public function getUserInfo(string $accessToken): array
+    {
         try {
             // Fetch user info from Google API (simplified)
             // ...existing code...

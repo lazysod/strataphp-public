@@ -47,7 +47,7 @@ return [
     ],
     'database_tables' => [
         'cms_pages',
-        'cms_posts', 
+        'cms_posts',
         'cms_menus',
         'cms_content_revisions'
     ]

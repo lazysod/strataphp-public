@@ -11,7 +11,14 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
 
 // Prepare CSRF token and formatted file size for view
 $csrfToken = $_SESSION[$sessionPrefix . 'csrf_token'] ?? '';
-$maxFileSizeFormatted = (function($bytes){if($bytes==0)return'0 Bytes';$k=1024;$sizes=['Bytes','KB','MB','GB'];$i=floor(log($bytes)/log($k));return round($bytes/pow($k,$i),2).' '.$sizes[$i];})($maxFileSize);
+$maxFileSizeFormatted = (function ($bytes) {
+    if ($bytes==0) {
+        return'0 Bytes';
+    }$k=1024;
+    $sizes=['Bytes','KB','MB','GB'];
+    $i=floor(log($bytes)/log($k));
+    return round($bytes/pow($k, $i), 2).' '.$sizes[$i];
+})($maxFileSize);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
 
@@ -208,15 +215,15 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                         <h5 class="mb-0"><i class="fas fa-cubes me-2"></i>Installed Modules</h5>
                     </div>
                     <div class="card-body">
-                        <?php if (empty($modules)): ?>
+                        <?php if (empty($modules)) : ?>
                             <div class="text-center py-4">
                                 <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                                 <h5>No modules installed</h5>
                                 <p class="text-muted">Install your first module using the options above.</p>
                             </div>
-                        <?php else: ?>
+                        <?php else : ?>
                             <div class="row">
-                                <?php foreach ($modules as $module): ?>
+                                <?php foreach ($modules as $module) : ?>
                                     <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="card module-card h-100">
                                             <div class="card-body">
@@ -232,7 +239,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                                 <div class="small">
                                                     <div><strong>Version:</strong> <?php echo htmlspecialchars($module['version'] ?? 'Unknown'); ?></div>
                                                     <div><strong>Author:</strong> <?php echo htmlspecialchars($module['author'] ?? 'Unknown'); ?></div>
-                                                    <?php if (!empty($module['category'])): ?>
+                                                    <?php if (!empty($module['category'])) : ?>
                                                         <div><strong>Category:</strong> <?php echo htmlspecialchars($module['category']); ?></div>
                                                     <?php endif; ?>
                                                 </div>

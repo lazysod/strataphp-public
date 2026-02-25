@@ -12,16 +12,15 @@ require dirname(__DIR__, 4) . '/views/partials/header.php';
                     <p>
                         It will be able to access:
                         <ul>
-                            <?php 
+                            <?php
                                 $data_shared = explode(',', $client['data_shared']);
-                                if(empty($data_shared)){
-                                    echo 'No data given';
-                                }else{
-                                
-                                foreach ($data_shared as $shared): ?>
+                            if (empty($data_shared)) {
+                                echo 'No data given';
+                            } else {
+                                foreach ($data_shared as $shared) : ?>
                                 <li><?= htmlspecialchars(ucfirst($shared)) ?></li>
                                 <?php endforeach; ?>
-                                <?php } ?>
+                            <?php } ?>
 
                         </ul>
                     </p>

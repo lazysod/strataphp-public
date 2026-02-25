@@ -1,5 +1,6 @@
 <?php
 namespace App\App;
+
 // Utility to load theme config JSON from a theme folder
 
 /**
@@ -11,7 +12,9 @@ namespace App\App;
 /**
  * Exception thrown when theme configuration cannot be loaded.
  */
-class ThemeConfigException extends \Exception {}
+class ThemeConfigException extends \Exception
+{
+}
 
 /**
  * Load theme configuration from a theme folder with robust error handling.

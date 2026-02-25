@@ -6,10 +6,10 @@ use PHPMailer\PHPMailer\Exception;
 
 /**
  * Email Test Controller
- * 
+ *
  * Provides email testing functionality for administrators to verify
  * SMTP configuration and email delivery
- * 
+ *
  * @package StrataPHP\Modules\User\Controllers
  * @author StrataPHP Framework
  * @version 1.0.0
@@ -18,7 +18,7 @@ class EmailTestController
 {
     /**
      * Display email test form and handle test email sending
-     * 
+     *
      * @return void
      */
     public function index()

@@ -63,4 +63,3 @@ UserThemeWrapper::renderUserPage('Password Reset Request', $pageContent, [
     'slug' => 'reset-request',
     'noindex' => true
 ]);
-?>

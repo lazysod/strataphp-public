@@ -95,10 +95,10 @@ unset($_SESSION['success'], $_SESSION['error']);
         <div class="breadcrumb">
             <a href="/admin">Admin</a> > <a href="/admin/cms">CMS</a> > Sites
         </div>
-        <?php if ($success_message): ?>
+        <?php if ($success_message) : ?>
             <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
         <?php endif; ?>
-        <?php if ($error_message): ?>
+        <?php if ($error_message) : ?>
             <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
         <div class="header">
@@ -118,7 +118,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 </tr>
             </thead>
             <tbody>
-            <?php foreach ($sites as $site): ?>
+            <?php foreach ($sites as $site) : ?>
                 <tr>
                     <td><?= $site['id'] ?></td>
                     <td><?= htmlspecialchars($site['name']) ?></td>

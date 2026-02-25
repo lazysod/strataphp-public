@@ -1,7 +1,7 @@
 <?php
 return [
     'name' => 'API Module',
-    'slug' => 'api', 
+    'slug' => 'api',
     'version' => '1.0.0',
     'description' => 'REST API endpoints for the StrataPHP framework providing JSON-based data access',
     'author' => 'StrataPHP Framework',
@@ -19,4 +19,3 @@ return [
     'update_url' => '',
     'enabled' => true
 ];
-?>

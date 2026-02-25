@@ -17,7 +17,7 @@ require dirname(__DIR__, 4) . '/views/partials/header.php';
         </div>
     </div>
 </section>
-<?php 
+<?php
 require dirname(__DIR__, 4) . '/views/partials/footer.php';
 ?>
 

@@ -5,7 +5,7 @@ use App\DB;
 
 /**
  * User Model for handling user data operations
- * 
+ *
  * This model provides methods for user management including:
  * - User profile operations
  * - Password management
@@ -19,7 +19,7 @@ class UserModel
     
     /**
      * Constructor
-     * 
+     *
      * @param DB $db Database connection instance
      * @param array $config Configuration array
      */
@@ -31,7 +31,7 @@ class UserModel
     
     /**
      * Get user by ID with SQL injection protection
-     * 
+     *
      * @param int $userId User ID
      * @return array|null User data or null if not found
      */
@@ -46,7 +46,7 @@ class UserModel
     
     /**
      * Get user by email with SQL injection protection
-     * 
+     *
      * @param string $email User email
      * @return array|null User data or null if not found
      */
@@ -61,7 +61,7 @@ class UserModel
     
     /**
      * Update user profile with SQL injection protection
-     * 
+     *
      * @param int $userId User ID
      * @param array $data User data to update
      * @return bool Success status
@@ -95,7 +95,7 @@ class UserModel
     
     /**
      * Update user password with SQL injection protection
-     * 
+     *
      * @param int $userId User ID
      * @param string $newPassword New password (will be hashed)
      * @return bool Success status
@@ -112,7 +112,7 @@ class UserModel
     
     /**
      * Create new user with SQL injection protection
-     * 
+     *
      * @param array $userData User registration data
      * @return array Result with status and message
      */
@@ -159,7 +159,7 @@ class UserModel
     
     /**
      * Authenticate user with SQL injection protection
-     * 
+     *
      * @param string $email User email
      * @param string $password User password
      * @return array Authentication result
@@ -185,7 +185,7 @@ class UserModel
     
     /**
      * Get user statistics
-     * 
+     *
      * @param int $userId User ID
      * @return array User statistics
      */

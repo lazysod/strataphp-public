@@ -1,6 +1,8 @@
 <?php
 namespace App;
+
 use App\Controllers\NotFoundController;
+
 // Minimal Router class for modular route registration
 class Router
 {
@@ -95,7 +97,7 @@ class Router
             'path' => $path,
             'params' => $_REQUEST,
         ];
-        $next = function() use ($method, $path) {
+        $next = function () use ($method, $path) {
             // Exact match first
             if (isset($this->routes[$method][$path])) {
                 $handler = $this->routes[$method][$path];
@@ -138,9 +140,15 @@ class Router
             $custom404 = dirname(__DIR__) . '/views/system/404.php';
             if (file_exists($custom404)) {
                 // Set default values for the custom 404 page
-                if (!isset($h1)) { $h1 = 'Page Not Found'; }
-                if (!isset($message)) { $message = 'Sorry, the page you requested could not be found.'; }
-                if (!isset($homeLink)) { $homeLink = $_ENV['BASE_URL'] ?? '/'; }
+                if (!isset($h1)) {
+                    $h1 = 'Page Not Found';
+                }
+                if (!isset($message)) {
+                    $message = 'Sorry, the page you requested could not be found.';
+                }
+                if (!isset($homeLink)) {
+                    $homeLink = $_ENV['BASE_URL'] ?? '/';
+                }
                 include dirname(__DIR__) . '/views/partials/header.php';
                 include $custom404;
                 include dirname(__DIR__) . '/views/partials/footer.php';
@@ -151,8 +159,8 @@ class Router
         };
         // Run middleware chain
         $middlewareChain = array_reverse($this->middleware);
-        $runner = array_reduce($middlewareChain, function($next, $mw) {
-            return function($request) use ($mw, $next) {
+        $runner = array_reduce($middlewareChain, function ($next, $mw) {
+            return function ($request) use ($mw, $next) {
                 return $mw($request, $next);
             };
         }, $next);

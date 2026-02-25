@@ -3,10 +3,10 @@ namespace App;
 
 /**
  * StrataPHP Framework Version Manager
- * 
+ *
  * Provides centralized version information for the framework.
  * Reads version from composer.json as the canonical source.
- * 
+ *
  * @package StrataPHP
  * @version 1.0.0
  */
@@ -24,7 +24,7 @@ class Version
     
     /**
      * Get the framework version
-     * 
+     *
      * @return string The version number (e.g., "1.0.0")
      */
     public static function get()
@@ -38,7 +38,7 @@ class Version
     
     /**
      * Get detailed version information
-     * 
+     *
      * @return array Version details including source
      */
     public static function getDetails()
@@ -56,7 +56,7 @@ class Version
     
     /**
      * Get the version source description
-     * 
+     *
      * @return string Description of where version was read from
      */
     public static function getVersionSource()
@@ -70,7 +70,7 @@ class Version
     
     /**
      * Get the path to composer.json
-     * 
+     *
      * @return string Path to composer.json
      */
     private static function getComposerPath()
@@ -101,7 +101,7 @@ class Version
     
     /**
      * Read version from composer.json
-     * 
+     *
      * @return string Version number or fallback
      */
     private static function readFromComposer()
@@ -127,7 +127,7 @@ class Version
     
     /**
      * Get fallback version when composer.json is unavailable
-     * 
+     *
      * @return string Fallback version
      */
     private static function getFallbackVersion()
@@ -137,7 +137,7 @@ class Version
     
     /**
      * Get when composer.json was last modified
-     * 
+     *
      * @return string|null Last modified date or null if unavailable
      */
     private static function getComposerLastModified()
@@ -158,7 +158,7 @@ class Version
     
     /**
      * Check if we're running a development version
-     * 
+     *
      * @return bool True if this appears to be a development version
      */
     public static function isDevelopment()
@@ -177,7 +177,7 @@ class Version
     
     /**
      * Get semantic version parts
-     * 
+     *
      * @return array Array with 'major', 'minor', 'patch' keys
      */
     public static function getSemanticParts()
@@ -198,7 +198,7 @@ class Version
     
     /**
      * Compare with another version
-     * 
+     *
      * @param string $otherVersion Version to compare against
      * @return int -1 if current < other, 0 if equal, 1 if current > other
      */
@@ -209,7 +209,7 @@ class Version
     
     /**
      * Check if current version is at least the specified version
-     * 
+     *
      * @param string $minimumVersion Minimum required version
      * @return bool True if current version meets requirement
      */
@@ -220,7 +220,7 @@ class Version
     
     /**
      * Clear cached version (useful for testing)
-     * 
+     *
      * @return void
      */
     public static function clearCache()

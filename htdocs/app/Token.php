@@ -1,5 +1,6 @@
 <?php
 namespace App;
+
 class Token
 {
     // Generate a secure random token

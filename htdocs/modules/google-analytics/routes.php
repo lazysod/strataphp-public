@@ -13,7 +13,6 @@ if (file_exists($composerAutoload)) {
 global $router;
 
 if (!empty(App::config('modules')['google-analytics']['enabled'])) {
-    
     // Main routes
     $router->get('/google-analytics', [GoogleAnalyticsController::class, 'index']);
     $router->get('/google-analytics/create', [GoogleAnalyticsController::class, 'create']);

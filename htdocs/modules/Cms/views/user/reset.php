@@ -98,4 +98,3 @@ UserThemeWrapper::renderUserPage('Set New Password', $pageContent, [
     'slug' => 'reset-password',
     'noindex' => true
 ]);
-?>

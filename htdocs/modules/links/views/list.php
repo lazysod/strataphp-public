@@ -12,7 +12,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($links as $link): ?>
+            <?php foreach ($links as $link) : ?>
                 <tr>
                     <td><?= htmlspecialchars($link['title'] ?? '') ?></td>
                     <td><a href="<?= htmlspecialchars($link['url'] ?? '') ?>" target="_blank">Visit</a></td>

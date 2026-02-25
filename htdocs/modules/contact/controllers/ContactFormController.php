@@ -1,9 +1,11 @@
 <?php
 namespace App\Modules\Contact\Controllers;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\App;
 use App\Token;
+
 /**
  * Class ContactFormController
  * Handles display and submission of the contact form.

@@ -1,10 +1,10 @@
 <?php
 /**
  * Links Module Configuration
- * 
+ *
  * Defines the links module metadata and configuration for the StrataPHP framework.
  * This module provides Linktree-style link management functionality.
- * 
+ *
  * @package App\Modules\Links
  * @author  StrataPHP Framework
  * @version 1.0.0
@@ -33,7 +33,7 @@ return [
     'routes' => [
         '/links' => 'LinksController@index',
         '/links/about' => 'LinksController@about'
-    ], 
-    'suitable_as_default' => true, 
+    ],
+    'suitable_as_default' => true,
     "admin_url" => "/admin/links",
 ];

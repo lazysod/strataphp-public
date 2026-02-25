@@ -6,6 +6,13 @@ use App\DB;
 class OAuthClientsController
 {
     protected $db;
+    /**
+     * OAuthClientsController constructor.
+     * Initializes DB connection from injected instance, global config, or config file.
+     * Throws exception if DB config is missing.
+     * @param DB|null $db Optional injected DB instance
+     * @throws \Exception
+     */
     public function __construct($db = null)
     {
         if ($db) {
@@ -31,15 +38,25 @@ class OAuthClientsController
         }
     }
 
-    // List all OAuth clients
+    /**
+     * List all OAuth clients.
+     * Displays client list view.
+     */
     public function index()
     {
-
-        $clients = $this->db->fetchAll('SELECT * FROM oauth_clients ORDER BY id DESC');
+        $clients = [];
+        try {
+            $clients = $this->db->fetchAll('SELECT * FROM oauth_clients ORDER BY id DESC');
+        } catch (\Exception $e) {
+            error_log('Error fetching OAuth clients: ' . $e->getMessage());
+        }
         include __DIR__ . '/../views/list.php';
     }
 
-    // Show add client form and handle POST
+    /**
+     * Show add client form and handle POST.
+     * Registers new OAuth client if valid POST data.
+     */
     public function add()
     {
         $error = '';
@@ -50,8 +67,12 @@ class OAuthClientsController
             if ($name && $redirect) {
                 $client_id = bin2hex(random_bytes(16));
                 $client_secret = bin2hex(random_bytes(32));
-                $this->db->query('INSERT INTO oauth_clients (name, redirect_uri, client_id, client_secret) VALUES (?, ?, ?, ?)', [$name, $redirect, $client_id, $client_secret]);
-                $success = 'Client registered!';
+                try {
+                    $this->db->query('INSERT INTO oauth_clients (name, redirect_uri, client_id, client_secret) VALUES (?, ?, ?, ?)', [$name, $redirect, $client_id, $client_secret]);
+                    $success = 'Client registered!';
+                } catch (\Exception $e) {
+                    $error = 'Database error: ' . $e->getMessage();
+                }
             } else {
                 $error = 'Name and Redirect URI required.';
             }

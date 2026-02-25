@@ -1,15 +1,16 @@
 <?php
 namespace App\Modules\admin\Controllers;
+
 use App\DB;
 use App\Modules\Admin\Models\Links;
 use Exception;
 
 /**
  * Admin Links Controller
- * 
+ *
  * Handles administrative operations for link management including CRUD operations,
  * ordering, and admin authentication checks.
- * 
+ *
  * @package App\Modules\Admin\Controllers
  * @author  StrataPHP Framework
  * @version 1.0.0
@@ -18,12 +19,13 @@ class AdminLinksController
 {
     /**
      * Require admin authentication
-     * 
+     *
      * Checks if user is authenticated as admin and redirects if not.
-     * 
+     *
      * @return void
      */
-    private function requireAdmin() {
+    private function requireAdmin()
+    {
         try {
             global $config;
             $sessionPrefix = $config['session_prefix'];
@@ -39,9 +41,9 @@ class AdminLinksController
 
     /**
      * Handle link ordering operations
-     * 
+     *
      * Processes POST requests to move links up or down in the display order.
-     * 
+     *
      * @return void
      */
     public function order()
@@ -73,9 +75,9 @@ class AdminLinksController
     }
     /**
      * Display links list page
-     * 
+     *
      * Shows all links in the admin interface with management options.
-     * 
+     *
      * @return void
      */
     public function index()
@@ -95,9 +97,9 @@ class AdminLinksController
     
     /**
      * Handle add link page and form submission
-     * 
+     *
      * Displays add form on GET, processes form submission on POST.
-     * 
+     *
      * @return void
      */
     public function add()
@@ -124,9 +126,9 @@ class AdminLinksController
     
     /**
      * Handle edit link page and form submission
-     * 
+     *
      * Displays edit form on GET, processes form submission on POST.
-     * 
+     *
      * @param int $id Link ID to edit
      * @return void
      */
@@ -156,9 +158,9 @@ class AdminLinksController
     
     /**
      * Handle link deletion
-     * 
+     *
      * Deletes the specified link and redirects to links list.
-     * 
+     *
      * @param int $id Link ID to delete
      * @return void
      */

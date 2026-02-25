@@ -5,7 +5,7 @@ use App\HtmlSanitizer;
 
 /**
  * CMS Theme Manager
- * 
+ *
  * Handles theme loading, template rendering, and asset management
  * for CMS content pages
  */
@@ -155,7 +155,7 @@ class ThemeManager
      */
     private function getTemplatePath($file)
     {
-        return $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' . 
+        return $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' .
                $this->currentTheme . '/' . $this->config['paths']['templates_dir'] . '/' . $file;
     }
     
@@ -164,7 +164,7 @@ class ThemeManager
      */
     private function getAssetsUrl()
     {
-        return '/' . $this->config['paths']['themes_dir'] . '/' . 
+        return '/' . $this->config['paths']['themes_dir'] . '/' .
                $this->currentTheme . '/' . $this->config['paths']['assets_dir'];
     }
     
@@ -175,7 +175,7 @@ class ThemeManager
     {
         $cssFile = 'style.css';
         if ($this->config['assets']['cache_bust']) {
-            $cssPath = $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' . 
+            $cssPath = $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' .
                       $this->currentTheme . '/' . $this->config['paths']['assets_dir'] . '/css/' . $cssFile;
             if (file_exists($cssPath)) {
                 $cssFile .= '?v=' . filemtime($cssPath);
@@ -192,7 +192,7 @@ class ThemeManager
     {
         $jsFile = 'theme.js';
         if ($this->config['assets']['cache_bust']) {
-            $jsPath = $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' . 
+            $jsPath = $this->basePath . '/' . $this->config['paths']['themes_dir'] . '/' .
                      $this->currentTheme . '/' . $this->config['paths']['assets_dir'] . '/js/' . $jsFile;
             if (file_exists($jsPath)) {
                 $jsFile .= '?v=' . filemtime($jsPath);
@@ -499,7 +499,6 @@ h1, h2, h3, h4, h5, h6 {
             }
 
             return $navigation;
-
         } catch (\Exception $e) {
             // Fallback navigation if database fails
             return [

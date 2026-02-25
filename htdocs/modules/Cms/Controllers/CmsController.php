@@ -20,7 +20,9 @@ class CmsController
             require_once __DIR__ . '/../models/Page.php';
             $pageModel = new \App\Modules\Cms\Models\Page($this->config);
             $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-            if ($limit < 1 || $limit > 100) $limit = 10;
+            if ($limit < 1 || $limit > 100) {
+                $limit = 10;
+            }
 
             $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
             $title = isset($_GET['title']) ? trim($_GET['title']) : null;

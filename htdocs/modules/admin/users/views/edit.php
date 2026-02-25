@@ -45,22 +45,34 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" id="role" name="role">
-                                <option value="user" <?php if (($user['is_admin'] ?? '') === 0) echo 'selected'; ?>>User</option>
-                                <option value="admin" <?php if (($user['is_admin'] ?? '') === 1) echo 'selected'; ?>>Admin</option>
+                                <option value="user" <?php if (($user['is_admin'] ?? '') === 0) {
+                                    echo 'selected';
+                                                     } ?>>User</option>
+                                <option value="admin" <?php if (($user['is_admin'] ?? '') === 1) {
+                                    echo 'selected';
+                                                      } ?>>Admin</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="verified" class="form-label">Verified</label>
                             <select class="form-select" id="verified" name="verified">
-                                <option value="1" <?php if (($user['verified'] ?? '') === 1) echo 'selected'; ?>>Yes</option>
-                                <option value="0" <?php if (($user['verified'] ?? '') === 0) echo 'selected'; ?>>No</option>
+                                <option value="1" <?php if (($user['verified'] ?? '') === 1) {
+                                    echo 'selected';
+                                                  } ?>>Yes</option>
+                                <option value="0" <?php if (($user['verified'] ?? '') === 0) {
+                                    echo 'selected';
+                                                  } ?>>No</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status">
-                                <option value="active" <?php if (($user['status'] ?? '') === 'active') echo 'selected'; ?>>Active</option>
-                                <option value="suspended" <?php if (($user['status'] ?? '') === 'suspended') echo 'selected'; ?>>Suspended</option>
+                                <option value="active" <?php if (($user['status'] ?? '') === 'active') {
+                                    echo 'selected';
+                                                       } ?>>Active</option>
+                                <option value="suspended" <?php if (($user['status'] ?? '') === 'suspended') {
+                                    echo 'selected';
+                                                          } ?>>Suspended</option>
                             </select>
                         </div>
                         <div class="mb-3">

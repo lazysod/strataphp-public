@@ -1,11 +1,11 @@
 <?php
 /**
  * Admin Module Configuration
- * 
+ *
  * Defines the admin module metadata and configuration for the StrataPHP framework.
  * This module provides comprehensive administration functionality including user management,
  * module management, and system controls.
- * 
+ *
  * @package App\Modules\Admin
  * @author  StrataPHP Framework
  * @version 1.0.0

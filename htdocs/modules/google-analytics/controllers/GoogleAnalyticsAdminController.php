@@ -9,13 +9,15 @@ namespace App\Modules\Google_Analytics\Controllers;
  *
  * @author StrataPHP Framework
  */
-class GoogleAnalyticsAdminController {
+class GoogleAnalyticsAdminController
+{
     /**
      * Show the Google Analytics settings page for admin users.
      *
      * @return void
      */
-    public function settings() {
+    public function settings()
+    {
         try {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();

@@ -3,7 +3,8 @@
  * Update the default_module value in modules.php
  * Usage: include and call updateDefaultModule('cms');
  */
-function updateDefaultModule($newDefault) {
+function updateDefaultModule($newDefault)
+{
     $modulesFile = __DIR__ . '/modules.php';
     error_log('updateDefaultModule: modulesFile=' . $modulesFile);
     if (!file_exists($modulesFile)) {

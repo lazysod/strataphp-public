@@ -5,7 +5,7 @@ use App\DB;
 
 /**
  * User Sessions Controller
- * 
+ *
  * Manages user session viewing and revocation functionality
  * Allows users to see active sessions and revoke access
  */
@@ -13,10 +13,10 @@ class UserSessionsController
 {
     /**
      * Display user sessions
-     * 
+     *
      * Shows active sessions for the current user with device information
      * Includes session management and revocation capabilities
-     * 
+     *
      * @return void
      */
     public function index()
@@ -44,10 +44,10 @@ class UserSessionsController
 
     /**
      * Revoke a user session
-     * 
+     *
      * Allows users to revoke specific sessions for security purposes
      * Validates session ownership before revocation
-     * 
+     *
      * @return void
      */
     public function revoke()

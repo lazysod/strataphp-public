@@ -3,7 +3,7 @@ namespace App\Modules\api\Controllers;
 
 /**
  * Base API Controller
- * 
+ *
  * Provides common functionality for API endpoints including
  * JSON response formatting and error handling
  */
@@ -11,7 +11,7 @@ class ApiController
 {
     /**
      * Send JSON response
-     * 
+     *
      * @param mixed $data Data to encode as JSON
      * @param int $status HTTP status code
      * @return void
@@ -30,7 +30,7 @@ class ApiController
 
     /**
      * Send error response
-     * 
+     *
      * @param string $message Error message
      * @param int $status HTTP status code
      * @return void

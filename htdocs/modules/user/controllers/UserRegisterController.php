@@ -1,5 +1,6 @@
 <?php
 namespace App\Modules\User\Controllers;
+
 use App\TokenManager;
 use App\DB;
 use App\User;
@@ -9,7 +10,7 @@ use App\Modules\User\Helpers\CmsHelper;
 // Refactored as a class for router compatibility
 /**
  * User Registration Controller
- * 
+ *
  * Handles new user registration with validation and security
  * Includes email verification, password validation, and CSRF protection
  */
@@ -17,10 +18,10 @@ class UserRegisterController
 {
     /**
      * Handle user registration requests
-     * 
+     *
      * Processes both GET (display form) and POST (register user) requests
      * Validates input data and creates new user accounts
-     * 
+     *
      * @return void
      */
     public function index()

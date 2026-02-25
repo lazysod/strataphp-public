@@ -22,7 +22,7 @@ require __DIR__ . '/../../../views/partials/header.php';
                 
                 <div class="mt-4 text-muted">
                     <small>Created: <?= date('F j, Y g:i A', strtotime($data['item']['created_at'])) ?></small>
-                    <?php if (isset($data['item']['updated_at'])): ?>
+                    <?php if (isset($data['item']['updated_at'])) : ?>
                         <br><small>Updated: <?= date('F j, Y g:i A', strtotime($data['item']['updated_at'])) ?></small>
                     <?php endif; ?>
                 </div>

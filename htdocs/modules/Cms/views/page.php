@@ -11,11 +11,11 @@ if (!defined('STRPHP_ROOT')) {
     <meta name="description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
     <title><?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?></title>
     
-    <?php if (!empty($canonical_url)): ?>
+    <?php if (!empty($canonical_url)) : ?>
     <link rel="canonical" href="<?= htmlspecialchars($canonical_url) ?>">
     <?php endif; ?>
     
-    <?php if (!empty($noindex)): ?>
+    <?php if (!empty($noindex)) : ?>
     <meta name="robots" content="noindex, nofollow">
     <?php endif; ?>
     
@@ -23,15 +23,15 @@ if (!defined('STRPHP_ROOT')) {
     <meta property="og:title" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
     <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'article') ?>">
-    <?php if (!empty($og_image)): ?>
+    <?php if (!empty($og_image)) : ?>
     <meta property="og:image" content="<?= htmlspecialchars($og_image) ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <?php 
+        <?php
     // Generate thumbnail URL for additional meta tag
-    $thumbnailUrl = str_replace('/storage/uploads/cms/', '/storage/uploads/cms/thumbs/', $og_image);
-    ?>
+        $thumbnailUrl = str_replace('/storage/uploads/cms/', '/storage/uploads/cms/thumbs/', $og_image);
+        ?>
     <meta property="og:image:thumbnail" content="<?= htmlspecialchars($thumbnailUrl) ?>">
     <?php endif; ?>
     <meta property="og:url" content="<?= htmlspecialchars($canonical_url ?? $_SERVER['REQUEST_URI'] ?? '') ?>">
@@ -41,7 +41,7 @@ if (!defined('STRPHP_ROOT')) {
     <meta name="twitter:card" content="<?= htmlspecialchars($twitter_card ?? 'summary_large_image') ?>">
     <meta name="twitter:title" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page') ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
-    <?php if (!empty($og_image)): ?>
+    <?php if (!empty($og_image)) : ?>
     <meta name="twitter:image" content="<?= htmlspecialchars($og_image) ?>">
     <meta name="twitter:image:alt" content="<?= htmlspecialchars($meta_title ?? $title ?? 'Page image') ?>">
     <?php endif; ?>
@@ -130,9 +130,9 @@ if (!defined('STRPHP_ROOT')) {
         ?>
     </main>
     
-    <?php if (isset($page) && $page): ?>
+    <?php if (isset($page) && $page) : ?>
     <div class="page-meta">
-        <?php if (!empty($page['created_at'])): ?>
+        <?php if (!empty($page['created_at'])) : ?>
             <p>Published: <?= date('F j, Y', strtotime($page['created_at'])) ?></p>
         <?php endif; ?>
     </div>

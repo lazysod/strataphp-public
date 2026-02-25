@@ -12,8 +12,12 @@ $formAction = $isEdit ? "/admin/cms/pages/{$page['id']}/edit" : "/admin/cms/page
 // Check for session messages
 $success_message = isset($_SESSION['success']) ? $_SESSION['success'] : null;
 $error_message = isset($_SESSION['error']) ? $_SESSION['error'] : null;
-if (isset($_SESSION['success'])) unset($_SESSION['success']);
-if (isset($_SESSION['error'])) unset($_SESSION['error']);
+if (isset($_SESSION['success'])) {
+    unset($_SESSION['success']);
+}
+if (isset($_SESSION['error'])) {
+    unset($_SESSION['error']);
+}
 
 // Warn if Media module is not enabled
 $mediaEnabled = false;
@@ -45,11 +49,11 @@ if (!$mediaEnabled) {
             <a href="/admin">Admin</a> > <a href="/admin/cms">CMS</a> > <a href="/admin/cms/pages">Pages</a> > <?= $pageTitle ?>
         </div>
 
-        <?php if ($success_message): ?>
+        <?php if ($success_message) : ?>
             <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
         <?php endif; ?>
 
-        <?php if ($error_message): ?>
+        <?php if ($error_message) : ?>
             <div class="alert alert-error"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
 
@@ -234,8 +238,8 @@ if (!$mediaEnabled) {
                                         <label for="site_id">Site <span class="required">*</span></label>
                                         <select id="site_id" name="site_id" required>
                                             <option value="">-- Select Site --</option>
-                                            <?php if (isset($sites) && is_array($sites)): ?>
-                                                <?php foreach ($sites as $site): ?>
+                                            <?php if (isset($sites) && is_array($sites)) : ?>
+                                                <?php foreach ($sites as $site) : ?>
                                                     <option value="<?= htmlspecialchars($site['id']) ?>" <?= (isset($page) && isset($page['site_id']) && $page['site_id'] == $site['id']) ? 'selected' : '' ?>>
                                                         <?= htmlspecialchars($site['name']) ?>
                                                     </option>
@@ -255,10 +259,15 @@ if (!$mediaEnabled) {
                                             <option value="">-- None (Top Level) --</option>
                                             <?php
                                             // Helper to build a flat list with indentation for hierarchy
-                                            function renderParentOptions($pages, $currentId = null, $parentId = null, $level = 0, $excludeIds = []) {
+                                            function renderParentOptions($pages, $currentId = null, $parentId = null, $level = 0, $excludeIds = [])
+                                            {
                                                 foreach ($pages as $p) {
-                                                    if ($p['id'] == $currentId || in_array($p['id'], $excludeIds)) continue;
-                                                    if ($p['parent_id'] != $parentId) continue;
+                                                    if ($p['id'] == $currentId || in_array($p['id'], $excludeIds)) {
+                                                        continue;
+                                                    }
+                                                    if ($p['parent_id'] != $parentId) {
+                                                        continue;
+                                                    }
                                                     $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
                                                     $selected = (isset($page) && isset($page['parent_id']) && $page['parent_id'] == $p['id']) ? 'selected' : '';
                                                     echo '<option value="' . htmlspecialchars($p['id']) . '" ' . $selected . '>' . $indent . htmlspecialchars($p['title']) . '</option>';
@@ -357,7 +366,7 @@ if (!$mediaEnabled) {
                                                 <button type="button" onclick="clearOgImage()">Clear</button>
                                             </div>
                                             <div id="og_image_preview" class="image-preview">
-                                                <?php if (!empty($page['og_image'])): ?>
+                                                <?php if (!empty($page['og_image'])) : ?>
                                                 <img src="<?= htmlspecialchars($page['og_image']) ?>" alt="OG Image Preview">
                                                 <?php endif; ?>
                                             </div>
@@ -418,7 +427,7 @@ if (!$mediaEnabled) {
                                     <h6>Preview</h6>
                                 </div>
                                 <div class="card-body">
-                                    <?php if (isset($page)): ?>
+                                    <?php if (isset($page)) : ?>
                                         <div class="form-group">
                                             <label>Page URL</label>
                                             <div class="input-group">
@@ -426,7 +435,7 @@ if (!$mediaEnabled) {
                                                 <a href="/<?= htmlspecialchars($page['slug']) ?>" target="_blank" class="btn btn-outline">View</a>
                                             </div>
                                         </div>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <p style="color: #666;">Save the page to see preview options</p>
                                     <?php endif; ?>
                                 </div>
@@ -441,7 +450,7 @@ if (!$mediaEnabled) {
                     <?= $isEdit ? 'Update Page' : 'Create Page' ?>
                 </button>
                 <a href="/admin/cms/pages" class="btn btn-secondary">Cancel</a>
-                <?php if (isset($page)): ?>
+                <?php if (isset($page)) : ?>
                     <a href="/<?= htmlspecialchars($page['slug']) ?>" target="_blank" class="btn btn-outline" style="float: right;">Preview Page</a>
                 <?php endif; ?>
             </div>

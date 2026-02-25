@@ -60,11 +60,15 @@ class AdminProfileController
                     if (isset($allowedTypes[$fileType])) {
                         $ext = $allowedTypes[$fileType];
                         $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/uploads/admins/' . $userId . '/';
-                        if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0775, true);
+                        }
                         // Remove existing avatar files
                         foreach (['png', 'jpg', 'jpeg', 'webp'] as $oldExt) {
                             $oldFile = $uploadDir . 'avatar.' . $oldExt;
-                            if (file_exists($oldFile)) @unlink($oldFile);
+                            if (file_exists($oldFile)) {
+                                @unlink($oldFile);
+                            }
                         }
                         $fileName = 'avatar.' . $ext;
                         $destPath = $uploadDir . $fileName;

@@ -1,11 +1,13 @@
 <?php
 namespace App\Modules\media\Controllers;
 
-class AdminController {
+class AdminController
+{
     /**
      * Render the media dashboard page
      */
-    public function dashboard() {
+    public function dashboard()
+    {
         include __DIR__ . '/../views/dashboard.php';
     }
 }

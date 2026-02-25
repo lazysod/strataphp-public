@@ -11,7 +11,7 @@ use App\Modules\User\Helpers\CmsHelper;
 
 /**
  * User Login Controller
- * 
+ *
  * Handles user authentication and login functionality
  * Provides secure login with CSRF protection and session management
  */
@@ -19,10 +19,10 @@ class UserLoginController
 {
     /**
      * Handle user login requests
-     * 
+     *
      * Processes both GET (display form) and POST (authenticate) requests
      * Includes CSRF token validation and proper error handling
-     * 
+     *
      * @return void
      */
     public function index()

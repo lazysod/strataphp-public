@@ -3,7 +3,7 @@ namespace App\Modules\api\Controllers;
 
 /**
  * Jokes API Controller
- * 
+ *
  * Example API controller providing joke endpoints for demonstration
  * Extends base ApiController for common functionality
  */
@@ -13,7 +13,7 @@ class JokesApiController extends ApiController
 {
     /**
      * Index endpoint - returns error as no default action
-     * 
+     *
      * @return void
      */
     public function index()
@@ -27,7 +27,7 @@ class JokesApiController extends ApiController
 
     /**
      * Get random joke endpoint
-     * 
+     *
      * @return void
      */
     public function random()
@@ -47,7 +47,7 @@ class JokesApiController extends ApiController
 
     /**
      * Get joke by ID endpoint
-     * 
+     *
      * @param string $id Joke ID
      * @return void
      */
@@ -79,7 +79,7 @@ class JokesApiController extends ApiController
 
     /**
      * Add new joke endpoint
-     * 
+     *
      * @return void
      */
     public function add()

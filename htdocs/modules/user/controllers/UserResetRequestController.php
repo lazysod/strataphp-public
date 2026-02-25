@@ -1,5 +1,6 @@
 <?php
 namespace App\Modules\User\Controllers;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use App\TokenManager;
@@ -8,10 +9,10 @@ use App\Modules\User\Helpers\CmsHelper;
 
 /**
  * User Password Reset Request Controller
- * 
+ *
  * Handles password reset request processing, validates user email,
  * generates secure reset tokens, and sends password reset emails
- * 
+ *
  * @package StrataPHP\Modules\User\Controllers
  * @author StrataPHP Framework
  * @version 1.0.0
@@ -20,7 +21,7 @@ class UserResetRequestController
 {
     /**
      * Process password reset requests
-     * 
+     *
      * @return void
      */
     public function index()
@@ -41,13 +42,13 @@ class UserResetRequestController
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $tm = new TokenManager();
                 $result = $tm->verify($_POST['token'] ?? '');
-                    if ($result['status'] !== 'success') {
-                        // Regenerate token and reload form with gentle message
-                        $tm->renew();
-                        $error = 'Your session expired or the form was open too long. The form has been refreshed—please try again.';
-                        $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
-                        include $viewPath;
-                        return;
+                if ($result['status'] !== 'success') {
+                    // Regenerate token and reload form with gentle message
+                    $tm->renew();
+                    $error = 'Your session expired or the form was open too long. The form has been refreshed—please try again.';
+                    $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
+                    include $viewPath;
+                    return;
                 } else {
                     $email = trim($_POST['email'] ?? '');
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

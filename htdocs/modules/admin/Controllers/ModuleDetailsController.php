@@ -95,12 +95,13 @@ class ModuleDetailsController
     /**
      * Validate a specific module via AJAX
      */
-    public function validate($module) {
+    public function validate($module)
+    {
                 // Check admin authentication
-                if (!$this->isAuthenticated()) {
-                    header('Location: /admin/admin_login.php');
-                    exit;
-                }
+        if (!$this->isAuthenticated()) {
+            header('Location: /admin/admin_login.php');
+            exit;
+        }
                 header('Content-Type: application/json');
         
         try {
@@ -146,7 +147,6 @@ class ModuleDetailsController
                 'results' => $results
             ]);
             exit;
-            
         } catch (\Exception $e) {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             exit;
@@ -156,7 +156,8 @@ class ModuleDetailsController
     /**
      * Show validation report for all modules
      */
-    public function validateAll() {
+    public function validateAll()
+    {
         // Check admin authentication
         if (!$this->isAuthenticated()) {
             header('Location: /admin/admin_login.php');
@@ -430,7 +431,9 @@ class ModuleDetailsController
      */
     public function formatBytes($bytes)
     {
-        if ($bytes == 0) return '0 Bytes';
+        if ($bytes == 0) {
+            return '0 Bytes';
+        }
         $unit = array('Bytes', 'KB', 'MB', 'GB', 'TB');
         $i = floor(log($bytes, 1024));
         return round($bytes / pow(1024, $i), 2) . ' ' . $unit[$i];

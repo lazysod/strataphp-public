@@ -38,14 +38,14 @@ if (basename(__FILE__) == basename($_SERVER['SCRIPT_NAME'])) {
         }
         
         echo "✅ Migration completed successfully\n";
-        
     } catch (Exception $e) {
         echo "❌ Migration failed: " . $e->getMessage() . "\n";
     }
 }
 
 // Migration functions for use by migration runner
-function up($db) {
+function up($db)
+{
     $newColumns = [
         'meta_keywords' => "VARCHAR(255) DEFAULT NULL AFTER meta_description",
         'og_image' => "VARCHAR(500) DEFAULT NULL AFTER meta_keywords",
@@ -71,10 +71,11 @@ function up($db) {
     return implode(", ", $results);
 }
 
-function down($db) {
+function down($db)
+{
     $columnsToRemove = [
         'meta_keywords',
-        'og_image', 
+        'og_image',
         'og_type',
         'twitter_card',
         'canonical_url',

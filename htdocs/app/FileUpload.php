@@ -3,7 +3,7 @@ namespace App;
 
 /**
  * Secure File Upload Handler
- * 
+ *
  * Handles file uploads with security validation, image processing,
  * and storage management for the StrataPHP CMS.
  */
@@ -14,7 +14,7 @@ class FileUpload
      */
     private static $allowedImageTypes = [
         'image/jpeg',
-        'image/jpg', 
+        'image/jpg',
         'image/png',
         'image/gif',
         'image/webp',
@@ -79,7 +79,6 @@ class FileUpload
             } else {
                 return ['success' => false, 'error' => 'Failed to save uploaded file'];
             }
-
         } catch (\Exception $e) {
             return ['success' => false, 'error' => 'Upload failed: ' . $e->getMessage()];
         }

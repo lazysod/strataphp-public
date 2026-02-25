@@ -13,23 +13,23 @@ require __DIR__ . '/../../../views/partials/header.php';
                     <a href="/cms/create" class="btn btn-primary">Create New</a>
                 </div>
                 
-                <?php if (isset($_SESSION['success'])): ?>
+                <?php if (isset($_SESSION['success'])) : ?>
                     <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success']) ?></div>
                     <?php unset($_SESSION['success']); ?>
                 <?php endif; ?>
                 
-                <?php if (isset($_SESSION['error'])): ?>
+                <?php if (isset($_SESSION['error'])) : ?>
                     <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']) ?></div>
                     <?php unset($_SESSION['error']); ?>
                 <?php endif; ?>
                 
-                <?php if (empty($data['items'])): ?>
+                <?php if (empty($data['items'])) : ?>
                     <div class="alert alert-info">
                         No cms found. <a href="/cms/create">Create the first one</a>
                     </div>
-                <?php else: ?>
+                <?php else : ?>
                     <div class="row">
-                        <?php foreach ($data['items'] as $item): ?>
+                        <?php foreach ($data['items'] as $item) : ?>
                             <div class="col-md-6 col-lg-4 mb-4">
                                 <div class="card h-100">
                                     <div class="card-body">

@@ -12,7 +12,7 @@
  * @param \App\DB $db Database connection instance
  * @return void
  */
-return function($db) {
+return function ($db) {
     try {
         // CMS Pages table
         $db->query("
@@ -149,7 +149,6 @@ return function($db) {
             INSERT IGNORE INTO cms_pages (title, slug, content, status, published_at) 
             VALUES ('Welcome to StrataPHP', 'home', '<h1>Welcome to StrataPHP</h1><p>This is your homepage. Edit this page through the CMS admin panel.</p>', 'published', NOW())
         ");
-        
     } catch (Exception $e) {
         throw new Exception("Failed to create CMS tables: " . $e->getMessage());
     }

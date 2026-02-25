@@ -5,7 +5,7 @@ if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin');
     exit;
 }
-include __DIR__ . '/../../../../views/partials/admin_header.php'; 
+include __DIR__ . '/../../../../views/partials/admin_header.php';
 ?>
 <section class="py-5">
 
@@ -24,9 +24,9 @@ include __DIR__ . '/../../../../views/partials/admin_header.php';
             <div class="row">
                 <div class="col-lg-8 offset-lg-2">
                     <h1>Edit Profile</h1>
-                    <?php if (!$profile): ?>
+                    <?php if (!$profile) : ?>
                         <div class="alert alert-danger">Profile not found.</div>
-                    <?php else: ?>
+                    <?php else : ?>
                     <form method="post">
                         <label for="profile_name">Profile Name</label><br>
                         <input type="text" name="profile_name" class="form-control" id="profile_name" value="<?= htmlspecialchars($profile['profile_name']) ?>" required><br><br>

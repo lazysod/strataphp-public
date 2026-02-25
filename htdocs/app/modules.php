@@ -1,58 +1,58 @@
 <?php
 return array (
-  'modules' => 
+  'modules' =>
   array (
-    'admin' => 
+    'admin' =>
     array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'api' => 
+    'api' =>
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'cms' => 
+    'cms' =>
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'contact' => 
+    'contact' =>
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'cookiebanner' => 
+    'cookiebanner' =>
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'helloworld' => 
+    'helloworld' =>
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'home' => 
+    'home' =>
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'links' => 
+    'links' =>
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'user' => 
+    'user' =>
     array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'google-analytics' => 
+    'google-analytics' =>
     array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'media' => 
+    'media' =>
     array (
       'enabled' => false,
       'suitable_as_default' => false,
@@ -66,7 +66,7 @@ return array (
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
-    'oauth_clients' => 
+    'oauth_clients' =>
     array (
       'enabled' => true,
       'suitable_as_default' => false,
@@ -78,7 +78,7 @@ return array (
     ),
   ),
   'default_module' => 'home',
-  'module_directory' => 
+  'module_directory' =>
   array (
     'enabled' => false,
     'suitable_as_default' => false,

@@ -22,13 +22,27 @@ try {
         $homePage = (new App\Modules\Cms\Models\Page())->getHomePage();
         if ($homePage) {
             $homeMeta = $themeManager->getPageMeta($homePage);
-            if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) $meta['og_image'] = $homeMeta['og_image'];
-            if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) $meta['og_title'] = $homeMeta['og_title'];
-            if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) $meta['og_description'] = $homeMeta['og_description'];
-            if (empty($meta['description']) && !empty($homeMeta['description'])) $meta['description'] = $homeMeta['description'];
-            if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) $meta['twitter_image'] = $homeMeta['twitter_image'];
-            if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) $meta['twitter_title'] = $homeMeta['twitter_title'];
-            if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) $meta['twitter_description'] = $homeMeta['twitter_description'];
+            if (empty($meta['og_image']) && !empty($homeMeta['og_image'])) {
+                $meta['og_image'] = $homeMeta['og_image'];
+            }
+            if (empty($meta['og_title']) && !empty($homeMeta['og_title'])) {
+                $meta['og_title'] = $homeMeta['og_title'];
+            }
+            if (empty($meta['og_description']) && !empty($homeMeta['og_description'])) {
+                $meta['og_description'] = $homeMeta['og_description'];
+            }
+            if (empty($meta['description']) && !empty($homeMeta['description'])) {
+                $meta['description'] = $homeMeta['description'];
+            }
+            if (empty($meta['twitter_image']) && !empty($homeMeta['twitter_image'])) {
+                $meta['twitter_image'] = $homeMeta['twitter_image'];
+            }
+            if (empty($meta['twitter_title']) && !empty($homeMeta['twitter_title'])) {
+                $meta['twitter_title'] = $homeMeta['twitter_title'];
+            }
+            if (empty($meta['twitter_description']) && !empty($homeMeta['twitter_description'])) {
+                $meta['twitter_description'] = $homeMeta['twitter_description'];
+            }
         }
     }
 } catch (\Throwable $e) {
@@ -44,15 +58,15 @@ try {
     $isProfile = isset($page['slug']) && $page['slug'] === 'user/profile';
     $noindex = !empty($meta['noindex']) || !empty($page['noindex']) || $isProfile;
     ?>
-    <?php if ($noindex): ?>
+    <?php if ($noindex) : ?>
         <meta name="robots" content="noindex, nofollow">
-    <?php else: ?>
+    <?php else : ?>
         <meta name="robots" content="index, follow">
     <?php endif; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($meta['title'] ?? $page['title'] ?? 'Page') ?></title>
-    <?php if (isset($meta['description'])): ?>
+    <?php if (isset($meta['description'])) : ?>
         <meta name="description" content="<?= htmlspecialchars($meta['description']) ?>">
     <?php endif; ?>
     <!-- Open Graph / Facebook -->
@@ -90,7 +104,9 @@ try {
                 </button>
                 <div class="collapse navbar-collapse" id="cmsNavbar">
                     <?php
-                    if (session_status() === PHP_SESSION_NONE) session_start();
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
                     $sessionPrefix = $config['session_prefix'] ?? 'app_';
                     $userId = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
                     $userName = $_SESSION[$sessionPrefix . 'first_name'] ?? 'User';
@@ -103,7 +119,9 @@ try {
                                 $hasChildren = !empty($nav['children']);
                                 $isActive = ($_SERVER['REQUEST_URI'] === $nav['url']) || ($nav['is_home'] && ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '/index.php'));
                                 $titleLower = strtolower($nav['title']);
-                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) continue;
+                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) {
+                                    continue;
+                                }
                                 if ($hasChildren) {
                                     $liClass = 'nav-item dropdown';
                                     $aClass = 'nav-link dropdown-toggle';
@@ -129,7 +147,9 @@ try {
                                 $hasChildren = !empty($nav['children']);
                                 $isActive = ($_SERVER['REQUEST_URI'] === $nav['url']);
                                 $titleLower = strtolower($nav['title']);
-                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) continue;
+                                if ($userId && ($titleLower === 'logout' || $titleLower === 'profile')) {
+                                    continue;
+                                }
                                 if ($hasChildren) {
                                     echo '<li class="dropdown-submenu">';
                                     echo '<a class="dropdown-item dropdown-toggle' . ($isActive ? ' active' : '') . '" href="' . htmlspecialchars($nav['url']) . '" id="dropdown-' . htmlspecialchars($nav['slug']) . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($nav['title']) . '</a>';
@@ -150,14 +170,16 @@ try {
                     }
                     ?>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <?php if (isset($navigation) && is_array($navigation)) renderNav($navigation, 0, $userId); ?>
-                        <?php if ($userId): ?>
+                        <?php if (isset($navigation) && is_array($navigation)) {
+                            renderNav($navigation, 0, $userId);
+                        } ?>
+                        <?php if ($userId) : ?>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Welcome <?= htmlspecialchars($userName) ?>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <?php if ($_SESSION[$sessionPrefix . 'admin']): ?>
+                                    <?php if ($_SESSION[$sessionPrefix . 'admin']) : ?>
                                         <li><a class="dropdown-item" href="/admin/dashboard">Admin Dashboard</a></li>
                                     <?php endif; ?>
                                     <li><a class="dropdown-item" href="/user/profile">Profile</a></li>

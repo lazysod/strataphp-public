@@ -11,7 +11,8 @@ namespace App\Modules\OAuthClients;
  * Interface for OAuth provider clients.
  * All methods should handle errors gracefully and return error details in arrays.
  */
-interface OAuthClientInterface {
+interface OAuthClientInterface
+{
     /**
      * Get provider authorization URL
      * @return string Empty string on error

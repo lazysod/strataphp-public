@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASE_PATH')) {
-  define('BASE_PATH', dirname(__DIR__, 2));
+    define('BASE_PATH', dirname(__DIR__, 2));
 }
 
 // Define the log file path

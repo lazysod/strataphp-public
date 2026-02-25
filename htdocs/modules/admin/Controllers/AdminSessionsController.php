@@ -3,7 +3,7 @@ namespace App\Modules\admin\Controllers;
 
 /**
  * Admin Sessions Controller
- * 
+ *
  * Manages admin user sessions including viewing active sessions,
  * revoking sessions, and updating device information
  */
@@ -11,13 +11,12 @@ class AdminSessionsController
 {
     /**
      * Display active admin sessions
-     * 
+     *
      * @return void
      */
     public function index()
     {
         try {
-            
             require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
             // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
@@ -30,7 +29,7 @@ class AdminSessionsController
                 exit;
             }
         // Only show latest active session per device (not revoked) for admin in user_sessions
-        $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$admin_id, $admin_id]);
+            $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$admin_id, $admin_id]);
             include __DIR__ . '/../views/sessions.php';
         } catch (\Exception $e) {
             http_response_code(500);
@@ -39,7 +38,7 @@ class AdminSessionsController
     }
     /**
      * Revoke an admin session
-     * 
+     *
      * @return void
      */
     public function revoke()
@@ -68,7 +67,7 @@ class AdminSessionsController
 
     /**
      * Allow admin to update device name for current session
-     * 
+     *
      * @return void
      */
     public function updateDevice()

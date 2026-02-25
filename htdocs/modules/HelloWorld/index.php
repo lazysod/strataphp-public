@@ -1,7 +1,7 @@
 <?php
 return [
     'name' => 'Hello World',
-    'slug' => 'helloworld', 
+    'slug' => 'helloworld',
     'version' => '1.0.0',
     'description' => 'Simple "Hello World" demonstration module for learning StrataPHP framework basics',
     'author' => 'StrataPHP Framework',
@@ -19,4 +19,3 @@ return [
     'update_url' => '',
     'enabled' => true
 ];
-?>

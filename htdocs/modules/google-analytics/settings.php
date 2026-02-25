@@ -38,10 +38,10 @@ try {
 </head>
 <body>
     <h1>Google Analytics Settings</h1>
-    <?php if ($success): ?>
+    <?php if ($success) : ?>
         <div style="color: green;"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
-    <?php if ($error): ?>
+    <?php if ($error) : ?>
         <div style="color: red;"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
     <form method="post" action="/modules/Google_Analytics/save_settings.php">

@@ -16,8 +16,7 @@
             </thead>
             <tbody>
 
-                <?php foreach ($links as $i => $link): ?>
-
+                <?php foreach ($links as $i => $link) : ?>
                     <tr>
                         <td><i class="<?php echo htmlspecialchars($link['icon'] ?? 'fas fa-link'); ?>"></i></td>
                         <td><?php echo htmlspecialchars($link['title']); ?></td>
@@ -25,8 +24,12 @@
                         <td>
                             <form method="post" action="/admin/links/order" style="display:inline-block">
                                 <input type="hidden" name="id" value="<?php echo $link['id']; ?>">
-                                <button type="submit" name="direction" value="up" class="btn btn-sm btn-light" <?php if ($i === 0) echo 'disabled'; ?>>&#8593;</button>
-                                <button type="submit" name="direction" value="down" class="btn btn-sm btn-light" <?php if ($i === count($links) - 1) echo 'disabled'; ?>>&#8595;</button>
+                                <button type="submit" name="direction" value="up" class="btn btn-sm btn-light" <?php if ($i === 0) {
+                                    echo 'disabled';
+                                                                                                               } ?>>&#8593;</button>
+                                <button type="submit" name="direction" value="down" class="btn btn-sm btn-light" <?php if ($i === count($links) - 1) {
+                                    echo 'disabled';
+                                                                                                                 } ?>>&#8595;</button>
                             </form>
                         </td>
                         <td>

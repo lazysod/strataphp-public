@@ -38,12 +38,14 @@ class CookieBanner
             $buttonText = $this->config['button_text'] ?? 'Accept';
             $bannerStyle = $this->config['banner_style'] ?? 'position:fixed;bottom:0;left:0;width:100%;background:#222;color:#fff;padding:18px 10px;z-index:9999;text-align:center;box-shadow:0 -2px 8px rgba(0,0,0,0.15);';
             $buttonStyle = $this->config['button_style'] ?? 'margin-left:20px;padding:8px 18px;background:#ffd700;color:#222;border:none;border-radius:4px;cursor:pointer;font-weight:bold;';
-            if (isset($_COOKIE[$cookieName])) return '';
+            if (isset($_COOKIE[$cookieName])) {
+                return '';
+            }
             ob_start();
             ?>
             <div id="cookie-banner" style="<?= htmlspecialchars($bannerStyle) ?>">
                 <span><?= htmlspecialchars($message) ?>
-                    <?php if ($readMoreUrl): ?>
+                    <?php if ($readMoreUrl) : ?>
                         <a href="<?= htmlspecialchars($readMoreUrl) ?>" style="color:#ffd700;text-decoration:underline;margin-left:10px;">Read more</a>
                     <?php endif; ?>
                 </span>

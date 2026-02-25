@@ -6,7 +6,6 @@ use App\Modules\Cms\Controllers\CmsController;
 use App\Modules\Cms\Controllers\PageController;
 use App\Modules\Cms\Controllers\AdminController;
 
-
 // Ensure Composer autoloader is loaded for App class
 $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
 if (file_exists($composerAutoload)) {

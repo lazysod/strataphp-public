@@ -1,7 +1,7 @@
 <?php
 /**
  * CMS 404 Page Template
- * 
+ *
  * Styled 404 page using the CMS theme system
  */
 
@@ -57,4 +57,3 @@ $navigation = $themeManager->getNavigationPages();
 
 // Include the theme template
 include dirname(__DIR__, 3) . '/themes/cms/modern/templates/base.php';
-?>

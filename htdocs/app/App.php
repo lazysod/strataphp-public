@@ -1,6 +1,8 @@
 <?php
 namespace App;
+
 use App\Logger;
+
 class App
 {
     // Dump a variable in a readable format

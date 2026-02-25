@@ -5,9 +5,9 @@
         <div class="alert alert-warning text-center">This page may contain links to adult sites. Please confirm you are 18+.</div>
     <?php endif; ?>
     <ul class="list-group list-group-flush mx-auto" style="max-width: 400px;">
-        <?php foreach ($links as $link): ?>
+        <?php foreach ($links as $link) : ?>
             <li class="list-group-item text-center">
-                <?php if (!empty($link['nsfw'])): ?>
+                <?php if (!empty($link['nsfw'])) : ?>
                     <button class="btn btn-outline-danger w-100 mb-2 nsfw-link" data-url="<?php echo htmlspecialchars($link['url'] ?? '') ?>">
                         <?php if (!empty($link['icon'])) : ?>
                             <i class="<?php echo htmlspecialchars($link['icon']) ?> me-2"></i>
@@ -15,7 +15,7 @@
                         <?php echo htmlspecialchars($link['title'] ?? ($link['label'] ?? '')) ?>
                         <span class="badge bg-danger ms-2">NSFW</span>
                     </button>
-                <?php else: ?>
+                <?php else : ?>
                     <a href="<?php echo htmlspecialchars($link['url'] ?? '') ?>" target="_blank" rel="noopener" class="btn btn-outline-primary w-100 mb-2">
                         <?php if (!empty($link['icon'])) : ?>
                             <i class="<?php echo htmlspecialchars($link['icon']) ?> me-2"></i>

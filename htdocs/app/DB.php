@@ -1,5 +1,6 @@
 <?php
 namespace App;
+
 use PDO;
 use PDOException;
 use App\Logger;
@@ -14,7 +15,10 @@ class DB
         $dsn = "mysql:host={$db['host']};dbname={$db['database']};charset=utf8mb4";
         try {
             $this->pdo = new PDO(
-                $dsn, $db['username'], $db['password'], [
+                $dsn,
+                $db['username'],
+                $db['password'],
+                [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]

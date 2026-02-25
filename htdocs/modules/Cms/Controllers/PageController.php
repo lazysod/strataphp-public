@@ -130,7 +130,7 @@ class PageController
         // Get page data and template
         $page = $data['page'] ?? $data;
     // Force all pages to use the 'default' template for consistent rendering
-    echo $themeManager->renderPage($page, 'default');
+        echo $themeManager->renderPage($page, 'default');
     }
     
     /**

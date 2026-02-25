@@ -38,7 +38,7 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         </thead>
                         <tbody>
                         <?php if (!empty($users)) : ?>
-                            <?php foreach ($users as $user): ?>
+                            <?php foreach ($users as $user) : ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($user['id']) ?></td>
                                     <td><?php echo htmlspecialchars($user['display_name'] ?? '') ?></td>
@@ -49,19 +49,18 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                     <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
                                     <td>
                                         <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                        <?php 
-                                            if(isset($user['active']) && $user['active']){
-                                                echo '<a href="/admin/users/suspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
-                                                
-                                            }else{
-                                                echo '<a href="/admin/users/unsuspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
-                                            }
+                                        <?php
+                                        if (isset($user['active']) && $user['active']) {
+                                            echo '<a href="/admin/users/suspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
+                                        } else {
+                                            echo '<a href="/admin/users/unsuspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
+                                        }
                                         ?>
                                         <a href="/admin/users/delete/<?php echo $user['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else: ?>
+                        <?php else : ?>
                             <tr><td colspan="8">No users found.</td></tr>
                         <?php endif; ?>
                         </tbody>
@@ -76,7 +75,7 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                 <?php if (isset($totalPages) && $totalPages > 1) : ?>
                 <nav aria-label="User pagination">
                     <ul class="pagination mt-3 justify-content-center">
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                             <li class="page-item<?php echo $i == $page ? ' active' : '' ?>">
                                 <a class="page-link" href="?page=<?php echo $i ?>"><?php echo $i ?></a>
                             </li>

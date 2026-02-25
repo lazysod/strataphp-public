@@ -3,7 +3,7 @@ namespace App\Services;
 
 /**
  * StrataPHP Module Validation Service
- * 
+ *
  * Validates module structure, metadata, and code quality
  * according to StrataPHP Module Standards
  */
@@ -96,7 +96,7 @@ class ModuleValidator
         // Default requirements if not specified (backward compatibility)
         $defaultRequirements = [
             'controllers' => true,
-            'views' => true, 
+            'views' => true,
             'models' => true
         ];
         
@@ -175,7 +175,6 @@ class ModuleValidator
             }
             
             return $metadata;
-            
         } catch (\Exception $e) {
             $this->errors[] = "Error parsing index.php: " . $e->getMessage();
             return null;
@@ -354,7 +353,7 @@ class ModuleValidator
             }
             
             // Check for XSS prevention
-            if (preg_match('/echo\s+\$|print\s+\$/', $content) && 
+            if (preg_match('/echo\s+\$|print\s+\$/', $content) &&
                 !preg_match('/htmlspecialchars\(|htmlentities\(/', $content)) {
                 $this->warnings[] = "Potential XSS risk in: " . basename($file);
             }
@@ -446,7 +445,7 @@ class ModuleValidator
         // Default requirements if not specified (backward compatibility)
         $defaultRequirements = [
             'controllers' => true,
-            'views' => true, 
+            'views' => true,
             'models' => true
         ];
         
@@ -476,8 +475,8 @@ class ModuleValidator
      */
     private function getSecurityResults()
     {
-        $securityErrors = array_filter($this->errors, function($error) {
-            return strpos($error, 'security') !== false || 
+        $securityErrors = array_filter($this->errors, function ($error) {
+            return strpos($error, 'security') !== false ||
                    strpos($error, 'SQL injection') !== false ||
                    strpos($error, 'XSS') !== false ||
                    strpos($error, 'dangerous function') !== false;
@@ -598,7 +597,7 @@ class ModuleValidator
             'exec' => ['ModuleInstallerController.php']
         ];
         
-        return isset($allowedFunctions[$function]) && 
+        return isset($allowedFunctions[$function]) &&
                in_array($fileName, $allowedFunctions[$function]);
     }
 }
@@ -607,7 +606,8 @@ class ModuleValidator
  * Compatibility function for older PHP versions
  */
 if (!function_exists('php_check_syntax_string')) {
-    function php_check_syntax_string($code) {
+    function php_check_syntax_string($code)
+    {
         $tempFile = tempnam(sys_get_temp_dir(), 'php_syntax_check');
         file_put_contents($tempFile, $code);
         $result = php_check_syntax($tempFile);
@@ -617,7 +617,8 @@ if (!function_exists('php_check_syntax_string')) {
 }
 
 if (!function_exists('php_check_syntax')) {
-    function php_check_syntax($filename) {
+    function php_check_syntax($filename)
+    {
         $output = shell_exec("php -l " . escapeshellarg($filename) . " 2>&1");
         return strpos($output, 'No syntax errors') !== false;
     }

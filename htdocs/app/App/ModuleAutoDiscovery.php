@@ -1,5 +1,6 @@
 <?php
 namespace App\App;
+
 /**
  * ModuleAutoDiscovery
  *
@@ -19,7 +20,9 @@ class ModuleAutoDiscovery
             return $modules;
         }
         foreach (scandir($modulesDir) as $moduleName) {
-            if ($moduleName === '.' || $moduleName === '..') continue;
+            if ($moduleName === '.' || $moduleName === '..') {
+                continue;
+            }
             $modulePath = $modulesDir . DIRECTORY_SEPARATOR . $moduleName;
             $indexFile = $modulePath . DIRECTORY_SEPARATOR . 'index.php';
             if (is_dir($modulePath) && file_exists($indexFile)) {

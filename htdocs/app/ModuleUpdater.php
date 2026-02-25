@@ -1,5 +1,6 @@
 <?php
 namespace App;
+
 /**
  * ModuleUpdater: Checks for and updates modules from a remote repo
  */
@@ -12,7 +13,9 @@ class ModuleUpdater
     {
         $localJson = json_decode(@file_get_contents($localPath), true);
         $remoteJson = json_decode(@file_get_contents($remoteUrl), true);
-        if (!$localJson || !$remoteJson) return false;
+        if (!$localJson || !$remoteJson) {
+            return false;
+        }
         return version_compare($remoteJson['version'], $localJson['version'], '>');
     }
 
@@ -48,10 +51,11 @@ class ModuleUpdater
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     $path = $dir . "/" . $object;
-                    if (is_dir($path))
+                    if (is_dir($path)) {
                         self::rrmdir($path);
-                    else
+                    } else {
                         unlink($path);
+                    }
                 }
             }
             rmdir($dir);

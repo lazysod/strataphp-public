@@ -1,13 +1,13 @@
 <?php
 /**
  * CMS User Template Wrapper
- * 
+ *
  * Provides CMS theming for user module pages
  */
 
 namespace App\Modules\Cms;
 
-class UserThemeWrapper 
+class UserThemeWrapper
 {
     /**
      * Render a user page with CMS theme
@@ -103,4 +103,3 @@ class UserThemeWrapper
         </div>";
     }
 }
-?>

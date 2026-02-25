@@ -29,7 +29,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
     </ol>
 
     <div class="row">
-        <?php if (($moduleData['slug'] ?? '') === 'google-analytics'): ?>
+        <?php if (($moduleData['slug'] ?? '') === 'google-analytics') : ?>
         <div class="alert alert-info mb-4">
             <strong>Google Analytics Admin Interface:</strong>
             <a href="/admin/google-analytics-settings" class="btn btn-outline-primary btn-sm ms-2">
@@ -56,9 +56,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <div class="col-md-6">
                             <p><strong>Category:</strong> <?= htmlspecialchars($moduleData['category'] ?? 'Uncategorized') ?></p>
                             <p><strong>Status:</strong> 
-                                <?php if ($moduleData['enabled']): ?>
+                                <?php if ($moduleData['enabled']) : ?>
                                     <span class="badge bg-success">Enabled</span>
-                                <?php else: ?>
+                                <?php else : ?>
                                     <span class="badge bg-secondary">Disabled</span>
                                 <?php endif; ?>
                             </p>
@@ -67,7 +67,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                             <p><strong>Repository:</strong> <?= '<a href="' . htmlspecialchars($moduleData['repository'] ?? 'Unknown').'" target="_blank" title="Go to Repository">' . htmlspecialchars($moduleData['repository'] ?? 'Unknown').'</a>' ?></p>
                         </div>
                     </div>
-                    <?php if (!empty($moduleData['description'])): ?>
+                    <?php if (!empty($moduleData['description'])) : ?>
                         <hr>
                         <p><strong>Description:</strong></p>
                         <p><?= nl2br(htmlspecialchars($moduleData['description'])) ?></p>
@@ -85,23 +85,23 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                 </div>
                 <div class="card-body">
                     <div class="validation-results">
-                        <?php if ($validationResults['valid']): ?>
+                        <?php if ($validationResults['valid']) : ?>
                             <div class="alert alert-success">
                                 <i class="fas fa-check-circle"></i> Module validation passed!
                             </div>
-                        <?php else: ?>
+                        <?php else : ?>
                             <div class="alert alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i> Module has validation issues
                             </div>
                         <?php endif; ?>
 
                         <!-- Display Errors if any -->
-                        <?php if (!empty($validationResults['errors'])): ?>
+                        <?php if (!empty($validationResults['errors'])) : ?>
                             <div class="mb-3">
                                 <h6 class="text-danger"><i class="fas fa-times-circle"></i> Errors</h6>
                                 <div class="alert alert-danger">
                                     <ul class="mb-0">
-                                        <?php foreach ($validationResults['errors'] as $error): ?>
+                                        <?php foreach ($validationResults['errors'] as $error) : ?>
                                             <li><?= htmlspecialchars($error) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -110,12 +110,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <?php endif; ?>
 
                         <!-- Display Warnings if any -->
-                        <?php if (!empty($validationResults['warnings'])): ?>
+                        <?php if (!empty($validationResults['warnings'])) : ?>
                             <div class="mb-3">
                                 <h6 class="text-warning"><i class="fas fa-exclamation-triangle"></i> Warnings</h6>
                                 <div class="alert alert-warning">
                                     <ul class="mb-0">
-                                        <?php foreach ($validationResults['warnings'] as $warning): ?>
+                                        <?php foreach ($validationResults['warnings'] as $warning) : ?>
                                             <li><?= htmlspecialchars($warning) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -124,12 +124,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <?php endif; ?>
 
                         <!-- Display Suggestions if any -->
-                        <?php if (!empty($validationResults['suggestions'])): ?>
+                        <?php if (!empty($validationResults['suggestions'])) : ?>
                             <div class="mb-3">
                                 <h6 class="text-info"><i class="fas fa-lightbulb"></i> Suggestions</h6>
                                 <div class="alert alert-info">
                                     <ul class="mb-0">
-                                        <?php foreach ($validationResults['suggestions'] as $suggestion): ?>
+                                        <?php foreach ($validationResults['suggestions'] as $suggestion) : ?>
                                             <li><?= htmlspecialchars($suggestion) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -140,11 +140,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <!-- Structure Validation -->
                         <h6>Structure Validation</h6>
                         <div class="validation-section mb-3">
-                            <?php foreach ($validationResults['structure'] as $check => $result): ?>
+                            <?php foreach ($validationResults['structure'] as $check => $result) : ?>
                                 <div class="d-flex align-items-center mb-1">
-                                    <?php if ($result): ?>
+                                    <?php if ($result) : ?>
                                         <i class="fas fa-check text-success me-2"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-times text-danger me-2"></i>
                                     <?php endif; ?>
                                     <span><?= ucfirst(str_replace('_', ' ', $check)) ?></span>
@@ -155,11 +155,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <!-- Security Validation -->
                         <h6>Security Validation</h6>
                         <div class="validation-section mb-3">
-                            <?php foreach ($validationResults['security'] as $check => $result): ?>
+                            <?php foreach ($validationResults['security'] as $check => $result) : ?>
                                 <div class="d-flex align-items-center mb-1">
-                                    <?php if ($result): ?>
+                                    <?php if ($result) : ?>
                                         <i class="fas fa-check text-success me-2"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-times text-danger me-2"></i>
                                     <?php endif; ?>
                                     <span><?= ucfirst(str_replace('_', ' ', $check)) ?></span>
@@ -170,11 +170,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <!-- Quality Validation -->
                         <h6>Code Quality</h6>
                         <div class="validation-section mb-3">
-                            <?php foreach ($validationResults['quality'] as $check => $result): ?>
+                            <?php foreach ($validationResults['quality'] as $check => $result) : ?>
                                 <div class="d-flex align-items-center mb-1">
-                                    <?php if ($result): ?>
+                                    <?php if ($result) : ?>
                                         <i class="fas fa-check text-success me-2"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-times text-danger me-2"></i>
                                     <?php endif; ?>
                                     <span><?= ucfirst(str_replace('_', ' ', $check)) ?></span>
@@ -186,7 +186,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
             </div>
 
             <!-- README Content -->
-            <?php if (!empty($readmeContent)): ?>
+            <?php if (!empty($readmeContent)) : ?>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-book me-1"></i>
@@ -209,7 +209,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                     Statistics
                 </div>
                 <div class="card-body">
-                    <?php if (!empty($moduleStats)): ?>
+                    <?php if (!empty($moduleStats)) : ?>
                         <p><strong>Controllers:</strong> <?= $moduleStats['controllers'] ?? 0 ?></p>
                         <p><strong>Models:</strong> <?= $moduleStats['models'] ?? 0 ?></p>
                         <p><strong>Views:</strong> <?= $moduleStats['views'] ?? 0 ?></p>
@@ -217,21 +217,21 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         <p><strong>Total Files:</strong> <?= $moduleStats['total_files'] ?? 0 ?></p>
                         <p><strong>Total Size:</strong> <?= isset($moduleStats['total_size']) ? formatBytes($moduleStats['total_size']) : '0 B' ?></p>
                         <p><strong>Last Modified:</strong> <?= isset($moduleStats['last_modified']) ? date('Y-m-d H:i:s', $moduleStats['last_modified']) : 'Unknown' ?></p>
-                    <?php else: ?>
+                    <?php else : ?>
                         <p class="text-muted">Statistics not available</p>
                     <?php endif; ?>
                 </div>
             </div>
 
             <!-- Dependencies -->
-            <?php if (!empty($moduleData['dependencies'])): ?>
+            <?php if (!empty($moduleData['dependencies'])) : ?>
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-puzzle-piece me-1"></i>
                         Dependencies
                     </div>
                     <div class="card-body">
-                        <?php foreach ($moduleData['dependencies'] as $dep): ?>
+                        <?php foreach ($moduleData['dependencies'] as $dep) : ?>
                             <span class="badge bg-secondary me-1 mb-1"><?= htmlspecialchars($dep) ?></span>
                         <?php endforeach; ?>
                     </div>
@@ -239,7 +239,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
             <?php endif; ?>
 
             <!-- Keywords/Tags -->
-            <?php if (!empty($moduleData['keywords'])): ?>
+            <?php if (!empty($moduleData['keywords'])) : ?>
                     <!-- Navigation Config Example -->
                     <div class="card mb-4">
                         <div class="card-header">
@@ -262,7 +262,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                         Keywords
                     </div>
                     <div class="card-body">
-                        <?php foreach ($moduleData['keywords'] as $keyword): ?>
+                        <?php foreach ($moduleData['keywords'] as $keyword) : ?>
                             <span class="badge bg-info me-1 mb-1"><?= htmlspecialchars($keyword) ?></span>
                         <?php endforeach; ?>
                     </div>
@@ -314,7 +314,8 @@ function formatBytes(bytes) {
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>
 
 <?php
-function formatBytes($size, $precision = 2) {
+function formatBytes($size, $precision = 2)
+{
     if (!is_numeric($size) || $size <= 0) {
         return '0 B';
     }

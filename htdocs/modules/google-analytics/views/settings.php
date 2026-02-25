@@ -8,11 +8,11 @@ if (file_exists($settingsPath)) {
 }
 ?>
 <h2><i class="fab fa-google me-2"></i>Google Analytics Settings</h2>
-<?php if (!empty($_SESSION['ga_settings_success'])): ?>
+<?php if (!empty($_SESSION['ga_settings_success'])) : ?>
     <div class="alert alert-success"> <?= htmlspecialchars($_SESSION['ga_settings_success']) ?> </div>
     <?php unset($_SESSION['ga_settings_success']); ?>
 <?php endif; ?>
-<?php if (!empty($_SESSION['ga_settings_error'])): ?>
+<?php if (!empty($_SESSION['ga_settings_error'])) : ?>
     <div class="alert alert-danger"> <?= htmlspecialchars($_SESSION['ga_settings_error']) ?> </div>
     <?php unset($_SESSION['ga_settings_error']); ?>
 <?php endif; ?>

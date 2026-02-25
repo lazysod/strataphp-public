@@ -161,11 +161,11 @@ unset($_SESSION['success'], $_SESSION['error']);
             <a href="/admin">Admin</a> > <a href="/admin/cms">CMS</a> > Pages
         </div>
 
-        <?php if ($success_message): ?>
+        <?php if ($success_message) : ?>
             <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
         <?php endif; ?>
 
-        <?php if ($error_message): ?>
+        <?php if ($error_message) : ?>
             <div class="alert alert-error"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
 
@@ -174,8 +174,8 @@ unset($_SESSION['success'], $_SESSION['error']);
             <label for="site_id" style="font-weight:600;">Filter by Site:</label>
             <select name="site_id" id="site_id" onchange="this.form.submit()" style="padding: 8px 12px; border-radius: 4px; border: 1px solid #ccc;">
                 <option value="">All Sites</option>
-                <?php if (isset($sites) && is_array($sites)): ?>
-                    <?php foreach ($sites as $site): ?>
+                <?php if (isset($sites) && is_array($sites)) : ?>
+                    <?php foreach ($sites as $site) : ?>
                         <option value="<?= htmlspecialchars($site['id']) ?>" <?= (isset($selectedSiteId) && $selectedSiteId == $site['id']) ? 'selected' : '' ?>><?= htmlspecialchars($site['name']) ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -188,7 +188,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             <h1><?= htmlspecialchars($title ?? 'Manage Pages') ?></h1>
         </div>
 
-        <?php if (isset($pages) && !empty($pages)): ?>
+        <?php if (isset($pages) && !empty($pages)) : ?>
             <table class="table">
                 <thead>
                     <tr>
@@ -228,7 +228,8 @@ unset($_SESSION['success'], $_SESSION['error']);
                             $siteLookup[$site['id']] = $site['name'];
                         }
                     }
-                    function renderPageRow($page, $level = 0, $siteLookup = []) {
+                    function renderPageRow($page, $level = 0, $siteLookup = [])
+                    {
                         $indent = $level * 24;
                         $isParent = !empty($page['children']);
                         echo '<tr' . ($isParent ? ' style="background:#f6fbff;"' : '') . '>';
@@ -271,7 +272,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                     ?>
                 </tbody>
             </table>
-        <?php else: ?>
+        <?php else : ?>
             <div class="empty-state">
                 <h3>No pages found</h3>
                 <p>Get started by creating your first page!</p>

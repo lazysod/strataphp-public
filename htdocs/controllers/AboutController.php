@@ -1,7 +1,9 @@
 <?php
 namespace App\Controllers;
+
 use App\View;
 use App\App;
+
 class AboutController
 {
     public function index()
@@ -24,5 +26,4 @@ class AboutController
             \App\App::loadView('about', $data);
         }
     }
-
 }

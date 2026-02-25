@@ -5,11 +5,11 @@ $router->post('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminP
 
 // Manual CORS preflight handler for /oauth/userinfo
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' && strpos($_SERVER['REQUEST_URI'], '/oauth/userinfo') !== false) {
-	header('Access-Control-Allow-Origin: *');
-	header('Access-Control-Allow-Headers: Authorization, Content-Type');
-	header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-	http_response_code(200);
-	exit;
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Authorization, Content-Type');
+    header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+    http_response_code(200);
+    exit;
 }
 // Google Analytics Admin Settings Route (protected by admin middleware)
 $router->get('/admin/google-analytics-settings', [\App\Modules\Google_Analytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
@@ -57,7 +57,7 @@ $router->get('/admin/users/suspend/{id}', [\App\Modules\Admin\Controllers\UserAd
 $router->get('/admin/users/unsuspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'unsuspend']);
 $router->get('/admin/users/delete/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'delete']);
 
-// 
+//
 // admin profile management
 $router->get('/admin/admin_profiles', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'index']);
 $router->get('/admin/admin_profiles/edit/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'edit']);
@@ -95,5 +95,6 @@ $router->post('/oauth/token', [\App\Modules\Admin\Controllers\OAuthTokenControll
 // OAuth2 userinfo endpoint
 $router->get('/oauth/userinfo', [\App\Modules\Admin\Controllers\OAuthUserInfoController::class, 'userinfo']);
 
-$router->get('/test', function() { echo 'test'; });
-
+$router->get('/test', function () {
+    echo 'test';
+});

@@ -19,7 +19,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function warning($message)
@@ -28,7 +28,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function primary($message)
@@ -37,7 +37,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function secondary($message)
@@ -46,7 +46,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function info($message)
@@ -55,7 +55,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function light($message)
@@ -64,7 +64,7 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 
     public function dark($message)
@@ -73,8 +73,6 @@ class bserror
                     ' . $message . '
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>';
-        return $content;        
+        return $content;
     }
 }
-
-?>

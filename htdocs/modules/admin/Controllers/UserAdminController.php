@@ -1,5 +1,6 @@
 <?php
 namespace App\Modules\admin\Controllers;
+
 require_once dirname(__DIR__, 4) . '/htdocs/bootstrap.php';
 use App\DB;
 use App\User;
@@ -7,14 +8,14 @@ use App\App;
 
 /**
  * Admin User Management Controller
- * 
+ *
  * Handles CRUD operations for user management in the admin interface
  */
 class UserAdminController
 {
     /**
      * List/search users with pagination
-     * 
+     *
      * @return void
      */
     public function index()
@@ -42,7 +43,7 @@ class UserAdminController
 
     /**
      * Add new user form and processing
-     * 
+     *
      * @return void
      */
     public function add()
@@ -86,7 +87,7 @@ class UserAdminController
 
     /**
      * Edit user form and processing
-     * 
+     *
      * @param string $id User ID
      * @return void
      */
@@ -144,7 +145,7 @@ class UserAdminController
 
     /**
      * Suspend a user account
-     * 
+     *
      * @param string $id User ID
      * @return void
      */
@@ -172,7 +173,7 @@ class UserAdminController
 
     /**
      * Unsuspend a user account
-     * 
+     *
      * @param string $id User ID
      * @return void
      */
@@ -200,7 +201,7 @@ class UserAdminController
 
     /**
      * Delete a user account
-     * 
+     *
      * @param string $id User ID
      * @return void
      */

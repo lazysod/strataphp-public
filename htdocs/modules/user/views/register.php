@@ -27,7 +27,9 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         <form id="userRegisterForm" method="post" action="" class="">
                             <input type="hidden" name="token" value="<?php echo htmlspecialchars(\App\TokenManager::csrf()); ?>">
                             <div class="form-floating mb-3">
-                                <input class="form-control" id="display_name" value="<?php if( isset($_POST['display_name'])){ echo htmlspecialchars($_POST['display_name']); } ?>" name="display_name" type="text" placeholder="Display Name" required />
+                                <input class="form-control" id="display_name" value="<?php if (isset($_POST['display_name'])) {
+                                    echo htmlspecialchars($_POST['display_name']);
+                                                                                     } ?>" name="display_name" type="text" placeholder="Display Name" required />
                                 <label for="display_name"><span class="text-danger">*</span>Display Name</label>
                                 <div id="displayNameFeedback" class="form-text"></div>
                             </div>
@@ -61,14 +63,20 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                             });
                             </script>
                             <div class="form-floating mb-3">
-                                <input class="form-control" id="first_name" name="first_name" value="<?php if(isset($_POST['first_name'])){ echo htmlspecialchars($_POST['first_name']); } ?>" type="text" placeholder="First Name" required />
+                                <input class="form-control" id="first_name" name="first_name" value="<?php if (isset($_POST['first_name'])) {
+                                    echo htmlspecialchars($_POST['first_name']);
+                                                                                                     } ?>" type="text" placeholder="First Name" required />
                                 <label for="first_name"><span class="text-danger">*</span>First Name</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input class="form-control" id="second_name" name="second_name" value="<?php if(isset($_POST['second_name'])){ echo htmlspecialchars($_POST['second_name']); } ?>" type="text" placeholder="Second Name" required />
+                                <input class="form-control" id="second_name" name="second_name" value="<?php if (isset($_POST['second_name'])) {
+                                    echo htmlspecialchars($_POST['second_name']);
+                                                                                                       } ?>" type="text" placeholder="Second Name" required />
                                 <label for="second_name"><span class="text-danger">*</span>Second Name</label>
                             <div class="form-floating mb-3">
-                                <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" value="<?php if(isset($_POST['email'])){ echo htmlspecialchars($_POST['email']); } ?>" required />
+                                <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" value="<?php if (isset($_POST['email'])) {
+                                    echo htmlspecialchars($_POST['email']);
+                                                                                                                                       } ?>" required />
                                 <label for="email"><span class="text-danger">*</span>Email address</label>
                             </div>
                             <div class="form-floating mb-3">

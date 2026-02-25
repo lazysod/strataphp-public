@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // List of bad words that are not allowed in display names (case-insensitive)
 return [

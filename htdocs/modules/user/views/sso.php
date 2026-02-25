@@ -10,9 +10,9 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                 <p class="text-center">Manage your Single Sign-On (SSO) connections for third-party websites and applications.</p>
             </div>
         </div>
-        <?php if (empty($ssos)): ?>
+        <?php if (empty($ssos)) : ?>
             <div class="alert alert-info">You have no SSO connections.</div>
-        <?php else: ?>
+        <?php else : ?>
             <div class="card bg-dark">
                 <table class="table table-dark table-bordered table-dark table-striped mb-0">
                     <thead>
@@ -24,18 +24,18 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
                         </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($ssos as $sso): ?>
+                    <?php foreach ($ssos as $sso) : ?>
                         <tr>
                             <td><?= htmlspecialchars($sso['client_name'] ?? 'Unknown') ?></td>
                             <td><?= htmlspecialchars($sso['client_id']) ?></td>
                             <td><?= ((int)$sso['status'] === 1) ? 'Active' : 'Revoked' ?></td>
                             <td>
-                                <?php if ((int)$sso['status'] === 1): ?>
+                                <?php if ((int)$sso['status'] === 1) : ?>
                                     <form method="post" action="/user/sso/revoke" style="display:inline;">
                                         <input type="hidden" name="revoke_id" value="<?= (int)$sso['id'] ?>">
                                         <button type="submit" class="btn btn-danger btn-sm">Revoke</button>
                                     </form>
-                                <?php else: ?>
+                                <?php else : ?>
                                     <span class="text-muted">Revoked</span>
                                 <?php endif; ?>
                             </td>
@@ -48,6 +48,6 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
         <?php endif; ?>
     </div>    
 </section>
-<?php 
+<?php
 include dirname(__DIR__, 3) . '/views/partials/footer.php';
 ?>

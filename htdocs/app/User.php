@@ -1,7 +1,9 @@
 <?php
 namespace App;
+
 use App\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
+
 class User
 {
     private $db;
@@ -292,7 +294,7 @@ class User
                 $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);
             }
             $userId = $this->db->insertId();
-            // Generate activation key and expiry (24h) 
+            // Generate activation key and expiry (24h)
             $activationKey = bin2hex(random_bytes(32));
             $entryDate = date('Y-m-d H:i:s');
             $expiryDate = date('Y-m-d H:i:s', strtotime('+1 day'));

@@ -5,7 +5,7 @@ use App\App;
 
 /**
  * CMS Fallback Helper
- * 
+ *
  * Provides utilities for graceful fallback when CMS module is disabled
  * Helps maintain compatibility between CMS-enhanced and basic StrataPHP modes
  */
@@ -13,7 +13,7 @@ class CmsHelper
 {
     /**
      * Check if CMS module is enabled and available
-     * 
+     *
      * @return bool
      */
     public static function isCmsEnabled(): bool
@@ -29,7 +29,7 @@ class CmsHelper
     
     /**
      * Check if CMS theme view exists and CMS is enabled
-     * 
+     *
      * @param string $viewPath Relative path to CMS view
      * @return bool
      */
@@ -45,7 +45,7 @@ class CmsHelper
     
     /**
      * Get appropriate view path with CMS fallback
-     * 
+     *
      * @param string $cmsViewPath Path to CMS view (e.g., 'user/login.php')
      * @param string $defaultViewPath Path to default view (e.g., '../views/login.php')
      * @return string Full path to the view to use
@@ -61,7 +61,7 @@ class CmsHelper
     
     /**
      * Get appropriate redirect URL based on user role and CMS availability
-     * 
+     *
      * @param bool $isAdmin Whether user is admin
      * @param string $fallbackUrl Default fallback URL
      * @return string Redirect URL
@@ -79,7 +79,7 @@ class CmsHelper
     
     /**
      * Get appropriate admin redirect for already-logged-in users
-     * 
+     *
      * @param bool $isAdmin Whether user is admin
      * @return string Redirect URL
      */

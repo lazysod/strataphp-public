@@ -2,13 +2,14 @@
 require_once dirname(__DIR__, 4) . '/bootstrap.php';
 require dirname(__DIR__, 3) . '/views/partials/header.php';
 use App\App;
+
 // App::dump($_SESSION, 'Current User Data');
 
 // Robust check: If no profiles, block access and show warning
-    if (empty($profile_list) || !is_array($profile_list) || count(array_filter($profile_list)) === 0) {
-        header('Location: /user/dashboard');
-        exit;
-    }
+if (empty($profile_list) || !is_array($profile_list) || count(array_filter($profile_list)) === 0) {
+    header('Location: /user/dashboard');
+    exit;
+}
 ?>
 
 <section class="py-5">
@@ -122,7 +123,9 @@ use App\App;
                         </div>
                         <!-- Delete Profile Button and Modal -->
                         <div class="mt-4">
-                            <button id="deleteProfileBtn" class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteProfileModal" <?php if (isset($profile_list) && count($profile_list) <= 1) echo 'disabled'; ?>>
+                            <button id="deleteProfileBtn" class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteProfileModal" <?php if (isset($profile_list) && count($profile_list) <= 1) {
+                                echo 'disabled';
+                                                                                                                                                           } ?>>
                                 <i class="fa-solid fa-trash"></i> Delete This Profile
                             </button>
                         </div>

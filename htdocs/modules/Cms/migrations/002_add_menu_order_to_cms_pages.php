@@ -38,7 +38,6 @@ if (basename(__FILE__) == basename($_SERVER['SCRIPT_NAME'])) {
         } else {
             echo "ℹ️  menu_order column already exists\n";
         }
-        
     } catch (Exception $e) {
         echo "❌ Migration failed: " . $e->getMessage() . "\n";
     }
@@ -47,7 +46,8 @@ if (basename(__FILE__) == basename($_SERVER['SCRIPT_NAME'])) {
 }
 
 // Migration functions for use by migration runner
-function up($db) {
+function up($db)
+{
     // Check if column already exists
     $columns = $db->fetchAll("SHOW COLUMNS FROM cms_pages LIKE 'menu_order'");
     
@@ -71,7 +71,8 @@ function up($db) {
     return "menu_order column already exists";
 }
 
-function down($db) {
+function down($db)
+{
     // Remove menu_order column
     $db->query("ALTER TABLE cms_pages DROP COLUMN IF EXISTS menu_order");
     return "Removed menu_order column from cms_pages table";

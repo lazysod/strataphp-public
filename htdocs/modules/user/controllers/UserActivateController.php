@@ -5,7 +5,7 @@ use App\DB;
 
 /**
  * User Account Activation Controller
- * 
+ *
  * Handles user account activation via email verification links
  * Validates activation tokens and activates user accounts
  */
@@ -13,10 +13,10 @@ class UserActivateController
 {
     /**
      * Handle user account activation
-     * 
+     *
      * Validates activation keys and activates user accounts
      * Includes proper error handling and security validation
-     * 
+     *
      * @return void
      */
     public function index()

@@ -81,8 +81,8 @@ class ModuleInstallerController
                     UPLOAD_ERR_EXTENSION => 'File upload stopped by PHP extension'
                 ];
                 
-                $errorMsg = isset($errorMessages[$uploadError]) 
-                    ? $errorMessages[$uploadError] 
+                $errorMsg = isset($errorMessages[$uploadError])
+                    ? $errorMessages[$uploadError]
                     : "Unknown upload error code: $uploadError";
                     
                 throw new \Exception("Upload error: $errorMsg");
@@ -139,7 +139,6 @@ class ModuleInstallerController
                 'message' => 'Module installed successfully!',
                 'module' => $result
             ]);
-            
         } catch (\Exception $e) {
             // Clean up on error (including uploaded ZIP)
             if (isset($tempDir)) {
@@ -200,7 +199,6 @@ class ModuleInstallerController
                 'message' => 'Module installed successfully!',
                 'output' => implode("\n", $output)
             ]);
-            
         } catch (\Exception $e) {
             return $this->jsonResponse([
                 'success' => false,
@@ -262,7 +260,6 @@ class ModuleInstallerController
                 'message' => 'Module generated successfully!',
                 'output' => implode("\n", $output)
             ]);
-            
         } catch (\Exception $e) {
             return $this->jsonResponse([
                 'success' => false,
@@ -323,7 +320,9 @@ class ModuleInstallerController
         if (is_dir($modulesDir)) {
             $dirs = scandir($modulesDir);
             foreach ($dirs as $dir) {
-                if ($dir === '.' || $dir === '..') continue;
+                if ($dir === '.' || $dir === '..') {
+                    continue;
+                }
                 
                 $moduleDir = $modulesDir . '/' . $dir;
                 $indexFile = $moduleDir . '/index.php';
@@ -472,7 +471,7 @@ class ModuleInstallerController
         $zip = new \ZipArchive();
         $result = $zip->open($zipPath);
         
-        if ($result !== TRUE) {
+        if ($result !== true) {
             return false;
         }
         
@@ -835,7 +834,9 @@ class ModuleInstallerController
      */
     public function formatBytes($size)
     {
-        if ($size == 0) return '0 Bytes';
+        if ($size == 0) {
+            return '0 Bytes';
+        }
         $unit = array('Bytes', 'KB', 'MB', 'GB', 'TB');
         $i = floor(log($size, 1024));
         return round($size / pow(1024, $i), 2) . ' ' . $unit[$i];

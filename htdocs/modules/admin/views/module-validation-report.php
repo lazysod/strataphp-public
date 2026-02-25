@@ -46,7 +46,9 @@ foreach ($modules as $moduleName => $moduleInfo) {
 
 // Calculate summary statistics
 $totalModules = count($validationResults);
-$validModules = count(array_filter($validationResults, function($result) { return $result['valid']; }));
+$validModules = count(array_filter($validationResults, function ($result) {
+    return $result['valid'];
+}));
 $invalidModules = $totalModules - $validModules;
 ?>
 
@@ -135,62 +137,70 @@ $invalidModules = $totalModules - $validModules;
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($validationResults as $moduleName => $result): ?>
+                        <?php foreach ($validationResults as $moduleName => $result) : ?>
                             <tr>
                                 <td>
                                     <strong><?= htmlspecialchars($moduleName) ?></strong>
-                                    <?php if ($moduleName === 'admin' || $moduleName === 'home'): ?>
+                                    <?php if ($moduleName === 'admin' || $moduleName === 'home') : ?>
                                         <span class="badge bg-secondary ms-2">Core</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($result['valid']): ?>
+                                    <?php if ($result['valid']) : ?>
                                         <span class="badge bg-success">
                                             <i class="fas fa-check-circle"></i> Valid
                                         </span>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <span class="badge bg-warning">
                                             <i class="fas fa-exclamation-triangle"></i> Issues
                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php 
-                                    $structureValid = array_reduce($result['structure'], function($carry, $item) { return $carry && $item; }, true);
+                                    <?php
+                                    $structureValid = array_reduce($result['structure'], function ($carry, $item) {
+                                        return $carry && $item;
+                                    }, true);
                                     ?>
-                                    <?php if ($structureValid): ?>
+                                    <?php if ($structureValid) : ?>
                                         <i class="fas fa-check text-success" title="Structure valid"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-times text-danger" title="Structure issues"></i>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php 
-                                    $securityValid = array_reduce($result['security'], function($carry, $item) { return $carry && $item; }, true);
+                                    <?php
+                                    $securityValid = array_reduce($result['security'], function ($carry, $item) {
+                                        return $carry && $item;
+                                    }, true);
                                     ?>
-                                    <?php if ($securityValid): ?>
+                                    <?php if ($securityValid) : ?>
                                         <i class="fas fa-shield-alt text-success" title="Security checks passed"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-shield-alt text-danger" title="Security issues"></i>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php 
-                                    $qualityValid = array_reduce($result['quality'], function($carry, $item) { return $carry && $item; }, true);
+                                    <?php
+                                    $qualityValid = array_reduce($result['quality'], function ($carry, $item) {
+                                        return $carry && $item;
+                                    }, true);
                                     ?>
-                                    <?php if ($qualityValid): ?>
+                                    <?php if ($qualityValid) : ?>
                                         <i class="fas fa-star text-success" title="Quality checks passed"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-star text-warning" title="Quality issues"></i>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php 
-                                    $performanceValid = array_reduce($result['performance'], function($carry, $item) { return $carry && $item; }, true);
+                                    <?php
+                                    $performanceValid = array_reduce($result['performance'], function ($carry, $item) {
+                                        return $carry && $item;
+                                    }, true);
                                     ?>
-                                    <?php if ($performanceValid): ?>
+                                    <?php if ($performanceValid) : ?>
                                         <i class="fas fa-tachometer-alt text-success" title="Performance checks passed"></i>
-                                    <?php else: ?>
+                                    <?php else : ?>
                                         <i class="fas fa-tachometer-alt text-warning" title="Performance issues"></i>
                                     <?php endif; ?>
                                 </td>
@@ -225,28 +235,32 @@ $invalidModules = $totalModules - $validModules;
     </div>
 
     <!-- Validation Issues Details -->
-    <?php 
-    $modulesWithIssues = array_filter($validationResults, function($result) { return !$result['valid']; });
-    if (!empty($modulesWithIssues)): 
-    ?>
+    <?php
+    $modulesWithIssues = array_filter($validationResults, function ($result) {
+        return !$result['valid'];
+    });
+    if (!empty($modulesWithIssues)) :
+        ?>
         <div class="card">
             <div class="card-header">
                 <i class="fas fa-exclamation-triangle me-1"></i>
                 Modules with Issues
             </div>
             <div class="card-body">
-                <?php foreach ($modulesWithIssues as $moduleName => $result): ?>
+                <?php foreach ($modulesWithIssues as $moduleName => $result) : ?>
                     <div class="border rounded p-3 mb-3">
                         <h6 class="text-warning">
                             <i class="fas fa-cube me-2"></i><?= htmlspecialchars($moduleName) ?>
                         </h6>
                         <div class="row">
-                            <?php if (!array_reduce($result['structure'], function($carry, $item) { return $carry && $item; }, true)): ?>
+                            <?php if (!array_reduce($result['structure'], function ($carry, $item) {
+    return $carry && $item;
+                            }, true)) : ?>
                                 <div class="col-md-6">
                                     <strong>Structure Issues:</strong>
                                     <ul class="small mb-2">
-                                        <?php foreach ($result['structure'] as $check => $passed): ?>
-                                            <?php if (!$passed): ?>
+                                        <?php foreach ($result['structure'] as $check => $passed) : ?>
+                                            <?php if (!$passed) : ?>
                                                 <li class="text-danger"><?= ucfirst(str_replace('_', ' ', $check)) ?></li>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
@@ -254,12 +268,14 @@ $invalidModules = $totalModules - $validModules;
                                 </div>
                             <?php endif; ?>
                             
-                            <?php if (!array_reduce($result['security'], function($carry, $item) { return $carry && $item; }, true)): ?>
+                            <?php if (!array_reduce($result['security'], function ($carry, $item) {
+    return $carry && $item;
+                            }, true)) : ?>
                                 <div class="col-md-6">
                                     <strong>Security Issues:</strong>
                                     <ul class="small mb-2">
-                                        <?php foreach ($result['security'] as $check => $passed): ?>
-                                            <?php if (!$passed): ?>
+                                        <?php foreach ($result['security'] as $check => $passed) : ?>
+                                            <?php if (!$passed) : ?>
                                                 <li class="text-danger"><?= ucfirst(str_replace('_', ' ', $check)) ?></li>
                                             <?php endif; ?>
                                         <?php endforeach; ?>

@@ -1,5 +1,6 @@
 <?php
 namespace App;
+
 // Simple Logger class for the framework
 
 class Logger

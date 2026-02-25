@@ -3,7 +3,7 @@ namespace App\Modules\HelloWorld\Models;
 
 /**
  * Hello World Model
- * 
+ *
  * Simple demonstration model for the Hello World module
  */
 class HelloWorld
@@ -18,7 +18,7 @@ class HelloWorld
 
     /**
      * Get a hello world message
-     * 
+     *
      * @param bool $random Whether to return a random message
      * @return string The hello world message
      */
@@ -36,7 +36,7 @@ class HelloWorld
 
     /**
      * Get all available messages
-     * 
+     *
      * @return array All messages
      */
     public function getAllMessages()

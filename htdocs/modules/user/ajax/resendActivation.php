@@ -12,6 +12,7 @@ require_once dirname(__DIR__, 3) . '/bootstrap.php';
 use App\DB;
 use App\User;
 use PHPMailer\PHPMailer\PHPMailer;
+
 // CSRF protection
 if (empty($_POST['token']) || !isset($_SESSION['app_token']['token_id']) || !hash_equals($_SESSION['app_token']['token_id'], $_POST['token'])) {
     echo json_encode(['status' => 'fail', 'message' => 'Invalid or missing CSRF token.']);

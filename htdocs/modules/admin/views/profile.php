@@ -13,17 +13,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                 <a href="/admin/dashboard" class="btn btn-secondary mb-3"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
             </div>
             <h1>Admin Profile</h1>
-            <?php if ($success): ?>
+            <?php if ($success) : ?>
                 <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
             <?php endif; ?>
-            <?php if ($error): ?>
+            <?php if ($error) : ?>
                 <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\App\TokenManager::csrf($config)) ?>">
                 <div class="mb-3">
                     <label for="avatar" class="form-label">Avatar</label><br>
-                    <?php if (!empty($user['avatar'])): ?>
+                    <?php if (!empty($user['avatar'])) : ?>
                         <div class="p-3 text-center">
                             <img src="<?= htmlspecialchars($user['avatar']) ?>" alt="Avatar" style="max-width:80px;max-height:80px;" class="rounded-circle mb-2">
                         </div>

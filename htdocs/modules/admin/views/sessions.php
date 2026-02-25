@@ -27,20 +27,20 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($sessions as $session): ?>
+                <?php foreach ($sessions as $session) : ?>
                     <?php $isCurrent = ($session['id'] ?? null) == ($_SESSION[$sessionPrefix . 'session_id'] ?? null); ?>
                     <tr<?= $isCurrent ? ' style="background:#e0ffe0;font-weight:bold;"' : '' ?>>
                         <td>
                             <?php
                             $deviceLabel = !empty($session['device_info']) ? $session['device_info'] : ($session['device_type'] ?? 'Unknown');
                             ?>
-                            <?php if ($isCurrent): ?>
+                            <?php if ($isCurrent) : ?>
                                 <form method="post" action="/admin/sessions/update-device">
                                     <input type="hidden" name="session_id" value="<?= $session['id'] ?>">
                                     <input type="text" name="device_info" value="<?= htmlspecialchars($deviceLabel) ?>" size="18">
                                     <button type="submit">Rename</button>
                                 </form>
-                            <?php else: ?>
+                            <?php else : ?>
                                 <?= htmlspecialchars($deviceLabel) ?>
                             <?php endif; ?>
                         </td>
@@ -48,17 +48,17 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                         <td><?= htmlspecialchars($session['created_at'] ?? '') ?></td>
                         <td><?= htmlspecialchars($session['last_active'] ?? '') ?></td>
                         <td>
-                            <?php if (!$isCurrent): ?>
+                            <?php if (!$isCurrent) : ?>
                                 <form method="post" action="/admin/sessions/revoke">
                                     <input type="hidden" name="session_id" value="<?= $session['id'] ?>">
                                     <button type="submit">Revoke</button>
                                 </form>
-                            <?php else: ?>
+                            <?php else : ?>
                                 Current Session
                             <?php endif; ?>
                         </td>
                         </tr>
-                    <?php endforeach; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>

@@ -2,6 +2,7 @@
 use App\Modules\User\Controllers\UserLoginController;
 use App\Modules\User\Controllers\UserProfileController;
 use App\App;
+
 // Ensure Composer autoloader is loaded for App class
 $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
 if (file_exists($composerAutoload)) {
@@ -31,22 +32,22 @@ if (!empty(App::config('modules')['user'])) {
     $router->post('/user/reset-request', [\App\Modules\User\Controllers\UserResetRequestController::class, 'index']);
     $router->get('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
     $router->post('/user/reset', [\App\Modules\User\Controllers\UserResetController::class, 'index']);
-    $router->get('/user/activate', [\App\Modules\User\Controllers\UserActivateController::class, 'index']); 
+    $router->get('/user/activate', [\App\Modules\User\Controllers\UserActivateController::class, 'index']);
     $router->get('/user/sessions', [\App\Modules\User\Controllers\UserSessionsController::class, 'index']);
     $router->post('/user/sessions/revoke', [\App\Modules\User\Controllers\UserSessionsController::class, 'revoke']);
     $router->post('/user/sessions/update-device', [\App\Modules\User\Controllers\UserSessionsController::class, 'updateDevice']);
     // Add more user routes as needed
     // Events module routes
     $router->get('/user/events', [\App\Modules\User\Events\Controllers\EventsController::class, 'index']);
-    $router->get('/user/events/show', function() {
+    $router->get('/user/events/show', function () {
         $id = $_GET['id'] ?? null;
         (new \App\Modules\User\Events\Controllers\EventsController())->show($id);
     });
     $router->get('/user/events/create', [\App\Modules\User\Events\Controllers\EventsController::class, 'create']);
-    $router->post('/user/events/store', function() {
+    $router->post('/user/events/store', function () {
         (new \App\Modules\User\Events\Controllers\EventsController())->store($_POST);
     });
-    $router->get('/user/themes', function() {
+    $router->get('/user/themes', function () {
         // Load config and dependencies
         $config = require $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
         require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
@@ -67,13 +68,13 @@ if (!empty(App::config('modules')['user'])) {
         $profile = $userModel->get_profile_from_name($_SESSION[$sessionPrefix . 'profile']['profile_name'] ?? null);
 
         // App::dump($_SESSION);
-         if (!$profile || !is_array($profile)) {
+        if (!$profile || !is_array($profile)) {
             $profile = [
-                'bio' => '',
-                'pride_logo' => 0,
-                'verified' => 0,
-                'profile_name' => '',
-                'locked' => 0,
+               'bio' => '',
+               'pride_logo' => 0,
+               'verified' => 0,
+               'profile_name' => '',
+               'locked' => 0,
             ];
         }
         // App::dump($profile, 'Profile Data');
@@ -107,7 +108,7 @@ if (!empty(App::config('modules')['user'])) {
                 );
             }
             unset($group);
-        } else if ($profile_id) {
+        } elseif ($profile_id) {
             $LinkList = $db->fetchAll("SELECT * FROM links WHERE profile_id = ? ORDER BY link_order ASC", [$profile_id]);
         }
         // end new block

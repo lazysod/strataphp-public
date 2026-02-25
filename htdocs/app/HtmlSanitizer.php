@@ -3,7 +3,7 @@ namespace App;
 
 /**
  * HTML Sanitizer for CMS Content
- * 
+ *
  * Designed to work with TinyMCE output while maintaining security.
  * Whitelist approach - only allows specifically permitted tags and attributes.
  */

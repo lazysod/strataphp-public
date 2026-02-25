@@ -3,7 +3,7 @@ namespace App\Modules\api\Controllers;
 
 /**
  * API Helper Utilities
- * 
+ *
  * Provides utility functions for API parameter validation
  * and response formatting
  */
@@ -11,7 +11,7 @@ class ApiHelper
 {
     /**
      * Validate required parameters in an array
-     * 
+     *
      * @param array $params Parameters to validate
      * @param array $required Required parameter keys
      * @return array Array of missing parameter names
@@ -33,7 +33,7 @@ class ApiHelper
 
     /**
      * Format a standard success response
-     * 
+     *
      * @param array $data Response data
      * @param string $message Success message
      * @return array Formatted response array
@@ -53,7 +53,7 @@ class ApiHelper
 
     /**
      * Format a standard error response
-     * 
+     *
      * @param string $message Error message
      * @param int $code Error code
      * @return array Formatted error response array

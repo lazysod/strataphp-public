@@ -36,7 +36,7 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         </thead>
                         <tbody>
                         <?php if (!empty($profiles)) : ?>
-                            <?php foreach ($profiles as $profile): ?>
+                            <?php foreach ($profiles as $profile) : ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($profile['profile_id']) ?></td>
                                     <td><?php echo htmlspecialchars($profile['profile_name'] ?? '') ?></td>
@@ -47,23 +47,23 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                         <a href="/admin/admin_profiles/edit/<?php echo $profile['profile_id'] ?>" class="btn btn-sm btn-warning">Edit</a>
                                         <?php
                                             // Show Verify/Unverify
-                                            if (empty($profile['verified'])) {
-                                                echo '<a href="/admin/admin_profiles/verify/' . $profile['profile_id'] . '" class="btn btn-sm btn-success">Verify</a>';
-                                            } else {
-                                                echo '<a href="/admin/admin_profiles/unverify/' . $profile['profile_id'] . '" class="btn btn-sm btn-outline-secondary">Unverify</a>';
-                                            }
+                                        if (empty($profile['verified'])) {
+                                            echo '<a href="/admin/admin_profiles/verify/' . $profile['profile_id'] . '" class="btn btn-sm btn-success">Verify</a>';
+                                        } else {
+                                            echo '<a href="/admin/admin_profiles/unverify/' . $profile['profile_id'] . '" class="btn btn-sm btn-outline-secondary">Unverify</a>';
+                                        }
                                             // Show Suspend/Unsuspend
-                                            if (isset($profile['admin_locked']) && $profile['admin_locked']) {
-                                                echo '<a href="/admin/admin_profiles/unsuspend/' . $profile['profile_id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
-                                            } else {
-                                                echo '<a href="/admin/admin_profiles/suspend/' . $profile['profile_id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
-                                            }
+                                        if (isset($profile['admin_locked']) && $profile['admin_locked']) {
+                                            echo '<a href="/admin/admin_profiles/unsuspend/' . $profile['profile_id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
+                                        } else {
+                                            echo '<a href="/admin/admin_profiles/suspend/' . $profile['profile_id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
+                                        }
                                         ?>
                                         <a href="/admin/admin_profiles/delete/<?php echo $profile['profile_id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this profile?')">Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else: ?>
+                        <?php else : ?>
                             <tr><td colspan="6">No profiles found.</td></tr>
                         <?php endif; ?>
                         </tbody>
@@ -78,7 +78,7 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                 <?php if (isset($totalPages) && $totalPages > 1) : ?>
                 <nav aria-label="Profile pagination">
                     <ul class="pagination mt-3 justify-content-center">
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
                             <li class="page-item<?php echo $i == $page ? ' active' : '' ?>">
                                 <a class="page-link" href="?page=<?php echo $i ?>"><?php echo $i ?></a>
                             </li>

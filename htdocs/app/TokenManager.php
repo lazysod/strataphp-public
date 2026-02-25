@@ -1,6 +1,8 @@
 <?php
 namespace App;
+
 use App\Logger;
+
 class TokenManager
 {
     private $config;
@@ -71,7 +73,7 @@ class TokenManager
     {
         $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
         $success = false;
-        if (isset($_SESSION[$sessionPrefix . 'token']['token_id'], $_SESSION[$sessionPrefix . 'token']['token_expire']) 
+        if (isset($_SESSION[$sessionPrefix . 'token']['token_id'], $_SESSION[$sessionPrefix . 'token']['token_expire'])
             && strtotime($_SESSION[$sessionPrefix . 'token']['token_expire']) > time()
         ) {
             if (hash_equals($_SESSION[$sessionPrefix . 'token']['token_id'], $token)) {
@@ -88,7 +90,8 @@ class TokenManager
         }
         if ($this->logger) {
             $this->logger->warning(
-                'Token verification failed', [
+                'Token verification failed',
+                [
                 'user_ip' => $_SERVER['REMOTE_ADDR'] ?? null,
                 'provided_token' => $token,
                 'session_token' => $_SESSION[$sessionPrefix . 'token']['token_id'] ?? null
@@ -104,15 +107,15 @@ class TokenManager
 
     public function tokenCheck()
     {
-        /* 
-            MIGHT set expiry in SESSION 
-            
-            Possible error codes: 
+        /*
+            MIGHT set expiry in SESSION
+
+            Possible error codes:
             - token no set(?)
             - token not valid
             - token is valid
-            OR 
-            - True = token is ok 
+            OR
+            - True = token is ok
             - false token not set or expired
         */
         $sessionPrefix = $this->config['session_prefix'] ?? 'app_';

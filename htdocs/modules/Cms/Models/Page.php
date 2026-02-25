@@ -371,9 +371,9 @@ class Page
             'twitter_card' => $this->validateTwitterCard($data['twitter_card'] ?? 'summary_large_image'),
             'canonical_url' => filter_var($data['canonical_url'] ?? '', FILTER_SANITIZE_URL),
             'noindex' => ($data['noindex'] ?? 0) ? 1 : 0,
-            'status' => in_array($data['status'] ?? 'draft', ['draft', 'published', 'private']) 
+            'status' => in_array($data['status'] ?? 'draft', ['draft', 'published', 'private'])
                        ? $data['status'] : 'draft',
-            'template' => preg_match('/^[a-zA-Z0-9_-]+$/', $data['template'] ?? 'default') 
+            'template' => preg_match('/^[a-zA-Z0-9_-]+$/', $data['template'] ?? 'default')
                          ? $data['template'] : 'default',
             'menu_order' => max(0, (int)($data['menu_order'] ?? 0)),
             'author_id' => (int)($data['author_id'] ?? 1),

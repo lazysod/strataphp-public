@@ -7,6 +7,7 @@ if (file_exists($composerAutoload)) {
 }
 // ...existing code...
 use App\Controllers\AdminController;
+
 // Home module routes (core route for /)
 global $router;
 
@@ -16,7 +17,8 @@ $cmsEnabled = !empty($modules['cms']['enabled']);
 
 if (!$cmsEnabled || (!empty(App::config('default_module')) && App::config('default_module') === 'home')) {
     $router->get(
-        '/', function () {
+        '/',
+        function () {
             if (class_exists('App\\App')) {
                 // App::log('DEBUG: / route dispatched (fallback)');
             }

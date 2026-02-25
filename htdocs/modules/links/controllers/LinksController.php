@@ -6,10 +6,10 @@ use App\Modules\Admin\Models\Links;
 
 /**
  * Links Controller
- * 
+ *
  * Handles Linktree-style link management and display functionality.
  * Provides methods for displaying links and about page with error handling.
- * 
+ *
  * @package App\Modules\Links\Controllers
  * @author  StrataPHP Framework
  * @version 1.0.0
@@ -18,10 +18,10 @@ class LinksController
 {
     /**
      * Display the main links page
-     * 
+     *
      * Retrieves all available links from the database and displays them
      * in a Linktree-style layout. Includes error handling for database failures.
-     * 
+     *
      * @return void
      */
     public function index()
@@ -42,10 +42,10 @@ class LinksController
 
     /**
      * Display the about page
-     * 
+     *
      * Shows biographical information or about content for the links page.
      * Includes error handling to gracefully handle display failures.
-     * 
+     *
      * @return void
      */
     public function about()

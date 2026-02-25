@@ -3,18 +3,20 @@ namespace App\Modules\Admin\Controllers;
 
 /**
  * Module Manager Controller
- * 
+ *
  * Handles module management interface including enabling/disabling modules
  * and setting the default module
  */
-class ModuleManagerController {
+class ModuleManagerController
+{
     
     /**
      * Display module management interface
-     * 
+     *
      * @return void
      */
-    public function index() {
+    public function index()
+    {
         try {
             global $siteConfig;
             
@@ -39,7 +41,8 @@ class ModuleManagerController {
     /**
      * Handle form submission directly in the index method
      */
-    private function handleFormSubmission() {
+    private function handleFormSubmission()
+    {
         try {
             // (Debug logging removed)
 
@@ -90,7 +93,8 @@ class ModuleManagerController {
     /**
      * Scan filesystem for all modules and merge with config data
      */
-    private function scanModules($siteConfig) {
+    private function scanModules($siteConfig)
+    {
         $modules = [];
         $modulesPath = $_SERVER['DOCUMENT_ROOT'] . '/modules';
         if (!is_dir($modulesPath)) {
@@ -216,14 +220,13 @@ class ModuleManagerController {
             
             if ($result['success']) {
                 $this->jsonResponse([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'Module deleted successfully',
                     'backup_path' => $backupPath
                 ]);
             } else {
                 $this->jsonResponse(['success' => false, 'message' => $result['message']]);
             }
-            
         } catch (\Exception $e) {
             $this->jsonResponse(['success' => false, 'message' => 'An error occurred during deletion']);
         }
@@ -234,7 +237,7 @@ class ModuleManagerController {
      */
     private function checkModuleProtection($moduleName)
     {
-    global $siteConfig;
+        global $siteConfig;
         
         // System modules that cannot be deleted
         $systemModules = ['admin', 'user'];
@@ -246,7 +249,7 @@ class ModuleManagerController {
         }
         
         // Check if it's the default module
-    $defaultModule = $siteConfig['default_module'] ?? '';
+        $defaultModule = $siteConfig['default_module'] ?? '';
         if ($moduleName === $defaultModule) {
             return [
                 'can_delete' => false,
@@ -289,7 +292,9 @@ class ModuleManagerController {
         
         $dirs = scandir($modulesDir);
         foreach ($dirs as $dir) {
-            if ($dir === '.' || $dir === '..' || $dir === $moduleName) continue;
+            if ($dir === '.' || $dir === '..' || $dir === $moduleName) {
+                continue;
+            }
             
             $moduleIndexPath = $modulesDir . '/' . $dir . '/index.php';
             if (file_exists($moduleIndexPath)) {
@@ -323,7 +328,7 @@ class ModuleManagerController {
         
         // Create ZIP backup
         $zip = new \ZipArchive();
-        if ($zip->open($backupPath, \ZipArchive::CREATE) === TRUE) {
+        if ($zip->open($backupPath, \ZipArchive::CREATE) === true) {
             $this->addDirectoryToZip($zip, $moduleDir, $moduleName);
             $zip->close();
         }
@@ -384,7 +389,6 @@ class ModuleManagerController {
             }
             
             return ['success' => true, 'message' => 'Module deleted successfully'];
-            
         } catch (\Exception $e) {
             return ['success' => false, 'message' => 'Deletion failed: ' . $e->getMessage()];
         }

@@ -8,9 +8,9 @@ return [
     'author' => 'StrataPHP Framework',
     'category' => 'Social',
     'update_url' => '', // Optional: URL to check for updates
-    'enabled' => true, 
+    'enabled' => true,
     'suitable_as_default' => true,
-    'repository' => 'https://github.com/lazysod/strataphp-public', 
+    'repository' => 'https://github.com/lazysod/strataphp-public',
     'homepage' => 'https://strataphp.org',
     'license' => 'MIT',
     'support_url' => 'https://strataphp.org/contact',

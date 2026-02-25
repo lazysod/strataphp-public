@@ -1,11 +1,17 @@
 <?php
 namespace App\Controllers;
+
 use App\DB;
 use App\User;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class AdminController
 {
+    /**
+     * Display and update admin profile.
+     * Handles POST for profile update, including password change.
+     * Performs CSRF validation and error handling.
+     */
     public function profile()
     {
         $config = include dirname(__DIR__) . '/app/config.php';
@@ -40,21 +46,25 @@ class AdminController
                 } elseif ($pwd && strlen($pwd) < 8) {
                     $error = 'Password must be at least 8 characters.';
                 } else {
-                    // Update user info
-                    $params = [$first_name, $second_name, $email, $userId];
-                    $db->query('UPDATE users SET first_name = ?, second_name = ?, email = ? WHERE id = ?', $params);
-                    if ($pwd) {
-                        $hash = password_hash($pwd, PASSWORD_DEFAULT);
-                        $db->query('UPDATE users SET password = ? WHERE id = ?', [$hash, $userId]);
+                    try {
+                        // Update user info
+                        $params = [$first_name, $second_name, $email, $userId];
+                        $db->query('UPDATE users SET first_name = ?, second_name = ?, email = ? WHERE id = ?', $params);
+                        if ($pwd) {
+                            $hash = password_hash($pwd, PASSWORD_DEFAULT);
+                            $db->query('UPDATE users SET password = ? WHERE id = ?', [$hash, $userId]);
+                        }
+                        // Refresh session user info
+                        $sql = "SELECT * FROM users WHERE id = ?";
+                        $rows = $db->fetchAll($sql, [$userId]);
+                        $user = $rows[0] ?? [];
+                        $_SESSION[$sessionPrefix . 'user']['first_name'] = $user['first_name'] ?? '';
+                        $_SESSION[$sessionPrefix . 'user']['second_name'] = $user['second_name'] ?? '';
+                        $_SESSION[$sessionPrefix . 'user']['email'] = $user['email'] ?? '';
+                        $success = 'Profile updated successfully.';
+                    } catch (\Exception $e) {
+                        $error = 'Database error: ' . $e->getMessage();
                     }
-                    // Refresh session user info
-                    $sql = "SELECT * FROM users WHERE id = ?";
-                    $rows = $db->fetchAll($sql, [$userId]);
-                    $user = $rows[0] ?? [];
-                    $_SESSION[$sessionPrefix . 'user']['first_name'] = $user['first_name'] ?? '';
-                    $_SESSION[$sessionPrefix . 'user']['second_name'] = $user['second_name'] ?? '';
-                    $_SESSION[$sessionPrefix . 'user']['email'] = $user['email'] ?? '';
-                    $success = 'Profile updated successfully.';
                 }
             }
         }
@@ -64,6 +74,9 @@ class AdminController
         $user = $rows[0] ?? [];
         include __DIR__ . '/../views/admin/admin_profile.php';
     }
+    /**
+     * Show admin login page.
+     */
     public function index()
     {
         // Example: load a view
@@ -74,51 +87,66 @@ class AdminController
         include __DIR__ . '/../views/admin/admin_login.php';
     }
 
+    /**
+     * Show admin dashboard page.
+     */
     public function dashboard()
     {
         $email = 'info@example.com';
         // APP::dump($_SESSION);
-    include __DIR__ . '/../views/admin/admin_dashboard.php';
+        include __DIR__ . '/../views/admin/admin_dashboard.php';
     }
 
+    /**
+     * Handle admin password reset request.
+     * Sends reset email if valid.
+     */
     public function resetRequest()
     {
         $showNav = false;
         $message = '';
         $config = include dirname(__DIR__) . '/app/config.php';
         $db = new DB($config);
-        $userModel = new \App\User($db, $config);
+        $userModel = new User($db, $config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
             $email = trim($_POST['email']);
-            $result = $userModel->requestPasswordReset($email, $config['base_url'], true); // true = admin only
-            if ($result['status'] === 'success') {
-                include_once dirname(__DIR__) . '/vendor/autoload.php';
-                $token = $result['token'];
-                $mail = new PHPMailer(true);
-                try {
-                    $mail->isSMTP();
-                    $mail->Host = $config['mail']['host'];
-                    $mail->SMTPAuth = true;
-                    $mail->Username = $config['mail']['username'];
-                    $mail->Password = $config['mail']['password'];
-                    $mail->SMTPSecure = $config['mail']['encryption'];
-                    $mail->Port = $config['mail']['port'];
-                    $mail->setFrom($config['mail']['from_email'], $config['site_name']);
-                    $mail->addAddress($email);
-                    $mail->Subject = 'Admin Password Reset Request';
-                    $mail->Body = "Click the following link to reset your admin password: $resetLink\nIf you did not request this, please ignore.";
-                    $mail->send();
-                    $success = 'If your email is registered as an admin, a reset link has been sent.';
-                } catch (\Exception $e) {
-                    $error = 'Email failed: ' . $mail->ErrorInfo;
+            try {
+                $result = $userModel->requestPasswordReset($email, $config['base_url'], true); // true = admin only
+                if ($result['status'] === 'success') {
+                    include_once dirname(__DIR__) . '/vendor/autoload.php';
+                    $token = $result['token'];
+                    $mail = new PHPMailer(true);
+                    try {
+                        $mail->isSMTP();
+                        $mail->Host = $config['mail']['host'];
+                        $mail->SMTPAuth = true;
+                        $mail->Username = $config['mail']['username'];
+                        $mail->Password = $config['mail']['password'];
+                        $mail->SMTPSecure = $config['mail']['encryption'];
+                        $mail->Port = $config['mail']['port'];
+                        $mail->setFrom($config['mail']['from_email'], $config['site_name']);
+                        $mail->addAddress($email);
+                        $mail->Subject = 'Admin Password Reset Request';
+                        $mail->Body = "Click the following link to reset your admin password: $resetLink\nIf you did not request this, please ignore.";
+                        $mail->send();
+                        $success = 'If your email is registered as an admin, a reset link has been sent.';
+                    } catch (\Exception $e) {
+                        $error = 'Email failed: ' . $mail->ErrorInfo;
+                    }
+                } else {
+                    $error = $result['message'];
                 }
-            } else {
-                $error = $result['message'];
+            } catch (\Exception $e) {
+                $error = 'Password reset error: ' . $e->getMessage();
             }
         }
         include __DIR__ . '/../views/admin/admin_reset_request.php';
     }
 
+    /**
+     * Handle admin password reset form and update password.
+     * Validates token and updates password securely.
+     */
     public function resetPassword()
     {
         $showNav = false;
@@ -164,4 +192,3 @@ class AdminController
         include __DIR__ . '/../views/admin/admin_reset_form.php';
     }
 }
-?>

@@ -7,6 +7,7 @@ if (file_exists($composerAutoload)) {
 }
 // ...existing code...
 use App\Modules\Links\Controllers\LinksController;
+
 global $router;
 if (!empty(App::config('modules')['links']['enabled'])) {
     // Register / as root if links is the default module

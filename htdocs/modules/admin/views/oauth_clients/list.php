@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($clients as $client): ?>
+                        <?php foreach ($clients as $client) : ?>
                             <tr>
                                 <td><?= htmlspecialchars($client['id']) ?></td>
                                 <td><?= htmlspecialchars($client['name']) ?></td>

@@ -1,7 +1,7 @@
 <?php
 /**
  * CMS Theme Configuration
- * 
+ *
  * Manages themes specifically for CMS content pages
  * Separate from main StrataPHP theme system
  */

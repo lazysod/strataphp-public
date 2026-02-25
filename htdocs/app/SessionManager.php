@@ -82,12 +82,22 @@ class SessionManager
     private function detectDeviceType()
     {
         $ua = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
-        if (strpos($ua, 'iphone') !== false) return 'iPhone';
-        if (strpos($ua, 'android') !== false && strpos($ua, 'mobile') !== false) return 'Android Phone';
-        if (strpos($ua, 'android') !== false) return 'Android Tablet';
-        if (strpos($ua, 'ipad') !== false) return 'iPad';
+        if (strpos($ua, 'iphone') !== false) {
+            return 'iPhone';
+        }
+        if (strpos($ua, 'android') !== false && strpos($ua, 'mobile') !== false) {
+            return 'Android Phone';
+        }
+        if (strpos($ua, 'android') !== false) {
+            return 'Android Tablet';
+        }
+        if (strpos($ua, 'ipad') !== false) {
+            return 'iPad';
+        }
         if (strpos($ua, 'windows') !== false || strpos($ua, 'macintosh') !== false) {
-            if (strpos($ua, 'tablet') !== false) return 'Tablet';
+            if (strpos($ua, 'tablet') !== false) {
+                return 'Tablet';
+            }
             return 'Desktop/Laptop';
         }
         return 'Unknown';
