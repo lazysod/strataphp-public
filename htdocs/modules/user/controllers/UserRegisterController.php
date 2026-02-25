@@ -26,7 +26,7 @@ class UserRegisterController
     public function index()
     {
         try {
-                require_once dirname(__DIR__, 4) . '/bootstrap.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
             $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             
@@ -51,82 +51,89 @@ class UserRegisterController
                 }
                 return;
             }
-        if (empty($config['modules']['user'])) {
-            header('Location: /');
-            exit;
-        }
-        $error = '';
-        $success = '';
-        
-        // Generate CSRF token for the form
-        $tm = new TokenManager();
-        $token = $tm->generate();
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $result = $tm->verify($_POST['token'] ?? '');
-            if ($result['status'] !== 'success') {
-                // Regenerate token and reload form with gentle message
-                $tm->renew();
-                $error = 'Your session expired or the form was open too long. The form has been refreshed—please try again.';
-                goto render;
-            } else {
-                $db = new DB($config['db']);
-                $user = new User($db, $config);
-                $userInfo = [
-                    'email' => trim($_POST['email'] ?? ''),
-                    'pwd' => $_POST['password'] ?? '',
-                    'confirm_pwd' => $_POST['confirm_password'] ?? '',
-                ];
-                if (!empty($_POST['display_name'])) {
-                    $userInfo['display_name'] = trim($_POST['display_name']);
-                }
-                // Server-side display name validation
-                if (!empty($userInfo['display_name'])) {
-                    // Check for taken display name
-                    $sql = "SELECT COUNT(*) FROM profile WHERE profile_name = ?";
-                    $stmt = $db->getPdo()->prepare($sql);
-                    $stmt->execute([$userInfo['display_name']]);
-                    if ($stmt->fetchColumn() > 0) {
-                        $error = 'Display name is already taken.';
-                        goto render;
-                    }
-                    // Check for bad words
-                    $sql = "SELECT COUNT(*) FROM bad_words WHERE name = ?";
-                    $stmt = $db->getPdo()->prepare($sql);
-                    $stmt->execute([$userInfo['display_name']]);
-                    if ($stmt->fetchColumn() > 0) {
-                        $error = 'Display name is not allowed.';
-                        goto render;
-                    }
-                }
-                // Server-side email validation
-                if (!empty($userInfo['email'])) {
-                    $sql = "SELECT COUNT(*) FROM users WHERE email = ?";
-                    $stmt = $db->getPdo()->prepare($sql);
-                    $stmt->execute([$userInfo['email']]);
-                    if ($stmt->fetchColumn() > 0) {
-                        $error = 'Email address is already registered.';
-                        goto render;
-                    }
-                }
-                $result = $user->register($userInfo);
-                if ($result['status'] === 'success') {
-                    $success = $result['message'];
+            if (empty($config['modules']['user'])) {
+                header('Location: /');
+                exit;
+            }
+            $error = '';
+            $success = '';
+            
+            // Generate CSRF token for the form
+            $tm = new TokenManager();
+            $token = $tm->generate();
+            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $result = $tm->verify($_POST['token'] ?? '');
+                if ($result['status'] !== 'success') {
+                    // Regenerate token and reload form with gentle message
+                    $tm->renew();
+                    $error = 'Your session expired or the form was open too long. The form has been refreshed—please try again.';
+                    goto render;
                 } else {
-                    $error = $result['message'];
+                    $db = new DB($config);
+                    $user = new User($db, $config);
+                    $userInfo = [
+                        'display_name' => trim($_POST['display_name'] ?? ''),
+                        'first_name' => trim($_POST['first_name'] ?? ''),
+                        'second_name' => trim($_POST['second_name'] ?? ''),
+                        'email' => trim($_POST['email'] ?? ''),
+                        'pwd' => $_POST['password'] ?? '',
+                        'confirm_pwd' => $_POST['confirm_password'] ?? '',
+                    ];
+                    // Password mismatch check
+                    if ($userInfo['pwd'] !== $userInfo['confirm_pwd']) {
+                        $error = 'Passwords do not match.';
+                        goto render;
+                    }
+                    if (!empty($_POST['display_name'])) {
+                        $userInfo['display_name'] = trim($_POST['display_name']);
+                    }
+                    // Server-side display name validation
+                    if (!empty($userInfo['display_name'])) {
+                        // Check for taken display name
+                        $sql = "SELECT COUNT(*) FROM users WHERE display_name = ?";
+                        $stmt = $db->getPdo()->prepare($sql);
+                        $stmt->execute([$userInfo['display_name']]);
+                        if ($stmt->fetchColumn() > 0) {
+                            $error = 'Display name is already taken.';
+                            goto render;
+                        }
+                        // Check for bad words (modular, from config)
+                        if (!empty($config['bad_words']) && is_array($config['bad_words'])) {
+                            if (in_array(strtolower($userInfo['display_name']), array_map('strtolower', $config['bad_words']))) {
+                                $error = 'Display name is not allowed.';
+                                goto render;
+                            }
+                        }
+                    }
+                    // Server-side email validation
+                    if (!empty($userInfo['email'])) {
+                        $sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+                        $stmt = $db->getPdo()->prepare($sql);
+                        $stmt->execute([$userInfo['email']]);
+                        if ($stmt->fetchColumn() > 0) {
+                            $error = 'Email address is already registered.';
+                            goto render;
+                        }
+                    }
+                    $result = $user->register($userInfo);
+                    if ($result['status'] === 'success') {
+                        $success = $result['message'];
+                    } else {
+                        $error = $result['message'];
+                    }
                 }
             }
-        }
-        render:
-        // Use CMS-themed registration page
-        $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
-        if (file_exists($cmsRegisterView)) {
-            include $cmsRegisterView;
-        } else {
-            include __DIR__ . '/../views/register.php';
-        }
+            render:
+            // Use CMS-themed registration page
+            $cmsRegisterView = dirname(__DIR__, 2) . '/cms/views/user/register.php';
+            if (file_exists($cmsRegisterView)) {
+                include $cmsRegisterView;
+            } else {
+                include __DIR__ . '/../views/register.php';
+            }
         } catch (\Exception $e) {
-            $error = 'An unexpected error occurred during registration. Please try again.';
+            $error = $e->getMessage() ?: 'An unexpected error occurred during registration. Please try again.';
             $success = '';
             
             // Generate token for the form even in error case

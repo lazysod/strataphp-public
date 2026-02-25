@@ -285,8 +285,8 @@ class User
         } else {
             // Insert user with active=0
             if ($displayName !== null) {
-                $sql = "INSERT INTO users (id, first_name, second_name, display_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, 0)";
-                $this->db->query($sql, [$fName, $sName, $displayName, $email, $pwdEncrypted, $hash]);
+                $sql = "INSERT INTO users (id, display_name, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, 0)";
+                $this->db->query($sql, [$displayName, $fName, $sName, $email, $pwdEncrypted, $hash]);
             } else {
                 $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, 0)";
                 $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);

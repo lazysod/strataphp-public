@@ -9,13 +9,16 @@ class Logger
 
     public function __construct($config)
     {
-        $this->logDir = rtrim($config['log_path'], '/');
+        // log_path may be a file, not a directory, so extract directory
+        $logPath = $config['log_path'];
+        $this->logDir = dirname($logPath);
         if (!is_dir($this->logDir)) {
+            // Suppress warning if directory exists due to race condition
             if (!@mkdir($this->logDir, 0777, true) && !is_dir($this->logDir)) {
                 throw new \RuntimeException("Logger: Failed to create log directory: {$this->logDir}");
             }
         }
-        $this->logFile = $this->logDir . '/app.log';
+        $this->logFile = $logPath;
     }
 
     public function log($level, $message, $context = [])

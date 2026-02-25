@@ -22,7 +22,7 @@ class UserActivateController
     public function index()
     {
         try {
-            require_once dirname(__DIR__, 4) . '/bootstrap.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
             global $config;
             $success = '';
             $error = '';
@@ -32,7 +32,7 @@ class UserActivateController
                 include __DIR__ . '/../views/activate.php';
                 return;
             }
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $sql = "SELECT * FROM user_activation WHERE activation_key = ?";
             $rows = $db->fetchAll($sql, [$key]);
             if (count($rows) === 0) {

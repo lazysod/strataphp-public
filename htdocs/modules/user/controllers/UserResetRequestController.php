@@ -53,7 +53,7 @@ class UserResetRequestController
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $error = 'Invalid email address.';
                     } else {
-                        $db = new DB($config['db']);
+                        $db = new DB($config);
                         $sql = "SELECT id FROM users WHERE email = ?";
                         $rows = $db->fetchAll($sql, [$email]);
                         if (count($rows) > 0) {
