@@ -7,7 +7,7 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
     exit;
 }
 
-$db = new \App\DB($config['db']);
+$db = new DB($config);
 $adminId = $_SESSION[$sessionPrefix . 'admin'] ?? null;
 $admin = null;
 if ($db && $adminId) {

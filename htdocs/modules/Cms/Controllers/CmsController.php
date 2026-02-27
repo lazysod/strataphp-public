@@ -9,6 +9,8 @@ use App\Modules\Cms\Models\Cms;
  *
  * Handles CMS API endpoints for the StrataPHP CMS module.
  */
+use App\Modules\Cms\Helpers\SiteHelper;
+
 class CmsController
 {
     /**
@@ -28,13 +30,19 @@ class CmsController
             $title = isset($_GET['title']) ? trim($_GET['title']) : null;
 
             // Filtering logic
+            $siteId = SiteHelper::getCurrentSiteId();
             if ($id) {
                 $pages = $pageModel->findById($id);
                 $pages = $pages ? [$pages] : [];
             } elseif ($title) {
-                $pages = $pageModel->searchByTitle($title, $limit);
+                // Optionally, you could add a getByTitleAndSite method for stricter filtering
+                $allPages = $pageModel->getAllBySite($siteId, $limit);
+                $pages = array_filter($allPages, function($p) use ($title) {
+                    return stripos($p['title'], $title) !== false;
+                });
+                $pages = array_values($pages);
             } else {
-                $pages = $pageModel->getAllPublished($limit);
+                $pages = $pageModel->getAllBySite($siteId, $limit);
             }
 
             header('Content-Type: application/json');

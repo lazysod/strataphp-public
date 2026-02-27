@@ -5,37 +5,32 @@ use App\DB;
 
 class AdminController
 {
+    /**
+     * Show admin dashboard with user and profile counts.
+     * Handles SQL securely and passes variables to the view.
+     */
     public function dashboard()
     {
-        // Load config and set up DB
-        $config = include dirname(__DIR__, 3) . '/app/config.php';
-        $db = new DB($config);
-        $rank_users = $db->fetchAll("SELECT `user_id` FROM `rank`");
-        $rank_user_ist = [];
-        foreach ($rank_users as $ru) {
-            $rank_user_ist[] = $ru['user_id'];
+        try {
+            //  you can add admin stats or queries here
+            global $config;
+            include dirname(__DIR__, 3) . '/views/admin/admin_dashboard.php';
+        } catch (\Exception $e) {
+            error_log('AdminController dashboard error: ' . $e->getMessage());
+            $_SESSION['error'] = 'Failed to load dashboard.';
+            include dirname(__DIR__, 3) . '/views/admin/admin_dashboard.php';
         }
-        // If there are users to exclude, build the NOT IN clause
-        $notInClause = '';
-        if (!empty($rank_user_ist)) {
-            $escapedIds = array_map(function ($id) use ($db) {
-                return "'" . $db->escapeString($id) . "'";
-            }, $rank_user_ist);
-            $notInClause = "WHERE id NOT IN (" . implode(",", $escapedIds) . ")";
-        }
-        $userCountRow = $db->fetch("SELECT COUNT(*) FROM users $notInClause");
-        $userCount = $userCountRow ? array_values($userCountRow)[0] : 0;
-
-        // Count profiles
-        $profileCountRow = $db->fetch("SELECT COUNT(*) FROM profile");
-        $profileCount = $profileCountRow ? array_values($profileCountRow)[0] : 0;
-
-        // Pass variables to the view
-        include dirname(__DIR__, 3) . '/views/admin/admin_dashboard.php';
     }
+    /**
+     * Show admin login page.
+     */
     public function index()
     {
-        // Default admin landing page
-        include dirname(__DIR__, 3) . '/views/admin/admin_login.php';
+        try {
+            include dirname(__DIR__, 3) . '/views/admin/admin_login.php';
+        } catch (\Exception $e) {
+            error_log('AdminController index error: ' . $e->getMessage());
+            $_SESSION['error'] = 'Failed to load admin login.';
+        }
     }
 }

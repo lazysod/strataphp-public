@@ -404,7 +404,17 @@ class ModuleManagerController
             return;
         }
         
-        $composer = json_decode(file_get_contents($composerPath), true);
+        $composer = [];
+        try {
+            if (is_readable($composerPath)) {
+                $composerContent = file_get_contents($composerPath);
+                $composer = json_decode($composerContent, true);
+            } else {
+                error_log('Composer file not readable: ' . $composerPath);
+            }
+        } catch (\Exception $e) {
+            error_log('Error reading composer file: ' . $e->getMessage());
+        }
         $moduleClass = ucfirst($moduleName);
         $namespace = "App\\Modules\\{$moduleClass}\\";
         

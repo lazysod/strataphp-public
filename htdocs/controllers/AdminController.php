@@ -49,12 +49,15 @@ class AdminController
                     try {
                         // Update user info
                         $params = [$first_name, $second_name, $email, $userId];
+                        // Secure: parameterized query prevents SQL injection
                         $db->query('UPDATE users SET first_name = ?, second_name = ?, email = ? WHERE id = ?', $params);
                         if ($pwd) {
                             $hash = password_hash($pwd, PASSWORD_DEFAULT);
+                            // Secure: parameterized query prevents SQL injection
                             $db->query('UPDATE users SET password = ? WHERE id = ?', [$hash, $userId]);
                         }
                         // Refresh session user info
+                        // Secure: parameterized query prevents SQL injection
                         $sql = "SELECT * FROM users WHERE id = ?";
                         $rows = $db->fetchAll($sql, [$userId]);
                         $user = $rows[0] ?? [];
@@ -69,6 +72,7 @@ class AdminController
             }
         }
         // Fetch current user info for display
+        // Secure: parameterized query prevents SQL injection
         $sql = "SELECT * FROM users WHERE id = ?";
         $rows = $db->fetchAll($sql, [$userId]);
         $user = $rows[0] ?? [];
@@ -160,6 +164,7 @@ class AdminController
             return;
         }
         // Find admin by token in reset table
+        // Secure: parameterized query prevents SQL injection
         $sql = "SELECT r.user_id, r.expiry_date FROM reset r JOIN users u ON r.user_id = u.id WHERE r.key = ? AND u.is_admin = 1";
         $rows = $db->fetchAll($sql, [$token]);
         if (count($rows) === 0) {
@@ -183,8 +188,10 @@ class AdminController
                 $message = 'Password must be at least 8 characters.';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
+                // Secure: parameterized query prevents SQL injection
                 $db->query('UPDATE users SET password = ? WHERE id = ?', [$hash, $userId]);
                 // Invalidate the token
+                // Secure: parameterized query prevents SQL injection
                 $db->query('DELETE FROM reset WHERE `key` = ?', [$token]);
                 $message = 'Password reset successful. <a href="/admin">Login</a>';
             }

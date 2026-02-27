@@ -217,7 +217,17 @@ $invalidModules = $totalModules - $validModules;
                                         if (isset($modulesConfig['modules'][$moduleName]) && is_array($modulesConfig['modules'][$moduleName]) && !empty($modulesConfig['modules'][$moduleName]['enabled'])) {
                                             $metaFile = dirname(__DIR__, 3) . '/modules/' . $moduleName . '/module.json';
                                             if (file_exists($metaFile)) {
-                                                $meta = json_decode(file_get_contents($metaFile), true);
+                                                $meta = [];
+                                                try {
+                                                    if (is_readable($metaFile)) {
+                                                        $metaContent = file_get_contents($metaFile);
+                                                        $meta = json_decode($metaContent, true);
+                                                    } else {
+                                                        error_log('Meta file not readable: ' . $metaFile);
+                                                    }
+                                                } catch (\Exception $e) {
+                                                    error_log('Error reading meta file: ' . $e->getMessage());
+                                                }
                                                 if (!empty($meta['admin_url'])) {
                                                     echo '<a href="' . htmlspecialchars($meta['admin_url']) . '" class="btn btn-outline-success btn-sm" title="Open Module"><i class="fas fa-external-link-alt"></i></a>';
                                                 }

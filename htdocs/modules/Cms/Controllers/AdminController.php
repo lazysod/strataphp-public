@@ -4,6 +4,7 @@ namespace App\Modules\Cms\Controllers;
 
 use App\DB;
 use App\Modules\Cms\Models\Page;
+use App\Modules\Cms\Helpers\SiteHelper;
 use App\SessionManager;
 
 /**
@@ -78,11 +79,13 @@ class AdminController
             $pageModel = new Page($this->config);
 
             // Get statistics
+
+            $siteId = SiteHelper::getCurrentSiteId();
             $stats = [
                 'total_pages' => $this->getPageCount(),
                 'published_pages' => $this->getPageCount('published'),
                 'draft_pages' => $this->getPageCount('draft'),
-                'recent_pages' => $pageModel->getAll(5)
+                'recent_pages' => $pageModel->getAllBySite($siteId, 5)
             ];
 
             $data = [
@@ -107,9 +110,9 @@ class AdminController
             $sites = $siteModel->getAll();
             $selectedSiteId = isset($_GET['site_id']) && is_numeric($_GET['site_id']) ? (int)$_GET['site_id'] : null;
             if ($selectedSiteId) {
-                $pages = $pageModel->getAllBySite($selectedSiteId);
+                $pages = $pageModel->getAllBySite($selectedSiteId, null, true);
             } else {
-                $pages = $pageModel->getAll();
+                $pages = $pageModel->getAll(); // Show all pages from all sites
             }
             $data = [
                 'title' => 'Manage Pages',
@@ -129,7 +132,8 @@ class AdminController
     public function createPage()
     {
         $pageModel = new Page($this->config);
-        $allPages = $pageModel->getAll();
+        $siteId = SiteHelper::getCurrentSiteId();
+        $allPages = $pageModel->getAllBySite($siteId);
         // Fetch all sites for the site selector
         $siteModel = new \App\Modules\Cms\Models\Site($this->config);
         $sites = $siteModel->getAll();
@@ -205,7 +209,8 @@ class AdminController
                 exit;
             }
 
-            $allPages = $pageModel->getAll();
+            $siteId = SiteHelper::getCurrentSiteId();
+            $allPages = $pageModel->getAllBySite($siteId);
             $siteModel = new \App\Modules\Cms\Models\Site($this->config);
             $sites = $siteModel->getAll();
             $data = [

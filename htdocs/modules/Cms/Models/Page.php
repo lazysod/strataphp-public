@@ -17,7 +17,7 @@ class Page
     public function findById($id)
     {
         try {
-            return $this->db->fetch("SELECT * FROM cms_pages WHERE id = ? AND status = 'published' LIMIT 1", [$id]);
+            return $this->db->fetch("SELECT * FROM cms_pages WHERE id = ? AND status = 'published' AND (headless_only IS NULL OR headless_only = 0) LIMIT 1", [$id]);
         } catch (\Throwable $e) {
             return null;
         }
@@ -29,7 +29,7 @@ class Page
     public function searchByTitle($title, $limit = 10)
     {
         try {
-            $sql = "SELECT * FROM cms_pages WHERE status = 'published' AND title LIKE ? ORDER BY created_at DESC LIMIT " . (int)$limit;
+            $sql = "SELECT * FROM cms_pages WHERE status = 'published' AND (headless_only IS NULL OR headless_only = 0) AND title LIKE ? ORDER BY created_at DESC LIMIT " . (int)$limit;
             return $this->db->fetchAll($sql, ["%$title%"]);
         } catch (\Throwable $e) {
             return [];
@@ -49,10 +49,10 @@ class Page
     {
         try {
             if ($config) {
-                $this->db = new \App\DB($config);
+                $this->db = new DB($config);
             } else {
                 $localConfig = include __DIR__ . '/../../../app/config.php';
-                $this->db = new \App\DB($localConfig);
+                $this->db = new DB($localConfig);
             }
         } catch (\Throwable $e) {
             throw new \Exception("Failed to initialize database connection");
@@ -65,11 +65,25 @@ class Page
      * @param int|null $limit
      * @return array
      */
-    public function getAllBySite($siteId, $limit = null)
+    public function getAllBySite($siteId, $limit = null, $forAdmin = false)
     {
         try {
-            $sql = "SELECT * FROM cms_pages WHERE site_id = ? ORDER BY created_at DESC";
             $params = [$siteId];
+            if ($forAdmin) {
+                $sql = "SELECT * FROM cms_pages WHERE site_id = ? ORDER BY created_at DESC";
+                if ($limit) {
+                    $sql .= " LIMIT " . (int)$limit;
+                }
+                return $this->db->fetchAll($sql, $params);
+            }
+            // Get the site's headless status
+            $siteRow = $this->db->fetch("SELECT headless FROM sites WHERE id = ? LIMIT 1", [$siteId]);
+            $isHeadless = $siteRow && isset($siteRow['headless']) ? (int)$siteRow['headless'] : 0;
+            if ($isHeadless) {
+                $sql = "SELECT * FROM cms_pages WHERE site_id = ? AND status = 'published' ORDER BY created_at DESC";
+            } else {
+                $sql = "SELECT * FROM cms_pages WHERE site_id = ? AND status = 'published' AND (headless_only IS NULL OR headless_only = 0) ORDER BY created_at DESC";
+            }
             if ($limit) {
                 $sql .= " LIMIT " . (int)$limit;
             }
@@ -87,7 +101,7 @@ class Page
     public function getHomePage()
     {
         try {
-            return $this->db->fetch("SELECT * FROM cms_pages WHERE is_home = 1 AND status = 'published' LIMIT 1");
+            return $this->db->fetch("SELECT * FROM cms_pages WHERE is_home = 1 AND status = 'published' AND (headless_only IS NULL OR headless_only = 0) LIMIT 1");
         } catch (\Throwable $e) {
             return null;
         }
@@ -101,7 +115,7 @@ class Page
     {
         $limit = func_num_args() > 0 ? (int)func_get_arg(0) : 10;
         try {
-            $sql = "SELECT * FROM cms_pages WHERE status = 'published' ORDER BY menu_order ASC, created_at DESC LIMIT " . (int)$limit;
+            $sql = "SELECT * FROM cms_pages WHERE status = 'published' AND (headless_only IS NULL OR headless_only = 0) ORDER BY menu_order ASC, created_at DESC LIMIT " . (int)$limit;
             return $this->db->fetchAll($sql);
         } catch (\Throwable $e) {
             return [];

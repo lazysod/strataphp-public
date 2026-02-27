@@ -228,7 +228,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                                         <div class="card module-card h-100">
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                                    <h6 class="card-title mb-0"><?php echo htmlspecialchars($module['name']); ?></h6>
+                                                    <h6 class="card-title mb-0"><?php echo htmlspecialchars($module['name'] ?? 'Unknown'); ?></h6>
                                                     <span class="badge bg-<?php echo $module['enabled'] ? 'success' : 'secondary'; ?>">
                                                         <?php echo $module['enabled'] ? 'Enabled' : 'Disabled'; ?>
                                                     </span>

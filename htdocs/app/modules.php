@@ -1,60 +1,60 @@
 <?php
 return array (
-  'modules' =>
+  'modules' => 
   array (
-    'admin' =>
+    'admin' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'api' =>
+    'api' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'cms' =>
+    'cms' => 
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'contact' =>
+    'contact' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => true,
     ),
-    'cookiebanner' =>
+    'cookiebanner' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'helloworld' =>
+    'helloworld' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'home' =>
+    'home' => 
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'links' =>
+    'links' => 
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'user' =>
+    'user' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'google-analytics' =>
-    array (
-      'enabled' => true,
-      'suitable_as_default' => false,
-    ),
-    'media' =>
+    'google-analytics' => 
     array (
       'enabled' => false,
+      'suitable_as_default' => false,
+    ),
+    'media' => 
+    array (
+      'enabled' => true,
       'suitable_as_default' => false,
       'category' => 'media',
       'name' => 'Media',
@@ -66,9 +66,9 @@ return array (
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
-    'oauth_clients' =>
+    'oauth_clients' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
       'category' => 'Admin',
       'name' => 'OAuth Clients',
@@ -77,8 +77,8 @@ return array (
       'license' => 'MIT',
     ),
   ),
-  'default_module' => 'home',
-  'module_directory' =>
+  'default_module' => 'cms',
+  'module_directory' => 
   array (
     'enabled' => false,
     'suitable_as_default' => false,

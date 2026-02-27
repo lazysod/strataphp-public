@@ -8,8 +8,37 @@ use App\DB;
  *
  * Handles site management and API key validation for the StrataPHP CMS module.
  */
-class Site
-{
+class Site {
+    /**
+     * Get a site by ID.
+     * @param int $id
+     * @return array|null
+     */
+    public function getById($id)
+    {
+        try {
+            return $this->db->fetch("SELECT * FROM sites WHERE id = ?", [$id]);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Update a site (name, headless).
+     * @param int $id
+     * @param string $name
+     * @param int $headless
+     * @return bool
+     */
+    public function updateSite($id, $name, $headless)
+    {
+        try {
+            return $this->db->query("UPDATE sites SET name = ?, headless = ?, updated_at = NOW() WHERE id = ?", [$name, $headless, $id]);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
     /**
      * @var DB Database connection
      */
@@ -66,8 +95,13 @@ class Site
      */
     public function create($name, $apiKey)
     {
+        return $this->createWithHeadless($name, $apiKey, 0);
+    }
+
+    public function createWithHeadless($name, $apiKey, $headless = 0)
+    {
         try {
-            return $this->db->query("INSERT INTO sites (name, api_key, status) VALUES (?, ?, 'active')", [$name, $apiKey]);
+            return $this->db->query("INSERT INTO sites (name, api_key, status, headless) VALUES (?, ?, 'active', ?)", [$name, $apiKey, $headless]);
         } catch (\Throwable $e) {
             // Log error or handle as needed
             return false;

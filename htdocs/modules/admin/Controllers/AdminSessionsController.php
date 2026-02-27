@@ -21,7 +21,7 @@ class AdminSessionsController
             global $config;
             // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
+            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             if (!$admin_id) {
@@ -47,8 +47,8 @@ class AdminSessionsController
             include_once __DIR__ . '/../../../app/bootstrap.php';
             $localConfig = include __DIR__ . '/../../../app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
-            $db = new \App\DB($config['db']);
+            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
+            $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             $session_id = $_POST['session_id'] ?? null;
             if (!$admin_id || !$session_id) {
@@ -76,8 +76,8 @@ class AdminSessionsController
             include_once __DIR__ . '/../../../app/bootstrap.php';
             $localConfig = include __DIR__ . '/../../../app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config['db'], true));
-            $db = new \App\DB($config['db']);
+            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
+            $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             $session_id = $_POST['session_id'] ?? null;
             $device_info = trim($_POST['device_info'] ?? '');

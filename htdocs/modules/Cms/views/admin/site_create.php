@@ -124,6 +124,11 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <label for="name" class="form-label">Site Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
+            <div class="mb-3">
+                <label for="headless" class="form-label">Headless (API Only)</label>
+                <input type="checkbox" id="headless" name="headless" value="1">
+                <span style="font-size:13px;color:#666;">If checked, this site will be headless (API only, no frontend).</span>
+            </div>
             <button type="submit" class="btn btn-success">Create Site</button>
             <a href="/admin/cms/sites" class="btn btn-secondary">Cancel</a>
         </form>

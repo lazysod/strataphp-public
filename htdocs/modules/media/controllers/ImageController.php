@@ -17,14 +17,19 @@ class ImageController
         if (is_dir($uploadDir)) {
             $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($uploadDir, \FilesystemIterator::SKIP_DOTS));
             foreach ($rii as $fileInfo) {
+                // Skip files in thumbs/ subdirectory
+                if (strpos($fileInfo->getPath(), DIRECTORY_SEPARATOR . 'thumbs') !== false) {
+                    continue;
+                }
                 if ($fileInfo->isFile()) {
                     $filename = $fileInfo->getFilename();
                     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
                     if (in_array($ext, ['jpg','jpeg','png','gif','webp','heic','pdf'])) {
+                        $thumbName = (in_array($ext, ['jpg','jpeg','png','gif','webp'])) ? preg_replace('/(\.[a-zA-Z0-9]+)$/', '_thumb$1', $filename) : $filename;
                         $images[] = [
                             'filename' => $filename,
                             'url' => '/storage/uploads/media/' . $filename,
-                            'thumbnail' => in_array($ext, ['jpg','jpeg','png','gif','webp']) ? '/storage/uploads/media/thumbs/' . $filename : '/storage/uploads/media/' . $filename,
+                            'thumbnail' => (in_array($ext, ['jpg','jpeg','png','gif','webp']) ? '/storage/uploads/media/thumbs/' . $thumbName : '/storage/uploads/media/' . $filename),
                             'size' => $fileInfo->getSize(),
                             'uploaded' => date('Y-m-d H:i', $fileInfo->getMTime()),
                         ];
@@ -72,10 +77,16 @@ class ImageController
             // If image, also delete thumbnail if exists
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
             if (in_array($ext, ['jpg','jpeg','png','gif','webp','heic'])) {
-                $thumbPath = dirname($filePath) . '/thumbs/' . $filename;
+                $dotPos = strrpos($filename, '.');
+                if ($dotPos !== false) {
+                    $thumbFilename = substr($filename, 0, $dotPos) . '_thumb' . substr($filename, $dotPos);
+                } else {
+                    $thumbFilename = $filename . '_thumb';
+                }
+                $thumbPath = dirname($filePath) . '/thumbs/' . $thumbFilename;
                 if (!file_exists($thumbPath)) {
                     // Try thumbs dir in main upload dir
-                    $thumbPath = $this->uploadDir . 'thumbs/' . $filename;
+                    $thumbPath = $this->uploadDir . 'thumbs/' . $thumbFilename;
                 }
                 if (file_exists($thumbPath)) {
                     @unlink($thumbPath);
@@ -143,8 +154,15 @@ class ImageController
                 throw new \Exception('Failed to upload file');
             }
             $thumbnailPath = null;
+            $thumbFilename = $filename;
             if (strpos($mimeType, 'image/') === 0 && $mimeType !== 'image/heic') {
                 $thumbnailPath = $this->createThumbnail($filepath, $filename);
+                $dotPos = strrpos($filename, '.');
+                if ($dotPos !== false) {
+                    $thumbFilename = substr($filename, 0, $dotPos) . '_thumb' . substr($filename, $dotPos);
+                } else {
+                    $thumbFilename = $filename . '_thumb';
+                }
             }
             ob_clean();
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
@@ -154,7 +172,7 @@ class ImageController
                 'success' => true,
                 'filename' => $filename,
                 'url' => $baseUrl . '/storage/uploads/media/' . $filename,
-                'thumbnail' => $thumbnailPath ? $baseUrl . '/storage/uploads/media/thumbs/' . $filename : $baseUrl . '/storage/uploads/media/' . $filename,
+                'thumbnail' => $thumbnailPath ? $baseUrl . '/storage/uploads/media/thumbs/' . $thumbFilename : $baseUrl . '/storage/uploads/media/' . $filename,
                 'size' => filesize($filepath)
             ]);
         } catch (\Exception $e) {
@@ -207,7 +225,14 @@ class ImageController
         if (!is_dir($thumbDir)) {
             mkdir($thumbDir, 0755, true);
         }
-        $thumbPath = $thumbDir . $filename;
+        // Insert _thumb before the file extension
+        $dotPos = strrpos($filename, '.');
+        if ($dotPos !== false) {
+            $thumbFilename = substr($filename, 0, $dotPos) . '_thumb' . substr($filename, $dotPos);
+        } else {
+            $thumbFilename = $filename . '_thumb';
+        }
+        $thumbPath = $thumbDir . $thumbFilename;
         try {
             $originalErrorReporting = error_reporting();
             $originalDisplayErrors = ini_get('display_errors');

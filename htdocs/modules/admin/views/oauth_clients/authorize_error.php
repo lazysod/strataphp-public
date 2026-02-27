@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__DIR__, 5) . '/bootstrap.php';
+require_once dirname(__DIR__, 4) . '/bootstrap.php';
 require dirname(__DIR__, 4) . '/views/partials/header.php';
 ?>
 <section class="py-5">

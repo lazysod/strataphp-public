@@ -3,6 +3,10 @@ namespace App\Modules\admin\OAuthClients\Controllers;
 
 use App\DB;
 
+/**
+ * Controller for managing OAuth clients.
+ * Handles listing, adding, and error management for OAuth clients.
+ */
 class OAuthClientsController
 {
     protected $db;
@@ -13,34 +17,48 @@ class OAuthClientsController
      * @param DB|null $db Optional injected DB instance
      * @throws \Exception
      */
+    /**
+     * Constructor for OAuthClientsController.
+     * Initializes DB connection from injected instance, global config, or config file.
+     * Throws exception if DB config is missing.
+     * @param DB|null $db Optional injected DB instance
+     * @throws \Exception
+     */
     public function __construct($db = null)
     {
         if ($db) {
-            die('OAuthClientsController: using injected DB instance');
+            // Log usage of injected DB instance
+            error_log('OAuthClientsController: using injected DB instance');
             $this->db = $db;
         } else {
-            // Try global $config first
-            global $config;
-            if (isset($config) && isset($config['db'])) {
-                error_log('OAuthClientsController: using global $config');
-                $this->db = new DB($config);
-                return;
+            try {
+                // Try global $config first
+                global $config;
+                if (isset($config) && isset($config['db'])) {
+                    error_log('OAuthClientsController: using global $config');
+                    $this->db = new DB($config);
+                    return;
+                }
+                // fallback: load config from file
+                $configPath = dirname(__DIR__, 4) . '/app/config.php';
+                $configFile = file_exists($configPath) ? require $configPath : [];
+                error_log('OAuthClientsController: loaded config file!: ');
+                if (!isset($configFile['db'])) {
+                    error_log('Database config missing in OAuthClientsController');
+                    throw new \Exception('Database config missing');
+                }
+                $this->db = new DB($configFile);
+            } catch (\Exception $e) {
+                error_log('Error initializing DB in OAuthClientsController: ' . $e->getMessage());
+                throw $e;
             }
-            // fallback: load config from file
-            $configPath = dirname(__DIR__, 4) . '/app/config.php';
-            $configFile = file_exists($configPath) ? require $configPath : [];
-            error_log('OAuthClientsController: loaded config file!: ');
-            if (!isset($configFile['db'])) {
-                error_log('Database config missing in OAuthClientsController');
-                throw new \Exception('Database config missing');
-            }
-            $this->db = new DB($configFile);
         }
     }
 
     /**
      * List all OAuth clients.
      * Displays client list view.
+     * Handles errors gracefully.
      */
     public function index()
     {
@@ -49,13 +67,19 @@ class OAuthClientsController
             $clients = $this->db->fetchAll('SELECT * FROM oauth_clients ORDER BY id DESC');
         } catch (\Exception $e) {
             error_log('Error fetching OAuth clients: ' . $e->getMessage());
+            $clients = [];
         }
-        include __DIR__ . '/../views/list.php';
+        try {
+            include __DIR__ . '/../views/list.php';
+        } catch (\Exception $e) {
+            error_log('Error including list view: ' . $e->getMessage());
+        }
     }
 
     /**
      * Show add client form and handle POST.
      * Registers new OAuth client if valid POST data.
+     * Handles errors gracefully.
      */
     public function add()
     {
@@ -77,6 +101,10 @@ class OAuthClientsController
                 $error = 'Name and Redirect URI required.';
             }
         }
-        include __DIR__ . '/../views/add.php';
+        try {
+            include __DIR__ . '/../views/add.php';
+        } catch (\Exception $e) {
+            error_log('Error including add view: ' . $e->getMessage());
+        }
     }
 }

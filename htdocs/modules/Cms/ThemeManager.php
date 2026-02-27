@@ -1,6 +1,6 @@
 <?php
 namespace App\Modules\Cms;
-
+use App\Modules\Cms\Helpers\SiteHelper;
 use App\HtmlSanitizer;
 
 /**
@@ -273,28 +273,29 @@ h1, h2, h3, h4, h5, h6 {
     public function getPageMeta($page)
     {
         $baseUrl = $this->getBaseUrl();
-        $pageUrl = $this->getPageUrl($page['slug']);
-        
+        $slug = isset($page['slug']) ? $page['slug'] : '';
+        $pageUrl = $this->getPageUrl($slug);
+
         return [
-            'title' => $page['meta_title'] ?: $page['title'],
-            'description' => $page['meta_description'] ?: $page['excerpt'],
-            'canonical' => $page['canonical_url'] ?: $pageUrl,
+            'title' => $page['meta_title'] ?? ($page['title'] ?? ''),
+            'description' => $page['meta_description'] ?? ($page['excerpt'] ?? ''),
+            'canonical' => $page['canonical_url'] ?? $pageUrl,
             'noindex' => !empty($page['noindex']),
-            
+
             // Open Graph
-            'og_title' => $page['meta_title'] ?: $page['title'],
-            'og_description' => $page['meta_description'] ?: $page['excerpt'],
-            'og_type' => $page['og_type'] ?: 'article',
+            'og_title' => $page['meta_title'] ?? ($page['title'] ?? ''),
+            'og_description' => $page['meta_description'] ?? ($page['excerpt'] ?? ''),
+            'og_type' => $page['og_type'] ?? 'article',
             'og_url' => $pageUrl,
-            'og_image' => $page['og_image'] ? $this->resolveImageUrl($page['og_image']) : null,
-            'og_site_name' => $this->config['site_name'] ?? $_SERVER['HTTP_HOST'] ?? 'Website',
-            
+            'og_image' => !empty($page['og_image']) ? $this->resolveImageUrl($page['og_image']) : null,
+            'og_site_name' => $this->config['site_name'] ?? ($_SERVER['HTTP_HOST'] ?? 'Website'),
+
             // Twitter Cards
-            'twitter_card' => $page['twitter_card'] ?: 'summary',
-            'twitter_title' => $page['meta_title'] ?: $page['title'],
-            'twitter_description' => $page['meta_description'] ?: $page['excerpt'],
-            'twitter_image' => $page['og_image'] ? $this->resolveImageUrl($page['og_image']) : null,
-            
+            'twitter_card' => $page['twitter_card'] ?? 'summary',
+            'twitter_title' => $page['meta_title'] ?? ($page['title'] ?? ''),
+            'twitter_description' => $page['meta_description'] ?? ($page['excerpt'] ?? ''),
+            'twitter_image' => !empty($page['og_image']) ? $this->resolveImageUrl($page['og_image']) : null,
+
             // Additional meta
             'author' => $page['author_name'] ?? null,
             'published_time' => $page['created_at'] ?? null,
@@ -413,13 +414,14 @@ h1, h2, h3, h4, h5, h6 {
             // error_log('DEBUG: ThemeManager.php DB config: ' . print_r($config['db'], true));
             $db = new \App\DB($config);
 
-            // Get published pages for navigation (with parent_id)
+            // Get published pages for navigation (with parent_id) for current site
+            $siteId = SiteHelper::getCurrentSiteId();
             $pages = $db->fetchAll("
                 SELECT id, title, slug, menu_order, is_home, parent_id
                 FROM cms_pages
-                WHERE status = 'published' AND show_in_nav = 1
+                WHERE status = 'published' AND show_in_nav = 1 AND site_id = ?
                 ORDER BY menu_order ASC, title ASC
-            ");
+            ", [$siteId]);
 
             // Build a map of id => page
             $pageMap = [];

@@ -22,7 +22,7 @@ ob_start();
         <?php
         $avatarPath = $user['avatar'] ?? '';
         if ($avatarPath && file_exists($_SERVER['DOCUMENT_ROOT'] . $avatarPath)) {
-            echo '<img src="' . htmlspecialchars($avatarPath) . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
+            echo '<img src="' . htmlspecialchars($config['base_url'] ?? '') . htmlspecialchars($avatarPath) . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';
         } else {
             $gravatar = 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($user['email'] ?? ''))) . '?s=80&r=g&d=mm';
             echo '<img src="' . htmlspecialchars($gravatar, ENT_QUOTES, 'UTF-8') . '" alt="Avatar" class="rounded-circle mb-2" style="width:80px;height:80px;object-fit:cover;">';

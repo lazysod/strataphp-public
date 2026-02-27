@@ -11,6 +11,8 @@ use App\View;
  *
  * Handles public and admin page operations for the StrataPHP CMS module.
  */
+use App\Modules\Cms\Helpers\SiteHelper;
+
 class PageController
 {
     private $db;
@@ -29,18 +31,29 @@ class PageController
     {
         try {
             $pageModel = new Page($this->config);
-
-            // Try to find the page marked as home
-            $homePage = $pageModel->getHomePage();
-            // Fallback: page with slug 'home'
-            if (!$homePage) {
-                $homePage = $pageModel->findBySlug('home');
+            $siteId = SiteHelper::getCurrentSiteId();
+            // Try to find the home page for this site
+            $pages = $pageModel->getAllBySite($siteId);
+            $homePage = null;
+            foreach ($pages as $p) {
+                if (!empty($p['is_home'])) {
+                    $homePage = $p;
+                    break;
+                }
             }
-            // Fallback: first published page
+            // Fallback: page with slug 'home' for this site
             if (!$homePage) {
-                $homePage = $pageModel->getFirstPublished();
+                foreach ($pages as $p) {
+                    if ($p['slug'] === 'home') {
+                        $homePage = $p;
+                        break;
+                    }
+                }
             }
-
+            // Fallback: first published page for this site
+            if (!$homePage && !empty($pages)) {
+                $homePage = $pages[0];
+            }
             if (!$homePage) {
                 // If no pages exist, show a default welcome message
                 $data = [
@@ -64,7 +77,6 @@ class PageController
                     'page' => $homePage
                 ];
             }
-            
             $this->renderPage($data);
         } catch (\Exception $e) {
             $this->showError('Unable to load the home page.');

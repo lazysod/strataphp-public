@@ -522,7 +522,13 @@ class ModuleInstallerController
     private function findModuleFromSpec($extractDir, $specFile)
     {
         try {
-            $content = file_get_contents($specFile);
+            $content = '';
+            if (is_readable($specFile)) {
+                $content = file_get_contents($specFile);
+            } else {
+                error_log('Spec file not readable: ' . $specFile);
+                throw new \Exception('Spec file not readable');
+            }
             $lines = array_filter(array_map('trim', explode("\n", $content)));
             
             foreach ($lines as $line) {

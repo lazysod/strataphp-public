@@ -19,6 +19,7 @@
         <h1>Media Dashboard</h1>
         <p>Welcome to the Media Module Dashboard. Here you can manage uploads, view the media library, and configure settings.</p>
         <a href="/admin/media/media-library" class="btn">Go to Media Library</a>
+        <a href="/admin/cms" class="btn">Go to CMS</a>
     </div>
 </body>
 </html>

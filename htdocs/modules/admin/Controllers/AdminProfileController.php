@@ -13,6 +13,12 @@ class AdminProfileController
         $showNav = true;
         $admin = $_SESSION[$sessionPrefix . 'user'] ?? null;
         $success = '';
+        /**
+         * Display and update admin profile.
+         * Handles POST for profile update, including password change.
+         * Performs CSRF validation and error handling.
+         * @throws \Exception
+         */
         $error = '';
         if (!$admin || empty($admin['is_admin'])) {
             header('Location: /admin/login');

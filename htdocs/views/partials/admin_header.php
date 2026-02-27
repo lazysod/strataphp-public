@@ -6,6 +6,12 @@ $controllersDir = __DIR__ . '/../../controllers/';
 $controllerFiles = glob($controllersDir . '*Controller.php');
 $navConfig = include __DIR__ . '/../../app/adminNavConfig.php';
 $sessionPrefix = $config['session_prefix'];
+$modules = include __DIR__ . '/../../app/modules.php';
+if (isset($modules['modules'])) {
+    $modules = $modules['modules'];
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +21,7 @@ $sessionPrefix = $config['session_prefix'];
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>
         <?php
-        echo \App\App::config('site_name');
+        echo App::config('site_name');
         if (isset($title)) {
             echo ' - ' . (isset($title) ? $title : '');
         }
@@ -28,7 +34,7 @@ $sessionPrefix = $config['session_prefix'];
     <!-- Font Awesome (required for forum icons)-->
     <link rel="stylesheet" href="/themes/default/assets/fontawesome/css/all.min.css">
 
-    <link rel="stylesheet" href="<?php echo \App\App::config('theme_path'); ?>/css/styles.css">
+    <link rel="stylesheet" href="<?php echo App::config('theme_path'); ?>/css/styles.css">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -52,6 +58,10 @@ $sessionPrefix = $config['session_prefix'];
                                 echo '<li class="nav-item"><a class="nav-link" href="/admin/admin_login.php">Admin Login</a></li>';
                             } else {
                                 foreach ($navConfig as $key => $config) {
+                                    if (isset($modules[$key]) && array_key_exists('enabled', $modules[$key]) && $modules[$key]['enabled'] === false) {
+                                        echo '<!-- Module ' . htmlspecialchars($key) . ' is disabled, skipping nav item -->';
+                                        continue;
+                                    }
                                     if (!($config['show'] ?? true)) { continue; }
                                     $label = $config['label'] ?? $key;
                                     $url = $config['url'] ?? ('/' . strtolower($key));
@@ -60,7 +70,7 @@ $sessionPrefix = $config['session_prefix'];
                                     if (!empty($config['children'])) {
                                         $active = ($url === $currentPath) ? ' class="active nav-item dropdown"' : ' class=" nav-item dropdown"';
                                         echo '<li' . $active . '>';
-                                        $slug = \App\App::stripSpaces($label);
+                                        $slug = App::stripSpaces($label);
                                         echo '<a class="nav-link dropdown-toggle" href="' . $url . '" id="navbarDropdown' . $slug . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . $label . '</a>';
                                         echo '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown' . $slug . '">';
                                         foreach ($config['children'] as $childKey => $child) {
@@ -89,11 +99,11 @@ $sessionPrefix = $config['session_prefix'];
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                         <?php $currentPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); ?>
-                                        <li><a class="dropdown-item" href="<?php echo \App\App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo \App\App::config('base_url'); ?>/admin/sessions">Device & Sessions</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo \App\App::config('base_url'); ?>/logout.php">Logout</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/sessions">Device & Sessions</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/logout.php">Logout</a></li>
                                         <li><hr></li>
-                                        <li><a class="dropdown-item" href="<?php echo \App\App::config('base_url'); ?>">Front Page</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>">Front Page</a></li>
                                     </ul>
                                 </li>
                             <?php else: ?>

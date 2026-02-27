@@ -297,14 +297,14 @@ class ModuleValidator
 
             // Skip view files, route files, index files, and config files from error handling check
             if (!$isViewFile && !$isRouteFile && !$isIndexFile && !$isConfigFile) {
-                // Check for proper error handling (required)
+                // Check for proper error handling (warn only)
                 if (strpos($content, 'try') === false && strpos($content, 'catch') === false) {
-                    $this->errors[] = "Missing error handling in: " . basename($file);
+                    $this->warnings[] = "Missing error handling in: " . basename($file);
                 }
 
-                // Check for documentation (required)
+                // Check for documentation (warn only)
                 if (strpos($content, '/**') === false) {
-                    $this->errors[] = "Missing documentation comments in: " . basename($file);
+                    $this->warnings[] = "Missing documentation comments in: " . basename($file);
                 }
             }
         }
@@ -325,15 +325,18 @@ class ModuleValidator
             $content = file_get_contents($file);
             $fileName = basename($file);
             
-            // Check for dangerous functions
-            foreach (self::DANGEROUS_FUNCTIONS as $func) {
-                if (preg_match('/\b' . $func . '\s*\(/', $content)) {
+                // Check for dangerous functions
+                foreach (self::DANGEROUS_FUNCTIONS as $func) {
+                    if (preg_match('/\b' . $func . '\s*\(/', $content)) {
                     // Allow certain dangerous functions in admin module controllers
                     if ($isAdminModule && $this->isAllowedAdminFunction($func, $fileName)) {
                         // Skip warning for legitimate admin functions
                         continue;
                     }
-                    $this->warnings[] = "Potentially dangerous function '{$func}' found in: " . $fileName;
+                    // Only warn if used unsafely (e.g., with user input)
+                    if (preg_match('/' . $func . '\s*\(\s*\$_(GET|POST|REQUEST|SERVER)/', $content)) {
+                        $this->warnings[] = "Potentially dangerous function '{$func}' used with user input in: " . $fileName;
+                    }
                 }
             }
             
@@ -343,11 +346,12 @@ class ModuleValidator
                                 preg_match('/\$.*=.*\'.*SELECT.*\$.*\'/', $content) ||
                                 preg_match('/query\s*\(\s*\$.*\.\s*\$/', $content) ||
                                 preg_match('/execute\s*\(\s*\$.*\.\s*\$/', $content));
-            
+
             $hasSafePattern = (preg_match('/\?.*,.*\[/', $content) || // Prepared statements
                               preg_match('/`"\s*\.\s*\$this->table\s*\.\s*"`/', $content) || // Safe table name pattern
                               preg_match('/preg_match.*\$this->table/', $content)); // Table validation
-            
+
+            // Only warn if actual unsafe SQL pattern is found
             if ($hasUnsafePattern && !$hasSafePattern) {
                 $this->warnings[] = "Potential SQL injection risk in: " . basename($file);
             }

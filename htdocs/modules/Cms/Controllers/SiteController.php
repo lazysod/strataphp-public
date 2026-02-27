@@ -6,19 +6,13 @@ use App\DB;
 use App\Modules\Cms\Models\Site;
 
 /**
- * Class SiteController
- *
  * Handles listing, creating, updating, and deleting sites, as well as API key management for the StrataPHP CMS module.
  */
 class SiteController
 {
-    /**
-     * @var DB Database connection
-     */
+    /** @var DB */
     private $db;
-    /**
-     * @var array Configuration array
-     */
+    /** @var array */
     private $config;
 
     /**
@@ -26,7 +20,6 @@ class SiteController
      */
     public function __construct()
     {
-        // Define the constant to allow access to CMS view files
         if (!defined('STRPHP_ROOT')) {
             define('STRPHP_ROOT', true);
         }
@@ -35,9 +28,32 @@ class SiteController
     }
 
     /**
+     * Set the active site (from dropdown)
+     */
+    public function setActive()
+    {
+        try {
+            $activeSiteId = isset($_POST['active_site_id']) ? (int)$_POST['active_site_id'] : null;
+            if (!$activeSiteId) {
+                $_SESSION['error'] = 'No site selected.';
+                header('Location: /admin/cms/sites');
+                exit;
+            }
+            // Update config table (assumes table: config, columns: config_key, config_value)
+            $this->db->query("REPLACE INTO config (config_key, config_value) VALUES ('active_site_id', ?)", [$activeSiteId]);
+            $_SESSION['success'] = 'Active site updated!';
+            header('Location: /admin/cms/sites');
+            exit;
+        } catch (\Throwable $e) {
+            $_SESSION['error'] = 'Failed to set active site.';
+            header('Location: /admin/cms/sites');
+            exit;
+        }
+    }
+
+    /**
      * List all sites.
      * Loads the sites list view.
-     * @return void
      */
     public function index()
     {
@@ -45,16 +61,19 @@ class SiteController
             require_once __DIR__ . '/../models/Site.php';
             $siteModel = new Site($this->config);
             $sites = $siteModel->getAll();
+            // Get active site from config table
+            $row = $this->db->fetch("SELECT config_value FROM config WHERE config_key = 'active_site_id' LIMIT 1");
+            $activeSiteId = $row && isset($row['config_value']) ? (int)$row['config_value'] : null;
             include __DIR__ . '/../views/admin/sites_list.php';
         } catch (\Throwable $e) {
-            $_SESSION['error'] = 'An error occurred loading the sites list.';
-            header('Location: /admin/cms');
+            $_SESSION['error'] = 'An error occurred loading the sites list: ' . $e->getMessage();
+            echo '<pre style="color:red;">' . htmlspecialchars($e) . '</pre>';
+            exit;
         }
     }
 
     /**
      * Show the create site form.
-     * @return void
      */
     public function create()
     {
@@ -68,7 +87,6 @@ class SiteController
 
     /**
      * Handle create site POST request.
-     * @return void
      */
     public function store()
     {
@@ -76,12 +94,14 @@ class SiteController
             require_once __DIR__ . '/../models/Site.php';
             $siteModel = new Site($this->config);
             $name = trim($_POST['name'] ?? '');
+            $headless = isset($_POST['headless']) && $_POST['headless'] == '1' ? 1 : 0;
             if (!$name) {
                 $_SESSION['error'] = 'Site name is required.';
                 header('Location: /admin/cms/sites/create');
+                exit;
             }
             $apiKey = bin2hex(random_bytes(32));
-            $siteModel->create($name, $apiKey);
+            $siteModel->create($name, $apiKey, $headless);
             $_SESSION['success'] = 'Site created!';
             header('Location: /admin/cms/sites');
         } catch (\Throwable $e) {
@@ -91,9 +111,52 @@ class SiteController
     }
 
     /**
+     * Show the edit site form.
+     */
+    public function edit($id)
+    {
+        try {
+            require_once __DIR__ . '/../models/Site.php';
+            $siteModel = new Site($this->config);
+            $site = $siteModel->getById($id);
+            if (!$site) {
+                $_SESSION['error'] = 'Site not found.';
+                header('Location: /admin/cms/sites');
+                exit;
+            }
+            include __DIR__ . '/../views/admin/site_edit.php';
+        } catch (\Throwable $e) {
+            $_SESSION['error'] = 'An error occurred loading the edit site form.';
+            header('Location: /admin/cms/sites');
+        }
+    }
+
+    /**
+     * Handle update site POST request.
+     */
+    public function update($id)
+    {
+        try {
+            require_once __DIR__ . '/../models/Site.php';
+            $siteModel = new Site($this->config);
+            $name = trim($_POST['name'] ?? '');
+            $headless = isset($_POST['headless']) && $_POST['headless'] == '1' ? 1 : 0;
+            if (!$name) {
+                $_SESSION['error'] = 'Site name is required.';
+                header('Location: /admin/cms/sites/edit/' . $id);
+                exit;
+            }
+            $siteModel->updateSite($id, $name, $headless);
+            $_SESSION['success'] = 'Site updated!';
+            header('Location: /admin/cms/sites');
+        } catch (\Throwable $e) {
+            $_SESSION['error'] = 'An error occurred updating the site.';
+            header('Location: /admin/cms/sites/edit/' . $id);
+        }
+    }
+
+    /**
      * Regenerate API key for a site.
-     * @param int $id Site ID
-     * @return void
      */
     public function regenerateKey($id)
     {
@@ -111,17 +174,18 @@ class SiteController
     }
 
     /**
-     * Delete a site.
-     * @param int $id Site ID
-     * @return void
+     * Delete a site and all its pages.
      */
     public function delete($id)
     {
         try {
             require_once __DIR__ . '/../models/Site.php';
+            require_once __DIR__ . '/../models/Page.php';
             $siteModel = new Site($this->config);
+            $pageModel = new \App\Modules\Cms\Models\Page($this->config);
+            $this->db->query("DELETE FROM cms_pages WHERE site_id = ?", [$id]);
             if ($siteModel->delete($id)) {
-                $_SESSION['success'] = 'Site deleted.';
+                $_SESSION['success'] = 'Site and all its pages deleted.';
             } else {
                 $_SESSION['error'] = 'Failed to delete site.';
             }

@@ -200,6 +200,11 @@ try {
             <?= $page['content'] ?? '' ?>
         </article>
     </main>
+    <footer class="cms-footer mt-5 py-4 bg-light">
+        <div class="container text-center">
+            <p class="mb-0">&copy; <?= date('Y') ?> <?= htmlspecialchars($theme['config']['site_name'] ?? 'CMS') ?>. All rights reserved.</p>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/modules/cms/themes/modern/assets/js/theme.js"></script>
 </body>

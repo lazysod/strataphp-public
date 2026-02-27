@@ -18,8 +18,11 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     $router->post('/admin/cms/sites/delete/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'delete']);
     // Sites management (multi-tenant API)
     $router->get('/admin/cms/sites', [\App\Modules\Cms\Controllers\SiteController::class, 'index']);
+    $router->post('/admin/cms/sites/set-active', [\App\Modules\Cms\Controllers\SiteController::class, 'setActive']);
     $router->get('/admin/cms/sites/create', [\App\Modules\Cms\Controllers\SiteController::class, 'create']);
     $router->post('/admin/cms/sites/store', [\App\Modules\Cms\Controllers\SiteController::class, 'store']);
+    $router->get('/admin/cms/sites/edit/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'edit']);
+    $router->post('/admin/cms/sites/update/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'update']);
     $router->get('/admin/cms/sites/regenerate/{id}', [\App\Modules\Cms\Controllers\SiteController::class, 'regenerateKey']);
     
     // Public page routes - Dynamic routing for CMS pages
@@ -39,9 +42,10 @@ if (!empty(App::config('modules')['cms']['enabled'])) {
     
 
     
-    // API routes for headless usage
-    $router->get('/api/cms/pages', [CmsController::class, 'apiPages']);
-    $router->get('/api/cms/pages/{slug}', [CmsController::class, 'apiPage']);
+    // API routes for headless usage (new, API key required)
+    $router->get('/api/pages', [\App\Modules\Cms\Controllers\ApiController::class, 'pages']);
+    // Deprecated: $router->get('/api/cms/pages', [CmsController::class, 'apiPages']);
+    // Deprecated: $router->get('/api/cms/pages/{slug}', [CmsController::class, 'apiPage']);
     
     // Fallback route for dynamic pages (must be last)
     $router->get('/{slug}', [PageController::class, 'dynamicPage']);

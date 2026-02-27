@@ -1,5 +1,3 @@
-
-
 <?php
 // Ensure $config is available and complete
 if (!isset($config) || !is_array($config) || empty($config['site_name'])) {

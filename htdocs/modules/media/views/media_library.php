@@ -213,6 +213,11 @@
             window.close();
             return;
         }
+        // Post message to parent if in iframe (for modal usage)
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ mediaUrl: url }, window.location.origin);
+            return;
+        }
         // Fallback: try to set input field in parent
         if (window.opener) {
             var field = new URLSearchParams(window.location.search).get('field');

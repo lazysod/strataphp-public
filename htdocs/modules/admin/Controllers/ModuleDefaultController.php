@@ -7,6 +7,11 @@ require_once __DIR__ . '/../../../app/updateDefaultModule.php';
 
 class ModuleDefaultController
 {
+    /**
+     * Set the default module from the admin UI.
+     * Handles POST request and updates the default module.
+     * @throws \Exception
+     */
     public function setDefault()
     {
         error_log('ModuleDefaultController::setDefault called');
@@ -17,7 +22,7 @@ class ModuleDefaultController
                 updateDefaultModule($newDefault);
                 error_log('Default module updated to: ' . $newDefault);
                 $_SESSION['success'] = 'Default module updated to ' . htmlspecialchars($newDefault);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 error_log('Failed to update default module: ' . $e->getMessage());
                 $_SESSION['error'] = 'Failed to update default module: ' . $e->getMessage();
             }
