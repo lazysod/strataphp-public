@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\admin\OAuthClients\Controllers;
+namespace App\Modules\Admin\OAuthClients\Controllers;
 
 use App\DB;
 

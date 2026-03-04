@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\admin\Controllers;
+namespace App\Modules\Admin\Controllers;
 
 /**
  * Admin Sessions Controller

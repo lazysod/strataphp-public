@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Analytics Admin Controller
+namespace App\Modules\GoogleAnalytics;
  * Provides a simple admin interface for updating the Measurement ID
  * Includes error handling and documentation comments.
  */

@@ -3,7 +3,7 @@ $bootstrapPath = dirname(__DIR__, 2) . '/app/bootstrap.php';
 if (file_exists($bootstrapPath)) {
     include_once $bootstrapPath;
 }
-require __DIR__ . '/../partials/header.php';
+require __DIR__ . '/../partials/admin_header.php';
 require_once __DIR__ . '/../../app/config.php';
 
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');

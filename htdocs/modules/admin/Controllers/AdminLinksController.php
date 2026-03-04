@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\admin\Controllers;
+namespace App\Modules\Admin\Controllers;
 
 use App\DB;
 use App\Modules\Admin\Models\Links;

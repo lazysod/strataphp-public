@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\media\Controllers;
+namespace App\Modules\Media\Controllers;
 
 /**
  * Image Upload Handler for Media Module

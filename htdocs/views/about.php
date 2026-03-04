@@ -3,6 +3,7 @@ $title = 'About - New Framework';
 $pageJs = 'about';
 // ...header is now handled by controller or view system
 ?>
+<?php include __DIR__ . '/partials/header.php'; ?>
 <section class="py-5" id="features">
     <div class="container px-5 my-5">
         <div class="row gx-5">
@@ -15,4 +16,4 @@ $pageJs = 'about';
         </div>
     </div>
 </section>
-// ...footer is now handled by controller or view system
+<?php include __DIR__ . '/partials/footer.php'; ?>  

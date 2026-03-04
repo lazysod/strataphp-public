@@ -14,11 +14,11 @@ class AdminController
         try {
             //  you can add admin stats or queries here
             global $config;
-            include dirname(__DIR__, 3) . '/views/admin/admin_dashboard.php';
+            include __DIR__ . '/../views/admin_dashboard.php';
         } catch (\Exception $e) {
             error_log('AdminController dashboard error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to load dashboard.';
-            include dirname(__DIR__, 3) . '/views/admin/admin_dashboard.php';
+            include __DIR__ . '/../views/admin_dashboard.php';
         }
     }
     /**

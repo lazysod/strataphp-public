@@ -12,9 +12,6 @@ namespace App\App;
 /**
  * Exception thrown when theme configuration cannot be loaded.
  */
-class ThemeConfigException extends \Exception
-{
-}
 
 /**
  * Load theme configuration from a theme folder with robust error handling.

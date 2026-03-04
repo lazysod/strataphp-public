@@ -23,7 +23,7 @@ class AboutController
             $view->render('about.twig', $data);
         } else {
             // Render classic PHP view (about.php) with theme support
-            \App\App::loadView('about', $data);
+            App::loadView('about', $data);
         }
     }
 }

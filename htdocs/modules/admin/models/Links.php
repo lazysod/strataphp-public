@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\admin\Models;
+namespace App\Modules\Admin\Models;
 
 use Exception;
 

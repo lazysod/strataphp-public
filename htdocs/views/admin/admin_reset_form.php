@@ -14,7 +14,7 @@ if (!$token) {
     header('Location: /admin/reset-request');
     exit;
 }
-require __DIR__ . '/../partials/header.php';
+require __DIR__ . '/../partials/admin_header.php';
 ?>
 <section class="py-5">
     <div class="container px-5">

@@ -1,6 +1,5 @@
 <?php
-namespace App\Modules\admin\Controllers;
-
+namespace App\Modules\Admin\Controllers;
 require_once dirname(__DIR__, 4) . '/htdocs/bootstrap.php';
 use App\DB;
 use App\User;

@@ -25,7 +25,11 @@ if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     exit;
 }
 
-require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
+if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php')) {
+    require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
+} else {
+    echo '<!-- Missing admin_header.php -->';
+}
 // Show module update messages at the top
 if (!empty($_SESSION['module_update_success'])) {
     echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['module_update_success']) . '</div>';
@@ -1136,4 +1140,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php'; ?>
+<?php 
+if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php')) {
+    require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/footer.php';
+} else {
+    echo '<!-- Missing footer.php -->';
+}
+?>
