@@ -17,11 +17,11 @@ class AdminSessionsController
     public function index()
     {
         try {
-            $bootstrapPath = $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
-            if (file_exists($bootstrapPath)) {
+            $bootstrapPath = realpath(__DIR__ . '/../../../app/bootstrap.php');
+            if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . $bootstrapPath);
+                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
@@ -61,7 +61,8 @@ class AdminSessionsController
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
             }
-            $localConfig = include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
+            $configPath = realpath(__DIR__ . '/../../../app/config.php');
+            $localConfig = $configPath && file_exists($configPath) ? include $configPath : [];
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
@@ -98,7 +99,8 @@ class AdminSessionsController
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
             }
-            $localConfig = include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
+            $configPath = realpath(__DIR__ . '/../../../app/config.php');
+            $localConfig = $configPath && file_exists($configPath) ? include $configPath : [];
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
