@@ -61,11 +61,11 @@ return [
             ]
         ]
     ],
-    'example_link' => [
-        'label' => 'Example link',
-        'url' => '#example',
+    'GoogleAnalytics' => [
+        'label' => 'Analytics',
         'show' => true,
-        'order' => 4
+        'order' => 21,
+        'url' => '/admin/google-analytics-settings'
     ]
     // ...other items
 ];

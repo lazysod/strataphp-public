@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Google_Analytics\Controllers;
+namespace App\Modules\GoogleAnalytics\Controllers;
 
 use App\DB;
-use App\Modules\Google_Analytics\Models\GoogleAnalytics;
+use App\Modules\GoogleAnalytics\Models\GoogleAnalytics;
 
 class GoogleAnalyticsController
 {

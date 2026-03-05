@@ -1,12 +1,12 @@
 <?php
-namespace App\Modules\Google_Analytics\Models;
+namespace App\Modules\GoogleAnalytics\Models;
 
 use App\DB;
 
 class GoogleAnalytics
 {
     private $db;
-    private $table = 'google_analytics';
+    private $table = 'google_analytics_settings';
     
     public function __construct(DB $db)
     {
@@ -14,6 +14,33 @@ class GoogleAnalytics
         // Validate table name for security
         if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $this->table)) {
             throw new \InvalidArgumentException('Invalid table name');
+        }
+    }
+
+    /**
+     * Get the current measurement ID
+     */
+    public function getMeasurementId()
+    {
+        $sql = "SELECT measurement_id FROM `" . $this->table . "` ORDER BY updated_at DESC LIMIT 1";
+        $row = $this->db->fetch($sql);
+        return $row['measurement_id'] ?? '';
+    }
+
+    /**
+     * Set the measurement ID
+     */
+    public function setMeasurementId($measurementId)
+    {
+        // If a row exists, update it; otherwise, insert new
+        $sql = "SELECT id FROM `" . $this->table . "` LIMIT 1";
+        $row = $this->db->fetch($sql);
+        if ($row && isset($row['id'])) {
+            $updateSql = "UPDATE `" . $this->table . "` SET measurement_id = :measurement_id, updated_at = NOW() WHERE id = :id";
+            return $this->db->query($updateSql, ['measurement_id' => $measurementId, 'id' => $row['id']]);
+        } else {
+            $insertSql = "INSERT INTO `" . $this->table . "` (measurement_id) VALUES (:measurement_id)";
+            return $this->db->query($insertSql, ['measurement_id' => $measurementId]);
         }
     }
     

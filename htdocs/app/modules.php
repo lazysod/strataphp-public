@@ -14,7 +14,7 @@ return array (
     ),
     'StrataCms' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => true,
     ),
     'contact' => 
@@ -47,14 +47,16 @@ return array (
       'enabled' => true,
       'suitable_as_default' => false,
     ),
-    'google-analytics' => 
+    'GoogleAnalytics' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
+      'version' => '1.0.0',
+      'license' => 'MIT',
     ),
     'media' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
       'category' => 'media',
       'name' => 'Media',
@@ -77,7 +79,7 @@ return array (
       'license' => 'MIT',
     ),
   ),
-  'default_module' => 'StrataCms',
+  'default_module' => 'home',
   'module_directory' => 
   array (
     'enabled' => false,

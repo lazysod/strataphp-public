@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\Google_Analytics;
+namespace App\Modules\GoogleAnalytics;
 
 /**
  * GoogleAnalytics

@@ -10,7 +10,10 @@ require __DIR__ . '/../../../views/partials/header.php';
             <div class="col-lg-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="fw-bolder">GoogleAnalytics</h1>
-                    <a href="/google_analytics/create" class="btn btn-primary">Create New</a>
+                    <div>
+                        <a href="/google_analytics/settings" class="btn btn-outline-info me-2">Settings</a>
+                        <a href="/google_analytics/create" class="btn btn-primary">Create New</a>
+                    </div>
                 </div>
                 
                 <?php if (isset($_SESSION['success'])) : ?>

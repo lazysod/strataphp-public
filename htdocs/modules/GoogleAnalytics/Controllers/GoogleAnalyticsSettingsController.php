@@ -1,4 +1,6 @@
 <?php
+namespace App\Modules\GoogleAnalytics\Controllers;
+
 /**
  * Google Analytics Settings Controller
  * Handles secure retrieval of the Measurement ID for frontend use

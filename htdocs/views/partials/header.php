@@ -52,14 +52,18 @@ if (!isset($config['site_description'])) {
 
 
     <?php
-    // Embed Google Analytics if Measurement ID is set
-    $gaSettingsPath = __DIR__ . '/../../../storage/settings/google_analytics.json';
-    if (file_exists($gaSettingsPath)) {
-        $gaData = json_decode(file_get_contents($gaSettingsPath), true);
-        if (!empty($gaData['measurement_id'])) {
-            $measurementId = htmlspecialchars($gaData['measurement_id']);
+    // Embed Google Analytics only if module is enabled
+    $modules = $config['modules'] ?? [];
+    $gaEnabled = !empty($modules['GoogleAnalytics']['enabled']);
+    if ($gaEnabled) {
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/app/DB.php';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/modules/GoogleAnalytics/Models/GoogleAnalytics.php';
+        $db = new \App\DB($config);
+        $gaModel = new \App\Modules\GoogleAnalytics\Models\GoogleAnalytics($db);
+        $measurementId = $gaModel->getMeasurementId();
+        if (!empty($measurementId)) {
             echo "\n<!-- Google Analytics Measurement ID: $measurementId -->\n";
-            if (preg_match('/^G-[A-Z0-9]+$/', $gaData['measurement_id'])) {
+            if (preg_match('/^G-[A-Z0-9]{10}$/', $measurementId)) {
                 echo "<!-- Google Analytics -->\n";
                 echo "<script async src=\"https://www.googletagmanager.com/gtag/js?id=$measurementId\"></script>\n";
                 echo "<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', '$measurementId');\n</script>\n";
@@ -69,8 +73,6 @@ if (!isset($config['site_description'])) {
         } else {
             echo "<!-- No Google Analytics Measurement ID set -->\n";
         }
-    } else {
-        echo "<!-- Google Analytics settings file not found: $gaSettingsPath -->\n";
     }
     ?>
 </head>

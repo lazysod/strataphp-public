@@ -1,7 +1,7 @@
 <?php
 use App\App;
-use App\Modules\Google_Analytics\Controllers\GoogleAnalyticsAdminController;
-use App\Modules\Google_Analytics\Controllers\GoogleAnalyticsController;
+use App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController;
+use App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsController;
 
 // Ensure Composer autoloader is loaded for App class
 $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';

@@ -46,8 +46,8 @@
             "App\\Modules\\Cms\\Models\\": "htdocs/modules/cms/models/",
             "App\\Modules\\ModuleDirectory\\Controllers\\": "htdocs/modules/module_directory/controllers/",
             "App\\Modules\\ModuleDirectory\\Models\\": "htdocs/modules/module_directory/models/",
-            "App\\Modules\\Google_Analytics\\Controllers\\": "htdocs/modules/google-analytics/controllers/",
-            "App\\Modules\\Google_Analytics\\Models\\": "htdocs/modules/google-analytics/models/",
+            "App\\Modules\\GoogleAnalytics\\Controllers\\": "htdocs/modules/GoogleAnalytics/Controllers/",
+            "App\\Modules\\GoogleAnalytics\\Models\\": "htdocs/modules/GoogleAnalytics/Models/",
             "Modules\\Blog\\Controllers\\": "htdocs/modules/blog/controllers/",
             "Modules\\Blog\\Models\\": "htdocs/modules/blog/models/"
         }

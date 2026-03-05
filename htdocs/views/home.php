@@ -1,4 +1,5 @@
 <?php 
+require __DIR__ . '/partials/header.php';
 use App\App;
 use App\Version;
 // ...header and Version.php are now handled by controller or view system

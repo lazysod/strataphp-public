@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' && strpos($_SERVER['REQUEST_URI'], 
     exit;
 }
 // Google Analytics Admin Settings Route (protected by admin middleware)
-$router->get('/admin/google-analytics-settings', [\App\Modules\Google_Analytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
+$router->get('/admin/google-analytics-settings', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
+$router->post('/admin/google-analytics-settings/save', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'saveSettings']);
 use App\Controllers\AdminController;
 use App\Modules\Admin\Controllers\ModuleInstallerController;
 use App\Modules\Admin\Controllers\ModuleDetailsController;

@@ -31,8 +31,10 @@ function asset($path)
 // Checks if the current user is an admin (adjust as needed)
 function is_admin()
 {
-    $session = $_SESSION ?? [];
-    return !empty($session['is_admin']);
+    $config = include __DIR__ . '/config.php';
+    $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+    $adminSession = $_SESSION[$sessionPrefix . 'admin'] ?? 0;
+    return ($adminSession > 0);
 }
 
 // Performs a safe HTTP redirect
