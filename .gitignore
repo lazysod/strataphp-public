@@ -15,10 +15,10 @@ storage/logs/
 storage/backups/
 
 # log files
-htdocs/storage/logs/
+public_html/storage/logs/
 
 # Environment/config files
-htdocs/app/config.php
+public_html/app/config.php
 
 # Ignore environment file
 .env
@@ -35,4 +35,4 @@ npm-debug.log
 # Misc
 .env
 lazylinks/*
-htdocs/storage/uploads/*
+public_html/storage/uploads/*
