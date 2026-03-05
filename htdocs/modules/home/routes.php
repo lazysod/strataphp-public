@@ -13,7 +13,8 @@ global $router;
 
 // Fallback homepage route when CMS is disabled or not available
 $modules = App::config('modules') ?? [];
-$cmsEnabled = !empty($modules['cms']['enabled']);
+
+$cmsEnabled = !empty($modules['StrataCms']['enabled']) || !empty($modules['cms']['enabled']);
 
 if (!$cmsEnabled || (!empty(App::config('default_module')) && App::config('default_module') === 'home')) {
     $router->get(

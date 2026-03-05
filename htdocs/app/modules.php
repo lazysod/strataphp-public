@@ -12,9 +12,9 @@ return array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'cms' => 
+    'StrataCms' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => true,
     ),
     'contact' => 
@@ -77,7 +77,7 @@ return array (
       'license' => 'MIT',
     ),
   ),
-  'default_module' => 'cms',
+  'default_module' => 'StrataCms',
   'module_directory' => 
   array (
     'enabled' => false,

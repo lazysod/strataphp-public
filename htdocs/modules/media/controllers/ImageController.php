@@ -41,6 +41,7 @@ class ImageController
         $viewFile = __DIR__ . '/../views/media_library.php';
         if (file_exists($viewFile)) {
             // Make $images available to the view
+            $config = include __DIR__ . '/../../../app/config.php';
             include $viewFile;
         } else {
             echo '<h2>Media Library view not found.</h2>';

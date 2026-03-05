@@ -1,9 +1,23 @@
-<?php
+<?php 
 $controllersDir = __DIR__ . '/../../controllers/';
 $controllerFiles = glob($controllersDir . '*Controller.php');
 $navConfig = include __DIR__ . '/../../app/navConfig.php';
 $config = $config ?? [];
 $sessionPrefix = $config['session_prefix'] ?? 'app_';
+
+use App\App;
+$controllerFiles = glob($controllersDir . '*Controller.php');
+$navConfig = include __DIR__ . '/../../app/navConfig.php';
+$config = $config ?? [];
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+
+if (!isset($config['site_name'])) {
+    $config['site_name'] = App::config('site_name');
+}
+if (!isset($config['site_description'])) {
+    $config['site_description'] = \App\App::config('site_description');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,12 +38,7 @@ $sessionPrefix = $config['session_prefix'] ?? 'app_';
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?php echo htmlspecialchars($metaTitle ?? ($config['site_name'] ?? '')); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($metaDescription ?? ($config['site_description'] ?? '')); ?>">
-    <title>
-        <?php
-        use App\App;
-        echo App::config('site_name') . ' - ' . App::config('site_description');
-        ?>
-    </title>
+
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -161,4 +170,4 @@ $sessionPrefix = $config['session_prefix'] ?? 'app_';
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav

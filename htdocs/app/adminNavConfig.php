@@ -38,25 +38,25 @@ return [
         'url' => '/admin/links/',
     ],
     // CMS menu example
-    'cms' => [
-        'label' => 'CMS',
+    'StrataCms' => [
+        'label' => 'StrataCms',
         'show' => true,
         'order' => 5,
-        'url' => '/admin/cms',
+        'url' => '/admin/strata-cms',
         'children' => [
             'dashboard' => [
                 'label' => 'CMS Dashboard',
-                'url' => '/admin/cms',
+                'url' => '/admin/strata-cms',
                 'show' => true
             ],
             'pages' => [
                 'label' => 'Manage Pages',
-                'url' => '/admin/cms/pages',
+                'url' => '/admin/strata-cms/pages',
                 'show' => true
             ],
             'create' => [
                 'label' => 'Create Page',
-                'url' => '/admin/cms/pages/create',
+                'url' => '/admin/strata-cms/pages/create',
                 'show' => true
             ]
         ]
