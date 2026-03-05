@@ -17,7 +17,7 @@ class AdminSessionsController
     public function index()
     {
         try {
-            require_once dirname(__DIR__, 3) . '/bootstrap.php';
+            include_once $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
             global $config;
             // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
