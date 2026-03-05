@@ -52,7 +52,7 @@ class UserRegisterController
                 }
                 return;
             }
-            if (empty($config['modules']['user'])) {
+            if (empty($config['modules']['User'])) {
                 header('Location: /');
                 exit;
             }

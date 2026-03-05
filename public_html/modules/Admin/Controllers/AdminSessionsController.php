@@ -17,7 +17,7 @@ class AdminSessionsController
     public function index()
     {
         try {
-            $bootstrapPath = realpath(__DIR__ . '/../../../app/bootstrap.php');
+            $bootstrapPath = realpath(__DIR__ . '/../../../bootstrap.php');
             if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
@@ -52,11 +52,11 @@ class AdminSessionsController
     public function revoke()
     {
         try {
-            $bootstrapPath = $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
-            if (file_exists($bootstrapPath)) {
+            $bootstrapPath = realpath(__DIR__ . '/../../../app/bootstrap.php');
+            if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . $bootstrapPath);
+                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
