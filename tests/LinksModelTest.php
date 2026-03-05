@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../htdocs/modules/admin/models/Links.php';
+require_once __DIR__ . '/../htdocs/modules/Admin/models/Links.php';
 require_once __DIR__ . '/../htdocs/app/DB.php';
 use App\DB;
 use App\Modules\Admin\Models\Links;

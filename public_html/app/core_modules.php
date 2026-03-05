@@ -2,7 +2,7 @@
 // List of core modules and their remote metadata and zip URLs
 return [
         'admin' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/htdocs/modules/admin/module.json',
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/htdocs/modules/Admin/module.json',
             'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
         ],
         'home' => [
