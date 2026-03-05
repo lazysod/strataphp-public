@@ -1,0 +1,8 @@
+# Allow access to all image files in this directory
+<FilesMatch "\.(png|jpg|jpeg|webp|gif)$">
+    Require all granted
+</FilesMatch>
+# Prevent script execution for security
+<FilesMatch "\.(php|phar|phtml|cgi|pl|py|sh|js)$">
+    Require all denied
+</FilesMatch>
