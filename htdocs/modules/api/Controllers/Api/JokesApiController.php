@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\api\Controllers;
+namespace App\Modules\Api\Controllers;
 
 /**
  * Jokes API Controller

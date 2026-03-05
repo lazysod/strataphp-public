@@ -1,5 +1,5 @@
 <?php
-namespace App\Tests\Modules\api;
+namespace App\Modules\Api\Tests;
 
 /**
  * Simple test suite for API module
