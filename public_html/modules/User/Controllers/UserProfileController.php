@@ -27,7 +27,7 @@ class UserProfileController
         try {
             require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
             global $config;
-            if (empty($config['modules']['user'])) {
+            if (empty($config['modules']['User'])) {
                 header('Location: /');
                 exit;
             }
