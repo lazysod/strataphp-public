@@ -5,11 +5,10 @@ $composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
 if (file_exists($composerAutoload)) {
     require_once $composerAutoload;
 }
-// ...existing code...
 use App\Modules\Links\Controllers\LinksController;
 
 global $router;
-if (!empty(App::config('modules')['links']['enabled'])) {
+if (!empty(App::config('modules')['Links']['enabled'])) {
     // Register / as root if links is the default module
     if (!empty(App::config('default_module')) && App::config('default_module') === 'links') {
         $router->get('/', [LinksController::class, 'index']);
