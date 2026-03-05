@@ -2,7 +2,7 @@
 <?php
 // Database backup script for Strata Framework
 if (!isset($config)) {
-    $config = require __DIR__ . '/../htdocs/app/config.php';
+    $config = require __DIR__ . '/../public_html/app/config.php';
 }
 if (!$config || !isset($config['db'])) {
     echo "Could not load database config.\n";

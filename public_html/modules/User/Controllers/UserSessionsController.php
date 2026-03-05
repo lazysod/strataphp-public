@@ -2,7 +2,7 @@
 namespace App\Modules\User\Controllers;
 
 use App\DB;
-
+use App\App;
 /**
  * User Sessions Controller
  *
@@ -66,23 +66,29 @@ class UserSessionsController
         require_once dirname(__DIR__, 3) . '/bootstrap.php';
         global $config;
         $db = new DB($config);
-        
         $sessionPrefix = $config['session_prefix'] ?? 'app_';
         $user_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
         if (!$user_id) {
+            App::log('Session revoke failed: missing user_id', 'ERROR', ['user_id' => $user_id]);
             header('Location: /user/login');
             exit;
         }
-        
         // Get session_id from POST data
         $session_id = $_POST['session_id'] ?? null;
         if (!$session_id) {
+            App::log('Session revoke failed: missing session_id', 'ERROR', ['session_id' => $session_id]);
             header('Location: /user/sessions');
             exit;
         }
-        
-        // Revoke session
-        $db->query("UPDATE user_sessions SET revoked = 1 WHERE id = ? AND user_id = ?", [$session_id, $user_id]);
+        // Revoke session and log affected rows
+        $stmt = $db->getPdo()->prepare("UPDATE user_sessions SET revoked = 1 WHERE id = ? AND user_id = ?");
+        $success = $stmt->execute([$session_id, $user_id]);
+        $affected = $stmt->rowCount();
+        if (!$success || $affected === 0) {
+            App::log('Session revoke DB update failed', 'ERROR', ['session_id' => $session_id, 'user_id' => $user_id, 'success' => $success, 'affected' => $affected]);
+        } else {
+            App::log('Session revoked successfully', 'INFO', ['session_id' => $session_id, 'user_id' => $user_id, 'affected' => $affected]);
+        }
         header('Location: /user/sessions');
         exit;
     }
