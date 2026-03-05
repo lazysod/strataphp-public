@@ -7,9 +7,59 @@ class OAuthAuthorizeController
 {
     public function index()
     {
-        // Basic scaffold for OAuth authorization endpoint
-        // TODO: Implement client validation, user login, consent, and code generation
-        echo '<h1>OAuth Authorization Endpoint</h1>';
-        echo '<p>This is a placeholder for /oauth/authorize. Implement logic here.</p>';
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
+        global $config;
+        $db = new DB($config);
+
+        // Get query params
+        $client_id = $_GET['client_id'] ?? '';
+        $redirect_uri = $_GET['redirect_uri'] ?? '';
+        $response_type = $_GET['response_type'] ?? '';
+        $state = $_GET['state'] ?? '';
+
+        // Validate client
+        $client = $db->fetch('SELECT * FROM oauth_clients WHERE client_id = ? AND status = 1', [$client_id]);
+        if (!$client) {
+            http_response_code(400);
+            echo 'Invalid client.';
+            return;
+        }
+        // Validate redirect URI
+        if (rtrim($client['redirect_uri'], '/') !== rtrim($redirect_uri, '/')) {
+            http_response_code(400);
+            echo 'Invalid redirect URI.';
+            return;
+        }
+        // Only support response_type=code
+        if ($response_type !== 'code') {
+            http_response_code(400);
+            echo 'Invalid response type.';
+            return;
+        }
+        // Require login
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        if (empty($_SESSION[$sessionPrefix . 'user_id'])) {
+            // Redirect to login, then back to this page
+            $_SESSION['oauth_login_redirect'] = $_SERVER['REQUEST_URI'];
+            header('Location: /user/login');
+            exit;
+        }
+        $user_id = $_SESSION[$sessionPrefix . 'user_id'];
+        // Show consent screen (simple)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve'])) {
+            // Generate code
+            $code = bin2hex(random_bytes(32));
+            $expires = date('Y-m-d H:i:s', time() + 300);
+            $db->query('INSERT INTO oauth_codes (code, client_id, user_id, expires_at) VALUES (?, ?, ?, ?)', [$code, $client_id, $user_id, $expires]);
+            // Redirect back to client
+            $redirect = $redirect_uri . (strpos($redirect_uri, '?') === false ? '?' : '&') . 'code=' . $code . ($state ? '&state=' . urlencode($state) : '');
+            header('Location: ' . $redirect);
+            exit;
+        }
+        // Consent form
+        echo '<h1>Authorize ' . htmlspecialchars($client['name']) . '</h1>';
+        echo '<form method="post"><p>Allow this app to access your account?</p>';
+        echo '<button type="submit" name="approve" value="1">Approve</button>';
+        echo '</form>';
     }
 }
