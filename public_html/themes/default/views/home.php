@@ -1,7 +1,11 @@
-<?php // DEBUG: THEME HOME VIEW START ?>
+<?php // DEBUG: THEME HOME VIEW START 
+?>
 <?php
+
 use App\App;
 use App\Version;
+
+require_once dirname(__DIR__, 3) . '/bootstrap.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
 ?>
@@ -21,18 +25,28 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
             </div>
             <div class="col-xl-5 col-xxl-6 d-none d-xl-block">
                 <div class="card">
-                <div class="card-body">
-                    <ul class="list-unstyled lead">
-                        <li><b>Site Name:</b> <?php echo App::config('site_name'); ?></li>
-                        <li><b>Version:</b> <?php echo Version::get(); ?></li>
-                        <li><b>Admin Email:</b> <?php echo App::config('admin_email'); ?></li>
-                        <li><b>PHP Version:</b> <?php echo phpversion();  ?></li>
-                        <li><b>Database Host:</b> <?php echo App::config('db')['host']; ?></li>
-                        <li><b>Database Name:</b> <?php echo App::config('db')['database']; ?></li>
-                        <li><b>Debug Mode:</b> <?php echo App::config('debug') ? 'Enabled' : 'Disabled'; ?></li>
-                        <li><b>Admin Login:</b> <a href="<?php echo App::config('base_url') . '/admin'; ?>"><?php echo App::config('base_url') . '/admin'; ?></a></li>
-                    </ul>
-                </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled lead">
+                            <li><b>Site Name:</b> <?php echo App::config('site_name'); ?></li>
+                            <li><b>Version:</b> <?php echo Version::get(); ?></li>
+                            <li><b>Admin Email:</b> <a href="mailto:<?php echo App::config('admin_email'); ?>"><?php echo App::config('admin_email'); ?></a></li>
+                            <li><b>PHP Version:</b> <?php echo phpversion();  ?></li>
+                            <li><b>Database Host:</b> <?php echo App::config('db')['host']; ?></li>
+                            <li><b>Database Name:</b> <?php echo App::config('db')['database']; ?></li>
+                            <li><b>Debug Mode:</b> <?php echo App::config('debug') ? 'Enabled' : 'Disabled'; ?></li>
+                            <li><b>Admin Login:</b> <a href="<?php echo App::config('base_url') . '/admin'; ?>"><?php echo App::config('base_url') . '/admin'; ?></a></li>
+                            <li><b>Connection:</b> <?php
+                            // detect if connection is active by trying to connect to the database
+                            global $config;
+                            try {
+                                $db = new \App\DB($config);
+                                echo '<span class="text-success">Active</span>';
+                            } catch (Exception $e) {
+                                echo '<span class="text-danger">Inactive</span>';
+                            }
+                            ?></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -43,7 +57,9 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
 <section class="py-5" id="features">
     <div class="container px-5 my-5">
         <div class="row mb-5">
-            <div class="col-lg-12 mb-5 mb-lg-0"><h2 class="text-center fw-bolder mb-0">A better way to start building.</h2></div>
+            <div class="col-lg-12 mb-5 mb-lg-0">
+                <h2 class="text-center fw-bolder mb-0">A better way to start building.</h2>
+            </div>
         </div>
         <div class="row ">
             <div class="col-lg-12">
