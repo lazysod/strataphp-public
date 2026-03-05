@@ -44,8 +44,8 @@ class AdminSessionsController
     public function revoke()
     {
         try {
-            include_once __DIR__ . '/../../../app/bootstrap.php';
-            $localConfig = include __DIR__ . '/../../../app/config.php';
+            include_once $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
+            $localConfig = include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
@@ -73,8 +73,8 @@ class AdminSessionsController
     public function updateDevice()
     {
         try {
-            include_once __DIR__ . '/../../../app/bootstrap.php';
-            $localConfig = include __DIR__ . '/../../../app/config.php';
+            include_once $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
+            $localConfig = include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
