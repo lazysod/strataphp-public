@@ -17,7 +17,15 @@ class AdminSessionsController
     public function index()
     {
         try {
-            include_once $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
+            $bootstrapPath = $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
+            if (file_exists($bootstrapPath)) {
+                include_once $bootstrapPath;
+            } else {
+                error_log('AdminSessionsController: bootstrap.php not found at ' . $bootstrapPath);
+                http_response_code(500);
+                echo '<h1>Critical error: bootstrap.php not found.</h1>';
+                exit;
+            }
             global $config;
             // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
