@@ -26,6 +26,10 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                     <form method="post" action="">
                         <!-- Display Name removed -->
                         <div class="mb-3">
+                            <label for="display_name" class="form-label">Display Name</label>
+                            <input type="text" class="form-control" id="display_name" name="display_name" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="first_name" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="first_name" name="first_name" required>
                         </div>

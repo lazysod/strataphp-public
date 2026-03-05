@@ -61,15 +61,17 @@ class DB
         try {
             $stmt = $this->pdo->prepare($sql);
             if (!$stmt) {
+                error_log('DB::query prepare failed: ' . $sql);
                 return null;
             }
             $result = $stmt->execute($params);
             if (!$result) {
+                error_log('DB::query execute failed: ' . $sql . ' Params: ' . print_r($params, true));
                 return null;
             }
             return $stmt;
         } catch (PDOException $e) {
-            // Optionally log the error here
+            error_log('DB::query PDOException: ' . $e->getMessage() . ' SQL: ' . $sql . ' Params: ' . print_r($params, true));
             return null;
         }
     }

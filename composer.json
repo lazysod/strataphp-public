@@ -26,22 +26,22 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "htdocs/app/",
-            "App\\Controllers\\": "htdocs/controllers/",
-            "App\\Models\\": "htdocs/models/",
-            "App\\Modules\\": "htdocs/modules/",
-            "App\\Modules\\Api\\Controllers\\": "htdocs/modules/api/Controllers/Api/",
-            "App\\Modules\\Api\\Tests\\": "htdocs/modules/api/Tests/",
-            "App\\Modules\\OAuthClients\\Controllers\\": "htdocs/modules/OAuthClients/controllers/",
-            "App\\Modules\\OAuthClients\\Models\\": "htdocs/modules/OAuthClients/models/",
-            "App\\Modules\\StrataCms\\Controllers\\": "htdocs/modules/StrataCms/Controllers/",
-            "App\\Modules\\StrataCms\\Models\\": "htdocs/modules/StrataCms/Models/",
-            "App\\Modules\\ModuleDirectory\\Controllers\\": "htdocs/modules/module_directory/controllers/",
-            "App\\Modules\\ModuleDirectory\\Models\\": "htdocs/modules/module_directory/models/",
-            "App\\Modules\\GoogleAnalytics\\Controllers\\": "htdocs/modules/GoogleAnalytics/Controllers/",
-            "App\\Modules\\GoogleAnalytics\\Models\\": "htdocs/modules/GoogleAnalytics/Models/",
-            "Modules\\Blog\\Controllers\\": "htdocs/modules/blog/controllers/",
-            "Modules\\Blog\\Models\\": "htdocs/modules/blog/models/"
+            "App\\": "public_html/app/",
+            "App\\Controllers\\": "public_html/controllers/",
+            "App\\Models\\": "public_html/models/",
+            "App\\Modules\\": "public_html/modules/",
+            "App\\Modules\\Api\\Controllers\\": "public_html/modules/api/Controllers/Api/",
+            "App\\Modules\\Api\\Tests\\": "public_html/modules/api/Tests/",
+            "App\\Modules\\OAuthClients\\Controllers\\": "public_html/modules/OAuthClients/controllers/",
+            "App\\Modules\\OAuthClients\\Models\\": "public_html/modules/OAuthClients/models/",
+            "App\\Modules\\StrataCms\\Controllers\\": "public_html/modules/StrataCms/Controllers/",
+            "App\\Modules\\StrataCms\\Models\\": "public_html/modules/StrataCms/Models/",
+            "App\\Modules\\ModuleDirectory\\Controllers\\": "public_html/modules/module_directory/controllers/",
+            "App\\Modules\\ModuleDirectory\\Models\\": "public_html/modules/module_directory/models/",
+            "App\\Modules\\GoogleAnalytics\\Controllers\\": "public_html/modules/GoogleAnalytics/Controllers/",
+            "App\\Modules\\GoogleAnalytics\\Models\\": "public_html/modules/GoogleAnalytics/Models/",
+            "Modules\\Blog\\Controllers\\": "public_html/modules/blog/controllers/",
+            "Modules\\Blog\\Models\\": "public_html/modules/blog/models/"
         }
     },
     "require": {

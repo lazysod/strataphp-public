@@ -66,6 +66,11 @@ return [
         'show' => true,
         'order' => 21,
         'url' => '/admin/google-analytics-settings'
+    ],
+    'OAuthClients' => [
+        'label' => 'OAuth Clients',
+        'show' => true,
+        'order' => 22,
+        'url' => '/admin/oauth-clients'
     ]
-    // ...other items
 ];

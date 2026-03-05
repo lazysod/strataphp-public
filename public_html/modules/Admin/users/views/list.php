@@ -31,7 +31,6 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                 <th>First Name</th>
                                 <th>Second Name</th>
                                 <th>Email</th>
-                                <th>Verified</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -45,7 +44,6 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                     <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
                                     <td><?php echo htmlspecialchars($user['second_name'] ?? '') ?></td>
                                     <td><?php echo htmlspecialchars($user['email']) ?></td>
-                                    <td><?php echo isset($user['verified']) && $user['verified'] ? 'Yes' : 'No' ?></td>
                                     <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
                                     <td>
                                         <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>

@@ -30,6 +30,7 @@ $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
 $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
 $router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
 $router->post('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+$router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
 $router->post('/admin/links/order', [AdminLinksController::class, 'order']);
 
 // Module Installer Routes
@@ -58,16 +59,7 @@ $router->get('/admin/users/suspend/{id}', [\App\Modules\Admin\Controllers\UserAd
 $router->get('/admin/users/unsuspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'unsuspend']);
 $router->get('/admin/users/delete/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'delete']);
 
-//
-// admin profile management
-$router->get('/admin/admin_profiles', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'index']);
-$router->get('/admin/admin_profiles/edit/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'edit']);
-$router->post('/admin/admin_profiles/edit/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'edit']);
-$router->get('/admin/admin_profiles/verify/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'verify']);
-$router->get('/admin/admin_profiles/unverify/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'unverify']);
-$router->get('/admin/admin_profiles/suspend/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'suspend']);
-$router->get('/admin/admin_profiles/unsuspend/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'unsuspend']);
-$router->get('/admin/admin_profiles/delete/{id}', [\App\Modules\Admin\Controllers\ProfileAdminController::class, 'delete']);
+
 
 $router->get('/admin/reset-password', [AdminController::class, 'resetPassword']);
 $router->post('/admin/reset-password', [AdminController::class, 'resetPassword']);

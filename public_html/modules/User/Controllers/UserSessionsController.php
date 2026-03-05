@@ -31,8 +31,19 @@ class UserSessionsController
                 header('Location: /user/login');
                 exit;
             }
-            // Only show latest active session per device (not revoked)
-            $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$user_id, $user_id]);
+            // Get latest active session per device
+            $latestSessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$user_id, $user_id]);
+
+            // Always include the current session, even if not the latest for its device
+            $currentSessionId = $_SESSION[$sessionPrefix . 'session_id'] ?? null;
+            $currentSession = null;
+            if ($currentSessionId) {
+                $currentSession = $db->fetch("SELECT * FROM user_sessions WHERE id = ? AND user_id = ? AND revoked = 0", [$currentSessionId, $user_id]);
+            }
+            $sessions = $latestSessions;
+            if ($currentSession && !in_array($currentSession['id'], array_column($latestSessions, 'id'))) {
+                $sessions[] = $currentSession;
+            }
             include __DIR__ . '/../views/sessions.php';
         } catch (\Exception $e) {
             $sessions = [];

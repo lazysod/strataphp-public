@@ -68,7 +68,7 @@ return array (
       'framework_version' => '2.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
-    'oauth_clients' => 
+    'OAuthClients' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,

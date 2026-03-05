@@ -28,7 +28,7 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         <!-- Display Name removed -->
                         <div class="mb-3">
                             <label for="display_name" class="form-label">Display Name</label>
-                            <input type="text" class="form-control" id="display_name" name="display_name" value="<?php echo htmlspecialchars($user['profile_name'] ?? ''); ?>">
+                            <input type="text" class="form-control" id="display_name" name="display_name" value="<?php echo htmlspecialchars($user['display_name'] ?? ''); ?>">
                         </div>
                         <div class="mb-3">
                             <label for="first_name" class="form-label">First Name</label>
@@ -51,17 +51,6 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                 <option value="admin" <?php if (($user['is_admin'] ?? '') === 1) {
                                     echo 'selected';
                                                       } ?>>Admin</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="verified" class="form-label">Verified</label>
-                            <select class="form-select" id="verified" name="verified">
-                                <option value="1" <?php if (($user['verified'] ?? '') === 1) {
-                                    echo 'selected';
-                                                  } ?>>Yes</option>
-                                <option value="0" <?php if (($user['verified'] ?? '') === 0) {
-                                    echo 'selected';
-                                                  } ?>>No</option>
                             </select>
                         </div>
                         <div class="mb-3">

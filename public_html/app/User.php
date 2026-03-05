@@ -56,6 +56,7 @@ class User
     public function updateUser($id, $data)
     {
         if (empty($data) || !$id) {
+            error_log('updateUser: No data or invalid ID');
             return false;
         }
         $fields = [];
@@ -66,7 +67,12 @@ class User
         }
         $params[] = (int)$id;
         $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
-        return $this->db->query($sql, $params);
+        error_log('data:' . print_r($data, true));
+        error_log('updateUser SQL: ' . $sql);
+        error_log('updateUser Params: ' . print_r($params, true));
+        $result = $this->db->query($sql, $params);
+        error_log('updateUser Result: ' . print_r($result, true));
+        return $result;
     }
     // Fetch a user by ID
     public function getById($id)

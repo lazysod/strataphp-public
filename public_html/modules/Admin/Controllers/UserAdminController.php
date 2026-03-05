@@ -1,6 +1,6 @@
 <?php
 namespace App\Modules\Admin\Controllers;
-require_once dirname(__DIR__, 4) . '/htdocs/bootstrap.php';
+require_once dirname(__DIR__, 4) . '/public_html/bootstrap.php';
 use App\DB;
 use App\User;
 use App\App;
@@ -112,13 +112,15 @@ class UserAdminController
                 $active = ($status === 'active') ? 1 : 0;
                 $dead_switch = ($active === 0) ? 1 : 0;
                 $updateData = [
+                    'first_name' => trim($_POST['first_name'] ?? ''),
+                    'second_name' => trim($_POST['second_name'] ?? ''),
                     'email' => $email,
                     'is_admin' => $is_admin,
                     'active' => $active,
-                    'verified' => isset($_POST['verified']) && $_POST['verified'] == '1' ? 1 : 0,
                     'display_name' => trim($_POST['display_name'] ?? ''),
                     'dead_switch' => $dead_switch
                 ];
+
                 $newPassword = trim($_POST['password'] ?? '');
                 if ($newPassword !== '') {
                     // Hash password before saving
