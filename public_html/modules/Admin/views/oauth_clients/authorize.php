@@ -5,9 +5,9 @@ require dirname(__DIR__, 4) . '/views/partials/header.php';
 <section class="py-5">
     <div class="container px-5">
         <div class="row mt-4">
-            <div class="col-lg-8 mx-auto">
+            <div class="col-lg-6 mx-auto">
                 <div class="bg-dark text-white rounded-3 py-5 px-4 px-md-5 mb-5">
-                    <h2>Authorize Application</h2>
+                    <h2>Authorize Application!</h2>
                     <p><strong><?= htmlspecialchars($client['name']) ?></strong> is requesting access to your account.</p>
                     <p>
                         It will be able to access:

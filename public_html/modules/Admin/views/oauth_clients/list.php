@@ -1,4 +1,3 @@
-
 <?php require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
 <section class="py-5">
     <div class="container px-5">
@@ -35,7 +34,17 @@
                                 <td><?= htmlspecialchars($client['id']) ?></td>
                                 <td><?= htmlspecialchars($client['name']) ?></td>
                                 <td><code><?= htmlspecialchars($client['client_id']) ?></code></td>
-                                <td><?= htmlspecialchars($client['redirect_uri']) ?></td>
+                                <td>
+                                    <?= htmlspecialchars($client['redirect_uri']) ?>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('redirect-<?= $client['id'] ?>')" title="Copy URL">
+                                        Copy URL
+                                    </button>
+                                    <input type="text" id="redirect-<?= $client['id'] ?>" value="<?= htmlspecialchars($client['redirect_uri']) ?>" style="position:absolute;left:-9999px;">
+                                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('authurl-<?= $client['id'] ?>')" title="Copy Auth URL">
+                                        Copy Auth URL
+                                    </button>
+                                    <input type="text" id="authurl-<?= $client['id'] ?>" value="http://localhost:8888/oauth/authorize?client_id=<?= htmlspecialchars($client['client_id']) ?>&redirect_uri=<?= urlencode($client['redirect_uri']) ?>&response_type=code&state=xyz" style="position:absolute;left:-9999px;">
+                                </td>
                                 <td><?= htmlspecialchars($client['data_shared'] ?? '') ?></td>
                                 <td>
                                     <a href="/admin/oauth-clients/edit/<?= $client['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
@@ -51,3 +60,14 @@
     </div>
 </section>
 <?php require __DIR__ . '/../../../../views/partials/footer.php'; ?>
+<script>
+function copyToClipboard(id) {
+    var copyText = document.getElementById(id);
+    copyText.type = 'text';
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand('copy');
+    copyText.type = 'hidden';
+    alert('Copied to clipboard');
+}
+</script>

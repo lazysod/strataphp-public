@@ -45,6 +45,12 @@ class OAuthAuthorizeController
             exit;
         }
         $user_id = $_SESSION[$sessionPrefix . 'user_id'];
+        // Handle Cancel (deny)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deny'])) {
+            $redirect = $redirect_uri . (strpos($redirect_uri, '?') === false ? '?' : '&') . 'error=access_denied' . ($state ? '&state=' . urlencode($state) : '');
+            header('Location: ' . $redirect);
+            exit;
+        }
         // Show consent screen (simple)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve'])) {
             // Generate code
@@ -56,10 +62,7 @@ class OAuthAuthorizeController
             header('Location: ' . $redirect);
             exit;
         }
-        // Consent form
-        echo '<h1>Authorize ' . htmlspecialchars($client['name']) . '</h1>';
-        echo '<form method="post"><p>Allow this app to access your account?</p>';
-        echo '<button type="submit" name="approve" value="1">Approve</button>';
-        echo '</form>';
+        // Use view for consent form
+        include dirname(__DIR__) . '/views/authorize.php';
     }
 }
