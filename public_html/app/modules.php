@@ -2,7 +2,7 @@
 return array (
   'modules' => 
   array (
-    'admin' => 
+    'Admin' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,
@@ -17,7 +17,7 @@ return array (
       'enabled' => false,
       'suitable_as_default' => true,
     ),
-    'contact' => 
+    'Contact' => 
     array (
       'enabled' => false,
       'suitable_as_default' => true,
@@ -27,7 +27,7 @@ return array (
       'enabled' => false,
       'suitable_as_default' => false,
     ),
-    'helloworld' => 
+    'HelloWorld' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
@@ -37,12 +37,12 @@ return array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'links' => 
+    'Links' => 
     array (
       'enabled' => true,
       'suitable_as_default' => true,
     ),
-    'user' => 
+    'User' => 
     array (
       'enabled' => true,
       'suitable_as_default' => false,
@@ -54,7 +54,7 @@ return array (
       'version' => '1.0.0',
       'license' => 'MIT',
     ),
-    'media' => 
+    'Media' => 
     array (
       'enabled' => false,
       'suitable_as_default' => false,
