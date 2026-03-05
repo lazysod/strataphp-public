@@ -5,7 +5,7 @@
  * Provides CMS theming for user module pages
  */
 
-namespace App\Modules\Cms;
+namespace App\Modules\StrataCms;
 
 class UserThemeWrapper
 {
