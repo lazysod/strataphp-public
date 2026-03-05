@@ -5,6 +5,35 @@ use App\DB;
 
 class OAuthClientController
 {
+    /**
+     * Delete an OAuth client by ID.
+     * @param int $id Client ID
+     */
+    public function delete($id)
+    {
+        try {
+            if (!is_numeric($id) || $id <= 0) {
+                $_SESSION['error'] = 'Invalid client ID.';
+                header('Location: /admin/oauth-clients');
+                exit;
+            }
+            // Optional: Add CSRF check here for extra security
+            $deleted = $this->db->query("DELETE FROM oauth_clients WHERE id = ?", [$id]);
+            if ($deleted) {
+                $_SESSION['success'] = 'OAuth client deleted.';
+            } else {
+                $_SESSION['error'] = 'Failed to delete OAuth client.';
+            }
+            header('Location: /admin/oauth-clients');
+            exit;
+        } catch (\Exception $e) {
+            error_log('OAuthClientController delete error: ' . $e->getMessage());
+            $_SESSION['error'] = 'Failed to delete OAuth client.';
+            header('Location: /admin/oauth-clients');
+            exit;
+        }
+    }
+
     protected $db;
 
     /**
@@ -46,7 +75,16 @@ class OAuthClientController
                 exit;
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // ...existing code...
+                $name = trim($_POST['name'] ?? '');
+                $redirect_uri = trim($_POST['redirect_uri'] ?? '');
+                $data_shared = trim($_POST['data_shared'] ?? '');
+                $this->db->query(
+                    "UPDATE oauth_clients SET name = ?, redirect_uri = ?, data_shared = ? WHERE id = ?",
+                    [$name, $redirect_uri, $data_shared, $id]
+                );
+                $_SESSION['success'] = 'OAuth client updated.';
+                header('Location: /admin/oauth-clients');
+                exit;
             }
             include __DIR__ . '/../views/oauth_clients/edit.php';
         } catch (\Exception $e) {
