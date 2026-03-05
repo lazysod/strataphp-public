@@ -40,9 +40,9 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
                             global $config;
                             try {
                                 $db = new \App\DB($config);
-                                echo '<span class="text-success">Active</span>';
+                                echo '<span class="text-success"><i class="fa-solid fa-circle-check"></i> Active</span>';
                             } catch (Exception $e) {
-                                echo '<span class="text-danger">Inactive</span>';
+                                echo '<span class="text-danger"><i class="fa-solid fa-circle-xmark"></i> Inactive</span>';
                             }
                             ?></li>
                         </ul>

@@ -56,7 +56,21 @@ class DB
     public function query($sql, $params = [])
     {
         if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
+            // Log the error if Logger is available
+            if (class_exists('App\\Logger')) {
+                $logger = new Logger($config ?? []);
+                $logger->error('Database connection is not established.');
+            }
+            $errorPage = __DIR__ . '/../../views/errors/500.php';
+            if (file_exists($errorPage)) {
+                http_response_code(500);
+                include $errorPage;
+                exit;
+            } else {
+                http_response_code(500);
+                echo 'Database connection is not established.';
+                exit;
+            }
         }
         try {
             $stmt = $this->pdo->prepare($sql);
@@ -79,7 +93,20 @@ class DB
     public function fetchAll($sql, $params = [])
     {
         if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
+            if (class_exists('App\\Logger')) {
+                $logger = new Logger($config ?? []);
+                $logger->error('Database connection is not established.');
+            }
+            $errorPage = __DIR__ . '/../../views/errors/500.php';
+            if (file_exists($errorPage)) {
+                http_response_code(500);
+                include $errorPage;
+                exit;
+            } else {
+                http_response_code(500);
+                echo 'Database connection is not established.';
+                exit;
+            }
         }
         $stmt = $this->query($sql, $params);
         if (!$stmt) {
@@ -91,7 +118,20 @@ class DB
     public function fetch($sql, $params = [])
     {
         if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
+            if (class_exists('App\\Logger')) {
+                $logger = new Logger($config ?? []);
+                $logger->error('Database connection is not established.');
+            }
+            $errorPage = __DIR__ . '/../../views/errors/500.php';
+            if (file_exists($errorPage)) {
+                http_response_code(500);
+                include $errorPage;
+                exit;
+            } else {
+                http_response_code(500);
+                echo 'Database connection is not established.';
+                exit;
+            }
         }
         $stmt = $this->query($sql, $params);
         return $stmt ? $stmt->fetch() : false;

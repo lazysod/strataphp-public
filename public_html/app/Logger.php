@@ -11,7 +11,7 @@ class Logger
     public function __construct($config)
     {
         // log_path may be a file, not a directory, so extract directory
-        $logPath = $config['log_path'];
+        $logPath = $config['log_path'] ?? (__DIR__ . '/../../storage/logs/app.log');
         $this->logDir = dirname($logPath);
         if (!is_dir($this->logDir)) {
             // Suppress warning if directory exists due to race condition
