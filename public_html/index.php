@@ -6,7 +6,7 @@ use App\DB;
 use App\User;
 use App\Router;
 
-$config = require __DIR__ . '/app/config.php';
+$config = $GLOBALS['config'];
 
 // Initialize the router
 $router = new Router();
