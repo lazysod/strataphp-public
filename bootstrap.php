@@ -15,6 +15,8 @@ if (file_exists($dotenvPath . '/.env')) {
 // Use absolute path and require for config
 $configFile = realpath(__DIR__ . '/public_html/app/config.php');
 $config = $configFile ? require $configFile : [];
+// Set global config for compatibility with Lazy Links
+$GLOBALS['config'] = $config;
 
 // 4. Set up error/exception handling (simple example)
 set_error_handler(function ($severity, $message, $file, $line) {
