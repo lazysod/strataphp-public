@@ -107,7 +107,7 @@ class AdminController
     {
         try {
             $pageModel = new Page($this->config);
-            $siteModel = new \App\Modules\StrataCms\Models\Site($this->config);
+            $siteModel = new Site($this->config);
             $sites = $siteModel->getAll();
             $selectedSiteId = isset($_GET['site_id']) && is_numeric($_GET['site_id']) ? (int)$_GET['site_id'] : null;
             if ($selectedSiteId) {
@@ -136,7 +136,7 @@ class AdminController
         $siteId = SiteHelper::getCurrentSiteId();
         $allPages = $pageModel->getAllBySite($siteId);
         // Fetch all sites for the site selector
-        $siteModel = new \App\Modules\StrataCms\Models\Site($this->config);
+        $siteModel = new Site($this->config);
         $sites = $siteModel->getAll();
         $data = [
             'title' => 'Create New Page',
@@ -212,7 +212,7 @@ class AdminController
 
             $siteId = SiteHelper::getCurrentSiteId();
             $allPages = $pageModel->getAllBySite($siteId);
-            $siteModel = new \App\Modules\StrataCms\Models\Site($this->config);
+            $siteModel = new Site($this->config);
             $sites = $siteModel->getAll();
             $data = [
                 'title' => 'Edit Page',

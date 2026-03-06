@@ -27,18 +27,20 @@ class AdminSessionsController
                 exit;
             }
             global $config;
-            // $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             if (!$admin_id) {
                 header('Location: /admin/login');
                 exit;
             }
-        // Only show latest active session per device (not revoked) for admin in user_sessions
-            $sessions = $db->fetchAll("SELECT * FROM user_sessions WHERE user_id = ? AND revoked = 0 AND id IN (SELECT MAX(id) FROM user_sessions WHERE user_id = ? AND revoked = 0 GROUP BY device_id)", [$admin_id, $admin_id]);
-            include __DIR__ . '/../views/sessions.php';
+            // Get all active sessions for non-admin users
+            $sql = "SELECT us.*, u.display_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE u.is_admin = 0 AND us.revoked = 0 ORDER BY us.last_seen DESC";
+            $sessions = $db->fetchAll($sql);
+            $debug_sql = $sql;
+            $debug_sessions = $sessions;
+            extract(['debug_sql' => $debug_sql, 'debug_sessions' => $debug_sessions, 'sessions' => $sessions]);
+            // include __DIR__ . '/../views/sessions.php';
         } catch (\Exception $e) {
             http_response_code(500);
             echo '<h1>Error loading sessions</h1>';
@@ -52,7 +54,7 @@ class AdminSessionsController
     public function revoke()
     {
         try {
-            $bootstrapPath = realpath(__DIR__ . '/../../../app/bootstrap.php');
+            $bootstrapPath = realpath(__DIR__ . '/../../../bootstrap.php');
             if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
@@ -61,10 +63,8 @@ class AdminSessionsController
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
             }
-            $configPath = realpath(__DIR__ . '/../../../app/config.php');
-            $localConfig = $configPath && file_exists($configPath) ? include $configPath : [];
+            global $config;
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             $session_id = $_POST['session_id'] ?? null;
@@ -90,19 +90,17 @@ class AdminSessionsController
     public function updateDevice()
     {
         try {
-            $bootstrapPath = $_SERVER['DOCUMENT_ROOT'] . '/app/bootstrap.php';
-            if (file_exists($bootstrapPath)) {
+            $bootstrapPath = realpath(__DIR__ . '/../../../bootstrap.php');
+            if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . $bootstrapPath);
+                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
             }
-            $configPath = realpath(__DIR__ . '/../../../app/config.php');
-            $localConfig = $configPath && file_exists($configPath) ? include $configPath : [];
+            global $config;
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
-            // error_log('DEBUG: AdminSessionsController.php DB config: ' . print_r($config, true));
             $db = new \App\DB($config);
             $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
             $session_id = $_POST['session_id'] ?? null;

@@ -1,6 +1,11 @@
 <?php 
 require_once __DIR__ . '/../../../../bootstrap.php'; 
 $base_url = isset($GLOBALS['config']['base_url']) ? $GLOBALS['config']['base_url'] : '';
+$sessionPrefix = $GLOBALS['config']['session_prefix'] ?? ($GLOBALS['config']['prefix'] ?? 'app_');
+if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'admin'] < 1) {
+    header('Location: /admin/admin_login.php');
+    exit;
+}
 ?>
 <?php require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
 <section class="py-5">

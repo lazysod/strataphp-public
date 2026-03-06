@@ -9,8 +9,34 @@ use App\App;
  * Manages user session viewing and revocation functionality
  * Allows users to see active sessions and revoke access
  */
-class UserSessionsController
+class UserSessionsController 
 {
+    /**
+     * Admin: Revoke any user session
+     * Only accessible to admins
+     */
+    public function adminRevoke()
+    {
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
+        global $config;
+        $db = new DB($config);
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        $isAdmin = isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] == 1;
+        if (!$isAdmin) {
+            header('Location: /user/login');
+            exit;
+        }
+        $session_id = $_POST['session_id'] ?? null;
+        if (!$session_id) {
+            header('Location: /admin/user/sessions');
+            exit;
+        }
+        // Revoke session (admin can revoke any session)
+        $db->query("UPDATE user_sessions SET revoked = 1 WHERE id = ?", [$session_id]);
+        header('Location: /admin/user/sessions');
+        exit;
+    }
+
     /**
      * Display user sessions
      *
@@ -114,5 +140,25 @@ class UserSessionsController
         }
         header('Location: /user/sessions');
         exit;
+    }
+
+    /**
+     * Admin: Display all active non-admin user sessions
+     * Only accessible to admins
+     */
+    public function adminSessions()
+    {
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
+        global $config;
+        $db = new DB($config);
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        $isAdmin = isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] == 1;
+        if (!$isAdmin) {
+            header('Location: /user/login');
+            exit;
+        }
+        $sql = "SELECT us.*, u.display_name, u.first_name, u.second_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE us.revoked = 0 AND us.user_id != 1 ORDER BY us.last_seen DESC";
+        $sessions = $db->fetchAll($sql);
+        include __DIR__ . '/../views/admin_sessions.php';
     }
 }

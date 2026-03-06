@@ -46,7 +46,7 @@ class UserResetRequestController
                     // Regenerate token and reload form with gentle message
                     $tm->renew();
                     $error = 'Your session expired or the form was open too long. The form has been refreshed—please try again.';
-                    $viewPath = \App\Modules\User\Helpers\CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
+                    $viewPath = CmsHelper::getViewPath('user/reset_request.php', __DIR__ . '/../views/reset_request.php');
                     include $viewPath;
                     return;
                 } else {

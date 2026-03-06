@@ -8,10 +8,27 @@ return [
         'url' => '/admin/dashboard',
     ],
     'user_management' => [
-        'label' => 'User Management',
+         'label' => 'User Management',
         'show' => true,
-        'order' => 2,
+        'order' => 5,
         'url' => '/admin/users/',
+        'children' => [
+            'dashboard' => [
+                'label' => 'List Users',
+                'url' => '/admin/users/',
+                'show' => true
+            ],
+            'pages' => [
+                'label' => 'Manage User Sessions',
+                'url' => '/admin/user/sessions',
+                'show' => true
+            ],
+            'create' => [
+                'label' => 'Add User',
+                'url' => '/admin/users/add',
+                'show' => true
+            ]
+        ]
     ],
     'modules' => [
         'label' => 'Modules',

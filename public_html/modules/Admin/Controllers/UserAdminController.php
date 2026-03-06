@@ -23,8 +23,6 @@ class UserAdminController
             // Pagination logic
             global $config;
             // Use autoloader for User.php, and instantiate DB directly
-            // var_dump($config);
-            // var_dump($config['db']);
             $db = new DB($config);
             $userModel = new User($db, $config);
             $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;

@@ -163,7 +163,7 @@ class User
                     session_start();
                 }
                 session_destroy();
-                unset($_COOKIE[PREFIX . '_cookie_login']);
+                unset($_COOKIE[$sessionPrefix . 'cookie_login']);
                 header('location: ' . $this->config['base_url'] . '/user/login');
                 exit;
             }
@@ -173,9 +173,9 @@ class User
     public function cookie_check()
     {
         $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
-        if (isset($_COOKIE[PREFIX . 'cookie_login'])) {
+        if (isset($_COOKIE[$sessionPrefix . 'cookie_login'])) {
             if (!isset($_SESSION[$sessionPrefix . 'user_id'])) {
-                $oldCookie = $_COOKIE[PREFIX . 'cookie_login'];
+                $oldCookie = $_COOKIE[$sessionPrefix . 'cookie_login'];
                 $sql = "SELECT * FROM `cookie_login` WHERE `cookie_hash`=?";
                 $rows = $this->db->fetchAll($sql, [$oldCookie]);
                 if (count($rows) > 0) {

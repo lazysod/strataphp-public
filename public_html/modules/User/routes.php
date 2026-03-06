@@ -40,5 +40,7 @@ if (!empty(App::config('modules')['User'])) {
     
     $router->get('/user/sso', [\App\Modules\User\Controllers\SSOController::class, 'index']);
     $router->post('/user/sso/revoke', [\App\Modules\User\Controllers\SSOController::class, 'revoke']);
+    $router->get('/admin/user/sessions', [\App\Modules\User\Controllers\UserSessionsController::class, 'adminSessions']);
+    $router->post('/admin/user/sessions/revoke', [\App\Modules\User\Controllers\UserSessionsController::class, 'adminRevoke']);
 }
     // Additional context lines can be added here if necessary

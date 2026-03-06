@@ -138,8 +138,7 @@ class ModuleDetailsController
                 }
             }
             
-            $validator = new \App\Services\ModuleValidator();
-            $results = $validator->validateModule($modulePath);
+            $results = $this->validator->validateModule($modulePath);
             
             echo json_encode([
                 'success' => true,
