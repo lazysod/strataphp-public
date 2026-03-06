@@ -28,9 +28,11 @@ class UserRegisterController
     {
         try {
             require_once dirname(__DIR__, 3) . '/bootstrap.php';
-            global $config;
-            $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
-            
+            $config = require dirname(__DIR__, 3) . '/app/config.php';
+            if (empty($config['modules']['User']) || empty($config['modules']['User']['enabled'])) {
+                header('Location: /');
+                exit;
+            }
             // Check if user is already logged in
             $sessionPrefix = $config['session_prefix'] ?? 'app_';
             if (isset($_SESSION[$sessionPrefix . 'user_id'])) {
@@ -52,7 +54,7 @@ class UserRegisterController
                 }
                 return;
             }
-            if (empty($config['modules']['user'])) {
+            if (empty($config['modules']['User'])) {
                 header('Location: /');
                 exit;
             }

@@ -27,7 +27,7 @@ class UserProfileController
         try {
             require_once $_SERVER['DOCUMENT_ROOT'] . '/bootstrap.php';
             global $config;
-            if (empty($config['modules']['user'])) {
+            if (empty($config['modules']['User'])) {
                 header('Location: /');
                 exit;
             }
@@ -65,7 +65,7 @@ class UserProfileController
                     $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
                     if (isset($allowedTypes[$fileType])) {
                         $ext = $allowedTypes[$fileType];
-                        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/uploads/users/' . $userId . '/';
+                        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/public_uploads/users/' . $userId . '/';
                         if (!is_dir($uploadDir)) {
                             mkdir($uploadDir, 0775, true);
                         }
@@ -79,7 +79,7 @@ class UserProfileController
                         $fileName = 'avatar.' . $ext;
                         $destPath = $uploadDir . $fileName;
                         if (move_uploaded_file($_FILES['avatar']['tmp_name'], $destPath)) {
-                            $avatarPath = '/storage/uploads/users/' . $userId . '/' . $fileName;
+                            $avatarPath = '/public_uploads/users/' . $userId . '/' . $fileName;
                         } else {
                             $error = 'Failed to save avatar.';
                         }

@@ -12,7 +12,7 @@ if (file_exists($composerAutoload)) {
 // Register user module routes using the router and modules['user'] config
 
 global $router;
-if (!empty(App::config('modules')['user'])) {
+if (!empty(App::config('modules')['User'])) {
     // Register / as root if user is the default module
     if (!empty(App::config('default_module')) && App::config('default_module') === 'user') {
         $router->get('/', [UserLoginController::class, 'index']);

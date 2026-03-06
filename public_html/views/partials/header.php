@@ -132,7 +132,7 @@ if (!isset($config['site_description'])) {
                                 echo '</li>';
                             }
                             ?>
-                            <?php if (!empty(App::config('modules')['user']['enabled'])) : ?>
+                            <?php if (!empty(App::config('modules')['User']['enabled'])) : ?>
                                 <?php if (!empty($_SESSION[$sessionPrefix . 'user_id'])) : ?>
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

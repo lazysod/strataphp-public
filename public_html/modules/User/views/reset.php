@@ -4,7 +4,7 @@ require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 <section class="py-5">
     <div class="container px-5">
-        <div class="bg-dark rounded-3 py-5 px-4 px-md-5 mb-5">
+        <div class="rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-5">
                 <h1 class="fw-bolder">Set New Password</h1>
             </div>
