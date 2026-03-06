@@ -11,7 +11,6 @@ class OAuthTokenController
         global $config;
         $this->db = new DB($config['db']);
     }
-
     // /oauth/token endpoint
     public function token()
     {
