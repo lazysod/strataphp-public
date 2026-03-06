@@ -83,7 +83,6 @@ $router->post('/admin/oauth-clients/delete/{id}', [\App\Modules\Admin\Controller
 // OAuth2 endpoints
 $router->get('/oauth/authorize', [\App\Modules\Admin\Controllers\OAuthAuthorizeController::class, 'authorize']);
 $router->post('/oauth/authorize', [\App\Modules\Admin\Controllers\OAuthAuthorizeController::class, 'authorize']);
-$router->post('/oauth/token', [\App\Modules\Admin\Controllers\OAuthTokenController::class, 'token']);
 
 // OAuth2 userinfo endpoint
 $router->get('/oauth/userinfo', [\App\Modules\Admin\Controllers\OAuthUserInfoController::class, 'userinfo']);

@@ -5,3 +5,4 @@ global $router;
 $router->get('/oauth/authorize', [\App\Modules\OAuthClients\Controllers\OAuthAuthorizeController::class, 'index']);
 $router->post('/oauth/authorize', [\App\Modules\OAuthClients\Controllers\OAuthAuthorizeController::class, 'index']);
 $router->post('/oauth/token', [\App\Modules\OAuthClients\Controllers\OAuthTokenController::class, 'token']);
+$router->get('/oauth/token', [\App\Modules\OAuthClients\Controllers\OAuthTokenController::class, 'token']);

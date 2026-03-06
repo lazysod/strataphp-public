@@ -1,5 +1,5 @@
 <?php
-namespace App\Modules\Admin\Controllers;
+namespace App\Modules\OAuthClients\Controllers;
 
 use App\DB;
 
@@ -8,8 +8,8 @@ class OAuthTokenController
     protected $db;
     public function __construct()
     {
-        global $config;
-        $this->db = new DB($config['db']);
+        $config = require dirname(__DIR__, 3) . '/app/config.php';
+        $this->db = new DB($config);
     }
     // /oauth/token endpoint
     public function token()
@@ -73,5 +73,21 @@ class OAuthTokenController
             'token_type' => 'bearer',
             'expires_in' => 3600
         ]);
+    }
+    public function index()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        header('Content-Type: application/json');
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
+        echo json_encode([
+            'status' => 'ok',
+            'message' => 'OAuthTokenController is now loaded and responding.'
+        ]);
+        exit;
     }
 }
