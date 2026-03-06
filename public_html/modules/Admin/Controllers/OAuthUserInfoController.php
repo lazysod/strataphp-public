@@ -30,6 +30,7 @@ class OAuthUserInfoController
         header('Access-Control-Allow-Headers: Authorization, Content-Type');
         header('Access-Control-Allow-Methods: GET, OPTIONS');
         header('Content-Type: application/json');
+        header('X-Debug-Controller: OAuthUserInfoController');
         try {
             // Accept Bearer token in Authorization header
             $headers = getallheaders();
