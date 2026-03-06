@@ -41,7 +41,7 @@ class UserResetController
             $error = '';
             $success = '';
         // Validate token and get user_id
-            $db = new DB($config['db']);
+            $db = new DB($config);
             $token = $_GET['token'] ?? '';
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $token = $_POST['reset_token'] ?? $token;

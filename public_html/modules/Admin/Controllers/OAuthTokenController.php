@@ -14,7 +14,7 @@ class OAuthTokenController
     public function __construct()
     {
         global $config;
-        $this->db = new DB($config['db']);
+        $this->db = new DB($config);
     }
 
 
