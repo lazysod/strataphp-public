@@ -36,14 +36,11 @@
                                 <td><code><?= htmlspecialchars($client['client_id']) ?></code></td>
                                 <td>
                                     <?= htmlspecialchars($client['redirect_uri']) ?>
-                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('redirect-<?= $client['id'] ?>')" title="Copy URL">
-                                        Copy URL
-                                    </button>
                                     <input type="text" id="redirect-<?= $client['id'] ?>" value="<?= htmlspecialchars($client['redirect_uri']) ?>" style="position:absolute;left:-9999px;">
                                     <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('authurl-<?= $client['id'] ?>')" title="Copy Auth URL">
                                         Copy Auth URL
                                     </button>
-                                    <input type="text" id="authurl-<?= $client['id'] ?>" value="http://localhost:8888/oauth/authorize?client_id=<?= htmlspecialchars($client['client_id']) ?>&redirect_uri=<?= urlencode($client['redirect_uri']) ?>&response_type=code&state=xyz" style="position:absolute;left:-9999px;">
+                                    <input type="text" id="authurl-<?= $client['id'] ?>" value="<?= htmlspecialchars($config['base_url']) ?>/oauth/authorize?client_id=<?= htmlspecialchars($client['client_id']) ?>&redirect_uri=<?= urlencode($client['redirect_uri']) ?>&response_type=code&state=xyz" style="position:absolute;left:-9999px;">
                                 </td>
                                 <td><?= htmlspecialchars($client['data_shared'] ?? '') ?></td>
                                 <td>
