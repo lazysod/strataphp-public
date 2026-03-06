@@ -22,7 +22,7 @@ return [
             'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
         ],
         'cms' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/htdocs/modules/cms/module.json',
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/htdocs/modules/StrataCms/module.json',
             'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
         ],
         'contact' => [
@@ -30,3 +30,4 @@ return [
             'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
         ]
     ];
+

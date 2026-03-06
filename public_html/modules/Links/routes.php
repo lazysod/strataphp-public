@@ -13,6 +13,7 @@ if (!empty(App::config('modules')['Links']['enabled'])) {
     if (!empty(App::config('default_module')) && App::config('default_module') === 'links') {
         $router->get('/', [LinksController::class, 'index']);
     }
+
     $router->get('/links', [LinksController::class, 'index']);
     $router->get('/links/about', [LinksController::class, 'about']);
 }

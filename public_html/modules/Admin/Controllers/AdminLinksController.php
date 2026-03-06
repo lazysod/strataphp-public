@@ -82,6 +82,7 @@ class AdminLinksController
      */
     public function index()
     {
+
         try {
             $this->requireAdmin();
             global $config;

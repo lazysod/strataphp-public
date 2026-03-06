@@ -23,8 +23,8 @@ use App\Modules\Admin\Controllers\AdminLinksController;
 $router->get('/admin', [\App\Modules\Admin\Controllers\AdminController::class, 'index']);
 $router->get('/admin/dashboard', [\App\Modules\Admin\Controllers\AdminController::class, 'dashboard']);
 // Links Admin Routes
-$router->get('/admin/links', [AdminLinksController::class, 'index']);
-$router->post('/admin/links', [AdminLinksController::class, 'index']);
+$router->get('/admin/links', [\App\Modules\Admin\Controllers\AdminLinksController::class, 'index']);
+$router->post('/admin/links', [\App\Modules\Admin\Controllers\AdminLinksController::class, 'index']);
 $router->get('/admin/links/add', [AdminLinksController::class, 'add']);
 $router->post('/admin/links/add', [AdminLinksController::class, 'add']);
 $router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);

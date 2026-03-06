@@ -29,8 +29,8 @@ class UserLoginController
     {
         try {
             require_once dirname(__DIR__, 3) . '/bootstrap.php';
-            global $config;
-            if (empty($config['modules']['User'])) {
+            $config = require dirname(__DIR__, 3) . '/app/config.php';
+            if (empty($config['modules']['User']) || empty($config['modules']['User']['enabled'])) {
                 header('Location: /');
                 exit;
             }
