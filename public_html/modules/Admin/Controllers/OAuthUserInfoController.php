@@ -31,15 +31,6 @@ class OAuthUserInfoController
         header('Access-Control-Allow-Methods: GET, OPTIONS');
         header('Content-Type: application/json');
         try {
-            // CORS headers
-            header('Access-Control-Allow-Origin: *');
-            header('Access-Control-Allow-Headers: Authorization, Content-Type');
-            header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-            header('Content-Type: application/json');
-            if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-                http_response_code(200);
-                exit;
-            }
             // Accept Bearer token in Authorization header
             $headers = getallheaders();
             $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
@@ -48,6 +39,11 @@ class OAuthUserInfoController
             } elseif (isset($_GET['access_token'])) {
                 $accessToken = $_GET['access_token'];
             } else {
+                // CORS headers for error
+                header('Access-Control-Allow-Origin: *');
+                header('Access-Control-Allow-Headers: Authorization, Content-Type');
+                header('Access-Control-Allow-Methods: GET, OPTIONS');
+                header('Content-Type: application/json');
                 http_response_code(401);
                 echo json_encode(['error' => 'invalid_token', 'error_description' => 'No access token provided']);
                 exit;
@@ -59,6 +55,11 @@ class OAuthUserInfoController
                 $debugIsExpired = strtotime($row['expires_at']) < time();
             }
             if (!$row || $debugIsExpired) {
+                // CORS headers for error
+                header('Access-Control-Allow-Origin: *');
+                header('Access-Control-Allow-Headers: Authorization, Content-Type');
+                header('Access-Control-Allow-Methods: GET, OPTIONS');
+                header('Content-Type: application/json');
                 http_response_code(401);
                 echo json_encode(['error' => 'invalid_token', 'error_description' => 'Token expired or invalid']);
                 exit;
@@ -67,6 +68,11 @@ class OAuthUserInfoController
             // Fetch user info
             $user = $this->db->fetch('SELECT id, display_name, email, avatar FROM users WHERE id = ?', [$userId]);
             if (!$user) {
+                // CORS headers for error
+                header('Access-Control-Allow-Origin: *');
+                header('Access-Control-Allow-Headers: Authorization, Content-Type');
+                header('Access-Control-Allow-Methods: GET, OPTIONS');
+                header('Content-Type: application/json');
                 http_response_code(404);
                 echo json_encode(['error' => 'user_not_found']);
                 exit;
@@ -79,6 +85,11 @@ class OAuthUserInfoController
                 'avatar' => $user['avatar'] ?? ''
             ]);
         } catch (\Exception $e) {
+            // CORS headers for error
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Headers: Authorization, Content-Type');
+            header('Access-Control-Allow-Methods: GET, OPTIONS');
+            header('Content-Type: application/json');
             http_response_code(500);
             error_log('OAuth userinfo error: ' . $e->getMessage());
             echo json_encode(['error' => 'server_error', 'error_description' => 'Internal server error']);
