@@ -25,6 +25,11 @@ class OAuthUserInfoController
      */
     public function userinfo()
     {
+        // CORS headers for all responses
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Headers: Authorization, Content-Type');
+        header('Access-Control-Allow-Methods: GET, OPTIONS');
+        header('Content-Type: application/json');
         try {
             // CORS headers
             header('Access-Control-Allow-Origin: *');
