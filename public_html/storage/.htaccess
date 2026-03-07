@@ -1,0 +1,15 @@
+# Allow access to avatar images in uploads/admins and uploads/user/profile using Rewrite rules
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Allow access to uploads/admins
+  RewriteCond %{REQUEST_URI} ^/storage/uploads/admins/ [NC]
+  RewriteRule ^uploads/admins/.*$ - [L]
+  # Allow access to uploads/user/profile
+  RewriteCond %{REQUEST_URI} ^/storage/uploads/user/profile/ [NC]
+  RewriteRule ^uploads/user/profile/.*$ - [L]
+  # Allow access to uploads/media and thumbs
+  RewriteCond %{REQUEST_URI} ^/storage/uploads/media/ [NC]
+  RewriteRule ^uploads/media/.*$ - [L]
+  # Deny all other access
+  RewriteRule ^.*$ - [F]
+</IfModule>

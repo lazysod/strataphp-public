@@ -70,7 +70,17 @@ if ($userId) {
         "INSERT INTO rank (user_id, title, level, admin) VALUES (?, ?, ?, ?)",
         [$userId, 'Administrator', 10, 1]
     );
+    // Set DEFAULT_ADMIN_ID in .env
+    $envPath = __DIR__ . '/../.env';
+    $envContent = file_get_contents($envPath);
+    if (strpos($envContent, 'DEFAULT_ADMIN_ID=') === false) {
+        $envContent .= "\nDEFAULT_ADMIN_ID={$userId}\n";
+    } else {
+        $envContent = preg_replace('/DEFAULT_ADMIN_ID=\d+/', "DEFAULT_ADMIN_ID={$userId}", $envContent);
+    }
+    file_put_contents($envPath, $envContent);
     echo "Admin user and rank created successfully!\n";
+    echo "DEFAULT_ADMIN_ID set to {$userId} in .env\n";
 } else {
     echo "Admin user created, but could not create rank record (user ID not found).\n";
 }
