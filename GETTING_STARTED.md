@@ -10,7 +10,7 @@ Welcome to StrataPHP—a modular PHP framework designed for rapid development, c
 ## Installation Steps
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/lazysod/strataphp-dev.git
+   git clone git@github.com:lazysod/strataphp-public.git
    cd strataphp-dev
    ```
 2. **Install Composer dependencies:**
@@ -52,6 +52,9 @@ module-name/
 ```
 
 Composer automatically loads classes from these folders. See the Module Development guide for details.
+
+## Composer Compatibility
+StrataPHP is fully compatible with Composer. All core framework dependencies and modules can be managed via Composer, making installation, updates, and autoloading seamless. You can add third-party modules or packages to your composer.json and Composer will handle autoloading according to PSR-4 standards.
 
 ## Next Steps
 - Explore the admin panel at `/admin/dashboard`

@@ -48,6 +48,25 @@ MyModule/
   ```
 - Or copy the module folder to `public_html/modules/`.
 
+### Installing from a Git Repository
+- Clone the module repository directly into your modules folder:
+  ```sh
+  git clone https://github.com/username/module-repo.git public_html/modules/ModuleName
+  ```
+- Ensure the module follows StrataPHP’s structure and includes `index.php` metadata.
+- If the module supports Composer, you can add it as a dependency in your composer.json:
+  ```json
+  "require": {
+    "vendor/module-repo": "^1.0"
+  }
+  ```
+  Then run:
+  ```sh
+  composer install
+  ```
+
+Refer to the module’s README for any additional setup steps.
+
 ## Best Practices
 - Keep modules self-contained and documented
 - Use migrations for database changes
