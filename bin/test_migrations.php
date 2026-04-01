@@ -8,11 +8,11 @@
 echo "🧪 StrataPHP Migration System Test\n";
 echo "==================================\n\n";
 
-require_once __DIR__ . '/../htdocs/app/config.php';
-require_once __DIR__ . '/../htdocs/app/DB.php';
+require_once __DIR__ . '/../public_html/app/config.php';
+require_once __DIR__ . '/../public_html/app/DB.php';
 use App\DB;
 
-$config = $config ?? require __DIR__ . '/../htdocs/app/config.php';
+$config = $config ?? require __DIR__ . '/../public_html/app/config.php';
 $db = new DB($config);
 
 // Test 1: Check migration files format
