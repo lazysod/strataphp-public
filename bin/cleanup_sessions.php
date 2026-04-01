@@ -2,10 +2,10 @@
 // Script to clean up old/revoked sessions for all users
 // Usage: php bin/cleanup_sessions.php
 
-require_once __DIR__ . '/../htdocs/bootstrap.php';
+require_once __DIR__ . '/../public_html/bootstrap.php';
 use App\DB;
 
-$config = include __DIR__ . '/../htdocs/app/config.php';
+$config = include __DIR__ . '/../public_html/app/config.php';
 $db = new DB($config);
 
 // Delete revoked sessions older than 7 days

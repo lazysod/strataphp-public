@@ -5,7 +5,7 @@
 // Usage: php bin/install.php
 
 $envFile = __DIR__ . '/../.env';
-$configFile = __DIR__ . '/../htdocs/app/config.php';
+$configFile = __DIR__ . '/../public_html/app/config.php';
 $schemaFile = __DIR__ . '/../mysql/db_instal.sql';
 
 if (!file_exists($envFile)) {
@@ -14,7 +14,7 @@ if (!file_exists($envFile)) {
 }
 
 if (!file_exists($configFile)) {
-    echo "ERROR: config.php file not found in htdocs/app/. Please ensure your configuration exists.\n";
+    echo "ERROR: config.php file not found in public_html/app/. Please ensure your configuration exists.\n";
     exit(1);
 }
 

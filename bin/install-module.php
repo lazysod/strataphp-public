@@ -21,8 +21,8 @@ class ModuleInstaller
     
     public function __construct()
     {
-        $this->modulesPath = __DIR__ . '/../htdocs/modules/';
-        $this->config = include __DIR__ . '/../htdocs/app/config.php';
+        $this->modulesPath = __DIR__ . '/../public_html/modules/';
+        $this->config = include __DIR__ . '/../public_html/app/config.php';
     }
     
     public function install($source)
@@ -198,7 +198,7 @@ class ModuleInstaller
     
     private function addToConfig($moduleName, $metadata)
     {
-        $configFile = __DIR__ . '/../htdocs/app/config.php';
+        $configFile = __DIR__ . '/../public_html/app/config.php';
         $config = include $configFile;
         
         if (!isset($config['modules'][$moduleName])) {

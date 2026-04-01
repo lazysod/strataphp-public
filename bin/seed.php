@@ -1,11 +1,11 @@
 #!/usr/bin/env php
 <?php
 // Seeder tool for Strata Framework
-require_once __DIR__ . '/../htdocs/app/config.php';
-require_once __DIR__ . '/../htdocs/app/DB.php';
+require_once __DIR__ . '/../public_html/app/config.php';
+require_once __DIR__ . '/../public_html/app/DB.php';
 use App\DB;
 
-$config = $config ?? require __DIR__ . '/../htdocs/app/config.php';
+$config = $config ?? require __DIR__ . '/../public_html/app/config.php';
 $db = new DB($config);
 
 $seedsDir = __DIR__ . '/../seeds/';

@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 // Database restore script for Strata Framework
-require_once __DIR__ . '/../htdocs/app/config.php';
+require_once __DIR__ . '/../public_html/app/config.php';
 
 $dbname = $config['db']['database'];
 $user = $config['db']['username'];

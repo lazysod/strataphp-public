@@ -22,7 +22,7 @@ class ModuleGenerator
             throw new InvalidArgumentException("Module name must start with a letter and contain only letters, numbers, hyphens, and underscores");
         }
         
-        $this->modulesPath = __DIR__ . '/../htdocs/modules/';
+        $this->modulesPath = __DIR__ . '/../public_html/modules/';
         
         // Normalize input: convert everything to lowercase with hyphens
         $normalizedName = strtolower(str_replace('_', '-', $moduleName));
@@ -945,8 +945,8 @@ MD;
         
         // Add PSR-4 autoloading for module
         $namespace = "App\\Modules\\{$this->moduleClass}\\";
-        $composer['autoload']['psr-4'][$namespace . "Controllers\\"] = "htdocs/modules/{$this->moduleName}/controllers/";
-        $composer['autoload']['psr-4'][$namespace . "Models\\"] = "htdocs/modules/{$this->moduleName}/models/";
+        $composer['autoload']['psr-4'][$namespace . "Controllers\\"] = "public_html/modules/{$this->moduleName}/controllers/";
+        $composer['autoload']['psr-4'][$namespace . "Models\\"] = "public_html/modules/{$this->moduleName}/models/";
         
         file_put_contents($composerFile, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         echo "📝 Updated: composer.json\n";
