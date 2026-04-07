@@ -124,7 +124,38 @@ ALTER TABLE `user_sessions`
 -- AUTO_INCREMENT for table `user_sessions`
 ALTER TABLE `user_sessions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+-- Table structure for table `links`
+DROP TABLE IF EXISTS `links`;
+CREATE TABLE `links` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `icon` varchar(64) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `order` int(11) NOT NULL DEFAULT '0',
+  `nsfw` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table `links`
+INSERT INTO `links` (`id`, `title`, `url`, `icon`, `created_at`, `order`, `nsfw`) VALUES
+(1, 'Strata PHP Home Page', 'https://www.strataphp.org', 'fas fa-link', '2025-08-13 08:09:46', 2, 1),
+(3, 'B.Smith Home Page!', 'https://barrysmith.dev', 'fas fa-link', '2025-08-13 08:25:14', 1, 0),
+(4, 'Lazy Links 2.0', 'https://lazylinks.co.uk', 'fas fa-link', '2025-08-13 08:26:48', 4, 0),
+(5, 'Lazy Tools', 'https://lazytools.org', 'fas fa-link', '2025-08-13 08:27:03', 3, 0);
+
+-- Indexes for table `links`
+ALTER TABLE `links`
+  ADD PRIMARY KEY (`id`);
+
+-- AUTO_INCREMENT for table `links`
+ALTER TABLE `links`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
