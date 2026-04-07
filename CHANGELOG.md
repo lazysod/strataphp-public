@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic format detection
   - Multi-step rollback capability (e.g., `php bin/rollback.php 3`)
   - Robust error handling for missing or invalid rollbacks
-- **Centralized Version Management** (`htdocs/app/Version.php`) - Professional version handling
+- **Centralized Version Management** (`public_html/app/Version.php`) - Professional version handling
   - Reads version from `composer.json` as canonical source
   - Removes version from user-editable config files
   - Provides version comparison and semantic parsing utilities

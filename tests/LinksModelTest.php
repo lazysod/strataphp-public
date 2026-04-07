@@ -1,8 +1,8 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../htdocs/modules/Admin/models/Links.php';
-require_once __DIR__ . '/../htdocs/app/DB.php';
+require_once __DIR__ . '/../public_html/modules/Admin/models/Links.php';
+require_once __DIR__ . '/../public_html/app/DB.php';
 use App\DB;
 use App\Modules\Admin\Models\Links;
 

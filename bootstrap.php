@@ -1,6 +1,4 @@
 <?php
-// htdocs/bootstrap.php
-
 // 1. Composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
 

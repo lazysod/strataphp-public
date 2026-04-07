@@ -2,11 +2,11 @@
 # This file specifies which directories contain StrataPHP modules
 
 # Core modules included with the framework
-htdocs/modules/Admin/
-htdocs/modules/helloworld/
-htdocs/modules/home/
-htdocs/modules/contact/
-htdocs/modules/user/
-htdocs/modules/api/
-htdocs/modules/messaging/
-htdocs/modules/links/
+public_html/modules/Admin/
+public_html/modules/helloworld/
+public_html/modules/home/
+public_html/modules/contact/
+public_html/modules/user/
+public_html/modules/api/
+public_html/modules/messaging/
+public_html/modules/links/

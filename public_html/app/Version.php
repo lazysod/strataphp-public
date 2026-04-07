@@ -79,7 +79,7 @@ class Version
             // Start from current file location and work backwards to find composer.json
             $currentDir = __DIR__;
             
-            // Try current directory first (htdocs/app/)
+            // Try current directory first (public_html/app/)
             $composerPath = $currentDir . '/../../composer.json';
             
             if (!file_exists($composerPath)) {

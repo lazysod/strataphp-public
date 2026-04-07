@@ -165,13 +165,13 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     error_log("[ERROR] $errstr in $errfile on line $errline\n", 3, LOG_PATH);
     // Optionally show a friendly error page
     if ($errno === E_USER_ERROR) {
-        include BASE_PATH . '/htdocs/views/errors/500.php';
+        include BASE_PATH . '/public_html/views/errors/500.php';
         exit;
     }
 });
 
 set_exception_handler(function($exception) {
     error_log("[EXCEPTION] " . $exception->getMessage() . "\n", 3, LOG_PATH);
-    include BASE_PATH . '/htdocs/views/errors/500.php';
+    include BASE_PATH . '/public_html/views/errors/500.php';
     exit;
 });
