@@ -56,7 +56,7 @@ h1 { color: #007bff; }
 
 A simple example module for the Strata Framework.
 
-- Place this folder in `htdocs/modules/helloworld/`
+- Place this folder in `public_html/modules/helloworld/`
 - Access via route/controller as configured
 ```
 

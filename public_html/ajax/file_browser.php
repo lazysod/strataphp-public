@@ -22,7 +22,7 @@ if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
 }
 
 // Get upload directory
-$uploadDir = STRPHP_ROOT . '/htdocs/storage/uploads/cms/images';
+$uploadDir = STRPHP_ROOT . '/public_html/storage/uploads/cms/images';
 $baseUrl = '/storage/uploads/cms/images';
 
 // Get files recursively

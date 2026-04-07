@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Admin session check and initialization
-$baseDir = dirname(__FILE__, 4); // Points to htdocs/
+$baseDir = dirname(__FILE__, 4); // Points to public_html/
 require_once $baseDir . '/app/config.php';
 $localConfig = include $baseDir . '/app/config.php';
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');

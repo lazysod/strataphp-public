@@ -10,7 +10,7 @@ A simple module for StrataPHP to embed Google Analytics tracking code using a Me
 
 ## Installation
 
-1. Copy the module to your `htdocs/modules/` directory.
+1. Copy the module to your `public_html/modules/` directory.
 2. Enable the module in your admin panel or in `app/config.php`.
 3. Visit the admin settings page to enter your Measurement ID.
 

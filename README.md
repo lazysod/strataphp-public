@@ -27,7 +27,7 @@ _How to set up StrataPHP for the first time (2025 update)._
   ```sh
   composer install
   ```
-4. Set up your web server to use `htdocs` as the document root.
+4. Set up your web server to use `public_html` as the document root.
 5. Copy `.env.example` to `.env` and fill in your actual database, mail, and other settings:
   ```sh
   cp .env.example .env
@@ -102,7 +102,7 @@ _A summary of the framework's core capabilities._
 - **Session management**: Robust, secure, auto-started in `app/start.php`
 - **Logging**: Security/auth events logged to `storage/logs/` via the `Logger` class
 - **Dynamic navigation**: Shows login/register/user menu based on config and session
-- **Extensible**: Add new modules in `/htdocs/modules/` (see user module for example)
+- **Extensible**: Add new modules in `/public_html/modules/` (see user module for example)
 - **Links management**: Complete Linktree-style link management with drag & drop ordering
 - **Module validation system**: Comprehensive security and quality checks for all modules
 - **Module enable/disable UI**: Admin panel allows enabling/disabling modules and selecting the default module for the root page.
@@ -112,7 +112,7 @@ _A summary of the framework's core capabilities._
 ## Structure
 _Overview of the project directory and file organization._
 
-- `htdocs/` — All PHP code, configs, and assets live here
+- `public_html/` — All PHP code, configs, and assets live here
   - `app/` — Config, core classes, utilities
   - `controllers/` — Controllers (one per route)
   - `models/` — Data models
@@ -122,7 +122,7 @@ _Overview of the project directory and file organization._
   - `vendor/` — Composer dependencies (auto-generated)
 - `_framework_old_backup_*` — Archived legacy code (safe to delete)
 
-- `htdocs/modules/` — Modular features (user system, forum, etc.)
+- `public_html/modules/` — Modular features (user system, forum, etc.)
 
 ---
 
@@ -161,7 +161,7 @@ StrataPHP includes a revolutionary **CMS Toggle System** that allows you to enab
 
 #### **Toggle Configuration**
 ```php
-// In htdocs/app/config.php
+// In public_html/app/config.php
 'modules' => [
     'cms' => [
         'enabled' => true,  // Change to false to disable CMS
@@ -178,7 +178,7 @@ StrataPHP includes a revolutionary **CMS Toggle System** that allows you to enab
 
 ### Disable User Registration
 
-To prevent new users from registering (while still allowing existing users to log in), set the following in your `htdocs/app/config.php`:
+To prevent new users from registering (while still allowing existing users to log in), set the following in your `public_html/app/config.php`:
 
 ```php
 'registration_enabled' => false,
@@ -196,7 +196,7 @@ When disabled, the registration page will show a message and block new signups.
 ## Extending & Modules
 _How to add, enable, or disable modules, and create your own._
 
-To extend the framework, you can create your own modules in the `htdocs/modules/` directory. Here are some guidelines to help you build robust, maintainable modules:
+To extend the framework, you can create your own modules in the `public_html/modules/` directory. Here are some guidelines to help you build robust, maintainable modules:
 
 ### Module Structure Requirements
 
@@ -352,9 +352,9 @@ StrataPHP includes a comprehensive validation system that ensures modules meet q
    ```bash
    php -r "
    require_once 'vendor/autoload.php';
-   require_once 'htdocs/app/start.php';
+   require_once 'public_html/app/start.php';
    \$validator = new \App\Services\ModuleValidator();
-   \$results = \$validator->validateModule('htdocs/modules/your-module');
+   \$results = \$validator->validateModule('public_html/modules/your-module');
    echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
    "
    ```
@@ -362,7 +362,7 @@ StrataPHP includes a comprehensive validation system that ensures modules meet q
 ### Development Guidelines
 
 1. **Directory Structure**
-  - Each module should have its own folder under `htdocs/modules/yourmodule/`.
+  - Each module should have its own folder under `public_html/modules/yourmodule/`.
   - Organize your module with subfolders for `controllers/`, `models/`, `views/`, and `assets/` as needed.
 
 2. **Autoloading**
@@ -526,7 +526,7 @@ _Recent changes and version history._
   - Modular structure and config loading improved
   - First stable release
 
-For more details, see the code comments and explore the `htdocs/` directory.
+For more details, see the code comments and explore the `public_html/` directory.
 
 ---
 
@@ -581,11 +581,11 @@ This framework supports Twig as an optional template engine. By default, classic
    ```bash
    composer require twig/twig
    ```
-2. Set `use_twig` to `true` in `htdocs/app/config.php` or your `.env` file:
+2. Set `use_twig` to `true` in `public_html/app/config.php` or your `.env` file:
    ```env
    USE_TWIG=true
    ```
-3. Create your templates in the `htdocs/views` directory with the `.twig` extension (e.g., `about.twig`).
+3. Create your templates in the `public_html/views` directory with the `.twig` extension (e.g., `about.twig`).
 4. Use Twig syntax in your templates. You can use template inheritance and includes for headers, footers, etc.
 
 If `use_twig` is set to `false`, the framework will use classic PHP views instead.
@@ -594,12 +594,12 @@ If `use_twig` is set to `false`, the framework will use classic PHP views instea
 
 The `AboutController` demonstrates how to conditionally render either a Twig template or a classic PHP view based on the configuration setting (`use_twig`).
 
-- If Twig is enabled in `htdocs/app/config.php` or your `.env` file, the controller will render `about.twig`.
+- If Twig is enabled in `public_html/app/config.php` or your `.env` file, the controller will render `about.twig`.
 - If Twig is disabled, it will render `about.php` using standard PHP includes.
 
 This setup allows you to keep Twig as an optional feature and provides a clear example for other controllers.
 
-See `htdocs/controllers/AboutController.php` for implementation details.
+See `public_html/controllers/AboutController.php` for implementation details.
 
 ---
 
@@ -655,7 +655,7 @@ StrataPHP now uses a modern, secure session management system with device-based 
 - See migration files for schema changes.
 
 ---
-For more, see the code in `htdocs/app/SessionManager.php`, `User.php`, and session dashboard controllers/views.
+For more, see the code in `public_html/app/SessionManager.php`, `User.php`, and session dashboard controllers/views.
 
 ---
 
@@ -703,7 +703,7 @@ The StrataPHP CMS module provides a modern, extensible content management system
 ### Usage
 - Access the CMS admin at `/admin/cms` after logging in as an admin.
 - Use the Media Library to upload, preview, and manage files.
-- All uploads are stored in `htdocs/storage/uploads/cms/` (with thumbnails in `thumbs/`).
+- All uploads are stored in `public_html/storage/uploads/cms/` (with thumbnails in `thumbs/`).
 - Deleting a file via the UI removes both the original and its thumbnail (if present).
 
 See the main documentation and `INSTALL.md` for setup and advanced configuration.

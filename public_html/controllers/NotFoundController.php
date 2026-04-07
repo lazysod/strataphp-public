@@ -8,7 +8,7 @@ class NotFoundController
         http_response_code(404);
         // Load the 404 view
         // This view should be created in the views directory
-        // e.g., htdocs/views/404.php
+        // e.g., public_html/views/404.php
         // It should contain a user-friendly message for not found pages
         $showNav = false; // Show navigation for admin
         $h1 = "404 - Not Found";

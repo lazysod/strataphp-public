@@ -35,7 +35,7 @@ class FileUpload
     private static $maxFileSize = 10485760;
 
     /**
-     * Upload directory relative to htdocs
+     * Upload directory relative to 
      */
     private static $uploadDir = 'storage/uploads';
 

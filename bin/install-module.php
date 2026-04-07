@@ -187,8 +187,8 @@ class ModuleInstaller
         
         // Add PSR-4 autoloading for module
         $namespace = "App\\Modules\\" . ucfirst($moduleName) . "\\";
-        $composer['autoload']['psr-4'][$namespace . "Controllers\\"] = "htdocs/modules/$moduleName/controllers/";
-        $composer['autoload']['psr-4'][$namespace . "Models\\"] = "htdocs/modules/$moduleName/models/";
+        $composer['autoload']['psr-4'][$namespace . "Controllers\\"] = "public_html/modules/$moduleName/controllers/";
+        $composer['autoload']['psr-4'][$namespace . "Models\\"] = "public_html/modules/$moduleName/models/";
         
         file_put_contents($composerFile, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         

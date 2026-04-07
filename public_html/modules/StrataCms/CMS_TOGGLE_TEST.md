@@ -13,7 +13,7 @@ The CMS module is currently **ENABLED** in your config. Here's how to test the t
    - Login as admin - should redirect to `/admin/cms`
 
 2. **Disable CMS Module**
-   Edit `/htdocs/app/config.php` and change:
+   Edit `/public_html/app/config.php` and change:
    ```php
    'cms' => array (
        'enabled' => false,  // Change from true to false

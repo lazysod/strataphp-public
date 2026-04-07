@@ -39,9 +39,9 @@
     <ol>
       <li>Clone or download this repository.</li>
       <li>Change directory to the project root.</li>
-      <li>Install Composer dependencies:<br><pre>cd htdocs
+      <li>Install Composer dependencies:<br><pre>cd public_html
 composer install</pre></li>
-      <li>Set up your web server to use <code>htdocs</code> as the document root.</li>
+      <li>Set up your web server to use <code>public_html</code> as the document root.</li>
       <li>Copy <code>.env.example</code> to <code>.env</code> and fill in your actual database, mail, and other settings:<br><pre>cp .env.example .env</pre>Edit <code>.env</code> with your real credentials.</li>
       <li>Visit your site in the browser!</li>
     </ol>
@@ -59,7 +59,7 @@ composer install</pre></li>
       <li>Session management: Robust, secure, auto-started in <code>app/start.php</code></li>
       <li>Logging: Security/auth events logged to <code>storage/logs/</code> via the <code>Logger</code> class</li>
       <li>Dynamic navigation: Shows login/register/user menu based on config and session</li>
-      <li>Extensible: Add new modules in <code>/htdocs/modules/</code></li>
+      <li>Extensible: Add new modules in <code>/public_html/modules/</code></li>
       <li>Admin links management: Add, edit, delete, and reorder links in the admin panel, with FontAwesome icon auto-detection and NSFW marking.</li>
       <li>NSFW support for links: Mark links as NSFW in the admin panel; public users must confirm before visiting NSFW links.</li>
       <li>Module enable/disable UI: Admin panel allows enabling/disabling modules and selecting the default module for the root page.</li>
@@ -68,7 +68,7 @@ composer install</pre></li>
   <section id="structure">
     <h2>Structure</h2>
     <ul>
-      <li><code>htdocs/</code> — All PHP code, configs, and assets live here
+      <li><code>public_html/</code> — All PHP code, configs, and assets live here
         <ul>
           <li><code>app/</code> — Config, core classes, utilities</li>
           <li><code>controllers/</code> — Controllers (one per route)</li>
@@ -80,7 +80,7 @@ composer install</pre></li>
         </ul>
       </li>
       <li><code>_framework_old_backup_*</code> — Archived legacy code (safe to delete)</li>
-      <li><code>htdocs/modules/</code> — Modular features (user system, forum, etc.)</li>
+      <li><code>public_html/modules/</code> — Modular features (user system, forum, etc.)</li>
     </ul>
   </section>
   <section id="security">
@@ -225,9 +225,9 @@ return [
       <li><strong>Command Line:</strong>
         <pre><code>php -r "
 require_once 'vendor/autoload.php';
-require_once 'htdocs/app/start.php';
+require_once 'public_html/app/start.php';
 \$validator = new \App\Services\ModuleValidator();
-\$results = \$validator->validateModule('htdocs/modules/your-module');
+\$results = \$validator->validateModule('public_html/modules/your-module');
 echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
 "</code></pre>
       </li>
@@ -235,7 +235,7 @@ echo 'Valid: ' . (\$results['valid'] ? 'YES' : 'NO') . PHP_EOL;
     
     <h3>Development Guidelines</h3>
     <ol>
-      <li><strong>Directory Structure:</strong> Each module should have its own folder under <code>htdocs/modules/yourmodule/</code>. Organize your module with subfolders for <code>controllers/</code>, <code>models/</code>, <code>views/</code>, and <code>assets/</code> as needed.</li>
+      <li><strong>Directory Structure:</strong> Each module should have its own folder under <code>public_html/modules/yourmodule/</code>. Organize your module with subfolders for <code>controllers/</code>, <code>models/</code>, <code>views/</code>, and <code>assets/</code> as needed.</li>
       <li><strong>Autoloading:</strong> Place your controllers in <code>controllers/</code>, models in <code>models/</code>, and views in <code>views/</code>. The framework's autoloader will automatically load classes from these locations if you follow the naming conventions.</li>
       <li><strong>Database Access:</strong> Use the provided <code>DB</code> class for all database operations. Do not use legacy or custom DB connection code.</li>
       <li><strong>Error Handling:</strong> Wrap all controller methods in try-catch blocks for proper error handling.</li>
@@ -316,8 +316,8 @@ php bin/seed.php --down            # Remove all seeded data
     <h2>Optional Twig Template Engine Support</h2>
     <ol>
       <li>Install Twig via Composer:<br><pre>composer require twig/twig</pre></li>
-      <li>Set <code>use_twig</code> to <code>true</code> in <code>htdocs/app/config.php</code> or your <code>.env</code> file:<br><pre>USE_TWIG=true</pre></li>
-      <li>Create your templates in the <code>htdocs/views</code> directory with the <code>.twig</code> extension.</li>
+      <li>Set <code>use_twig</code> to <code>true</code> in <code>public_html/app/config.php</code> or your <code>.env</code> file:<br><pre>USE_TWIG=true</pre></li>
+      <li>Create your templates in the <code>public_html/views</code> directory with the <code>.twig</code> extension.</li>
       <li>Use Twig syntax in your templates. You can use template inheritance and includes for headers, footers, etc.</li>
     </ol>
     <p>If <code>use_twig</code> is set to <code>false</code>, the framework will use classic PHP views instead.</p>
@@ -328,7 +328,7 @@ php bin/seed.php --down            # Remove all seeded data
       <li>If Twig is disabled, it will render <code>about.php</code> using standard PHP includes.</li>
     </ul>
     <p>This setup allows you to keep Twig as an optional feature and provides a clear example for other controllers.</p>
-    <p>See <code>htdocs/controllers/AboutController.php</code> for implementation details.</p>
+    <p>See <code>public_html/controllers/AboutController.php</code> for implementation details.</p>
   </section>
   <section id="csrf-protection">
     <h2>CSRF Protection</h2>

@@ -166,7 +166,7 @@ class ModuleDetailsController
         // Set up data that the view expects
         $config = $this->config;
         $modules = $config['modules'] ?? [];
-        $baseDir = dirname(__DIR__, 3); // Points to htdocs/
+        $baseDir = dirname(__DIR__, 3); // Points to public_html/
         
         // Load the validation report view (controller version)
         include dirname(__DIR__) . '/views/module-validation-report-controller.php';
