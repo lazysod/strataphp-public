@@ -1,11 +1,4 @@
 <?php
-// Ensure $config and $modules are always available
-if (isset($debug_sql) || isset($debug_sessions)) {
-    echo '<div style="background:#ffe;border:1px solid #cc0;padding:10px;margin-bottom:20px;">';
-    echo '<strong>Debug SQL:</strong><br><pre>' . htmlspecialchars($debug_sql ?? '') . '</pre>';
-    echo '<strong>Debug Result:</strong><br><pre>' . print_r($debug_sessions ?? [], true) . '</pre>';
-    echo '</div>';
-}
 if (!isset($config)) {
     $config = file_exists($_SERVER['DOCUMENT_ROOT'] . '/app/config.php') ? include $_SERVER['DOCUMENT_ROOT'] . '/app/config.php' : [];
 }
