@@ -44,7 +44,7 @@ return array (
     ),
     'User' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
     ),
     'GoogleAnalytics' => 
