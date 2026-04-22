@@ -17,5 +17,6 @@ return [
         'models' => false  // API module doesn't need models - it's for endpoints only
     ],
     'update_url' => '',
-    'enabled' => true
+    'enabled' => true,
+    'update' => false
 ];

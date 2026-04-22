@@ -17,5 +17,6 @@ return [
         'models' => false
     ],
     'update_url' => '',
-    'enabled' => true
+    'enabled' => true,
+    'update' => false
 ];

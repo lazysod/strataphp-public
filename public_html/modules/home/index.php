@@ -20,5 +20,5 @@ return [
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true,
     'suitable_as_default' => true,
-    
+    'update' => false,
 ];

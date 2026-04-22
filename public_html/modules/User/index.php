@@ -18,5 +18,6 @@ return [
         'models' => true        // Needs models for user data
     ],
     'update_url' => '', // Optional: URL to check for updates
-    'enabled' => true
+    'enabled' => true,
+    'update' => false
 ];

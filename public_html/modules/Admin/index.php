@@ -24,6 +24,7 @@ return [
     'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'homepage' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
+    'update' => false,
     'structure_requirements' => [
         'controllers' => true,  // Needs controllers for admin operations
         'views' => true,        // Needs views for admin interface

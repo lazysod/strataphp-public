@@ -14,6 +14,7 @@ return [
     'documentation' => 'https://strataphp.org',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => false,
+    'update' => false,
     'suitable_as_default' => false,
     'dependencies' => [
         'user' => 'User >=1.0.0',  // Requires user management for authors

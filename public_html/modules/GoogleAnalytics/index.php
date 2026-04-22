@@ -22,4 +22,5 @@ return [
     ],
     'tags' => ['google-analytics', 'content', 'cms', 'crud'],
     // 'screenshots' => [],
+    'update' => false,
 ];

@@ -10,5 +10,6 @@ return [
     'homepage' => 'https://strataphp.org',
     'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'slug' => 'oauth-clients',
-    'support_url' => 'https://strataphp.org'
+    'support_url' => 'https://strataphp.org',
+    'update' => false,
 ];

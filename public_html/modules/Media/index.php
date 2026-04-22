@@ -15,4 +15,5 @@ return [
     'module_type' => 'core',
     'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'support_url' => 'https://github.com/lazysod/strataphp_core_modules/issues',
+    'update' => false,
 ];

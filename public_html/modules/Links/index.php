@@ -23,6 +23,7 @@ return [
     'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'homepage' => 'https://strataphp.org',
     'support_url' => 'https://github.com/lazysod/strataphp_core_modules/issues',
+    'update' => true,
     'structure_requirements' => [
         'controllers' => true,  // Needs controllers for link display
         'views' => true,        // Needs views for link pages

@@ -1,4 +1,3 @@
-
 <?php
 // Media Module Dashboard View
 include_once __DIR__ . '/../../../views/partials/admin_header.php';

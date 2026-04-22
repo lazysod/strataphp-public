@@ -20,6 +20,7 @@ return [
         'php' => '>=7.4'
     ],
     'tags' => ['cookie', 'consent', 'privacy', 'banner'],
+    'update' => false,
     'features' => [
         'Customizable message',
         'Configurable cookie name and duration',
