@@ -10,8 +10,9 @@ return [
     'category' => 'Utility',
     'license' => 'MIT',
     'homepage' => 'https://strataphp.org',
-    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://strataphp.org',
+    'update' => true,
     'enabled' => false,
     'suitable_as_default' => false,
     'dependencies' => [],
@@ -20,7 +21,6 @@ return [
         'php' => '>=7.4'
     ],
     'tags' => ['cookie', 'consent', 'privacy', 'banner'],
-    'update' => false,
     'features' => [
         'Customizable message',
         'Configurable cookie name and duration',

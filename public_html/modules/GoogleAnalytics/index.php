@@ -9,8 +9,9 @@ return [
     'category' => 'Analytics',
     'license' => 'MIT',
     'homepage' => 'https://github.com/strataphp/google_analytics-module',
-    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'repository' => 'https://github.com/strataphp/google_analytics-module.git',
     'support_url' => 'https://github.com/strataphp/google_analytics-module/issues',
+    'update' => true,
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true,
     'suitable_as_default' => false,
@@ -22,5 +23,4 @@ return [
     ],
     'tags' => ['google-analytics', 'content', 'cms', 'crud'],
     // 'screenshots' => [],
-    'update' => false,
 ];

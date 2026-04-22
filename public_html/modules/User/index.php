@@ -9,7 +9,7 @@ return [
     'category' => 'Security',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
     'homepage' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
     'structure_requirements' => [
@@ -18,6 +18,5 @@ return [
         'models' => true        // Needs models for user data
     ],
     'update_url' => '', // Optional: URL to check for updates
-    'enabled' => true,
-    'update' => false
+    'enabled' => true
 ];

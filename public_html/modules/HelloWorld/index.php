@@ -8,15 +8,15 @@ return [
     'category' => 'Development',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
     'homepage' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
+    'update' => true,
     'structure_requirements' => [
         'controllers' => false,  // Simple demo module doesn't need complex structure
         'views' => true,
         'models' => false
     ],
     'update_url' => '',
-    'enabled' => true,
-    'update' => false
+    'enabled' => true
 ];

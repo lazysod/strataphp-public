@@ -30,18 +30,81 @@ class ModuleUpdater
         file_put_contents($tmpZip, file_get_contents($zipUrl));
         $zip = new \ZipArchive();
         if ($zip->open($tmpZip) === true) {
-            $zip->extractTo($tmpDir);
+            // Find the correct module path inside the zip (e.g., modules/links/)
+            $moduleSubdir = null;
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $stat = $zip->statIndex($i);
+                $name = $stat['name'];
+                // Look for a directory like modules/links/ or modules/Links/
+                if (preg_match('#^(.*modules/(' . preg_quote($moduleName, '#') . '))/index\\.php$#i', $name, $matches)) {
+                    $moduleSubdir = $matches[1];
+                    break;
+                }
+            }
+            if ($moduleSubdir === null) {
+                $zip->close();
+                unlink($tmpZip);
+                return false; // Module not found in zip
+            }
+            // Extract only the module directory
+            if (is_dir($tmpDir)) self::rrmdir($tmpDir);
+            mkdir($tmpDir);
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $stat = $zip->statIndex($i);
+                $name = $stat['name'];
+                if (stripos($name, $moduleSubdir . '/') === 0) {
+                    $relPath = substr($name, strlen($moduleSubdir) + 1);
+                    if ($relPath === '') continue;
+                    $targetPath = $tmpDir . '/' . $relPath;
+                    if (substr($name, -1) === '/') {
+                        if (!is_dir($targetPath)) mkdir($targetPath, 0777, true);
+                    } else {
+                        $dir = dirname($targetPath);
+                        if (!is_dir($dir)) mkdir($dir, 0777, true);
+                        copy('zip://' . $tmpZip . '#' . $name, $targetPath);
+                    }
+                }
+            }
             $zip->close();
             // Copy files to modulesDir
-            $modulePath = $modulesDir . '/' . $moduleName;
-            if (is_dir($modulePath)) {
-                self::rrmdir($modulePath);
+            // Find the original case directory name in the modules path
+            $existingDirName = null;
+            foreach (scandir($modulesDir) as $dir) {
+                if (strcasecmp($dir, $moduleName) === 0) {
+                    $existingDirName = $dir;
+                    break;
+                }
             }
-            rename($tmpDir, $modulePath);
+            $dst = $modulesDir . '/' . ($existingDirName ?: $moduleName);
+            if ($existingDirName && is_dir($dst)) {
+                self::rrmdir($dst);
+            }
+            mkdir($dst, 0777, true);
+            self::recurseCopy($tmpDir, $dst);
+            self::rrmdir($tmpDir);
             unlink($tmpZip);
             return true;
         }
         return false;
+    }
+
+    // Recursively copy files from one directory to another
+    private static function recurseCopy($src, $dst)
+    {
+        $dir = opendir($src);
+        if (!is_dir($dst)) {
+            mkdir($dst, 0777, true);
+        }
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($src . '/' . $file)) {
+                    self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
+                } else {
+                    copy($src . '/' . $file, $dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
     }
 
     private static function rrmdir($dir)

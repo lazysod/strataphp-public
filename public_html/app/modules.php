@@ -44,7 +44,7 @@ return array (
     ),
     'User' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
     ),
     'GoogleAnalytics' => 
@@ -70,7 +70,7 @@ return array (
     ),
     'OAuthClients' => 
     array (
-      'enabled' => true,
+      'enabled' => false,
       'suitable_as_default' => false,
       'category' => 'Admin',
       'name' => 'OAuth Clients',

@@ -21,10 +21,10 @@ return [
     'category' => 'Admin',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'repository' => 'https://github.com/lazysod/strataphp-public',
     'homepage' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
-    'update' => false,
+    'update' => true,
     'structure_requirements' => [
         'controllers' => true,  // Needs controllers for admin operations
         'views' => true,        // Needs views for admin interface

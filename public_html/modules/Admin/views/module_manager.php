@@ -261,39 +261,16 @@ if (!empty($_SESSION['module_update_error'])) {
                                         $validationStatus = $validationResults['valid'];
                                     }
                                 }
-                                // Fetch and parse .strataphp-modules for authoritative module paths
-                                static $remoteModulePaths = null;
-                                if ($remoteModulePaths === null) {
-                                    $modulesListUrl = 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/.strataphp-modules';
-                                    $modulesListRaw = @file_get_contents($modulesListUrl);
-                                    $remoteModulePaths = [];
-                                    if ($modulesListRaw !== false) {
-                                        // Assume .strataphp-modules is a JSON object: { "ModuleName": "modules/ModuleName/index.php", ... }
-                                        $parsed = json_decode($modulesListRaw, true);
-                                        if (is_array($parsed)) {
-                                            $remoteModulePaths = $parsed;
-                                        }
-                                    }
-                                }
-                                $remoteVersion = null;
-                                $moduleDirName = basename($modulePath);
-                                $remoteKey = 'modules/' . $moduleDirName;
-                                $rawUrl = null;
-                                if (isset($metadata['repository']) && isset($remoteModulePaths[$remoteKey])) {
-                                    $rawUrl = 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/' . $remoteModulePaths[$remoteKey];
-                                    echo '<!-- Fetching remote: ' . htmlspecialchars($rawUrl) . ' -->';
-                                    $remote = @file_get_contents($rawUrl);
-                                    if ($remote !== false && preg_match("/'version'\\s*=>\\s*'([^']+)'/", $remote, $matches)) {
-                                        $remoteVersion = $matches[1];
-                                    }
-                                }
-                                $updateAvailable = false;
-                                if ($remoteVersion && isset($metadata['version'])) {
-                                    $updateAvailable = version_compare($remoteVersion, $metadata['version'], '>');
-                                }
-                                // Debug output removed; only update/version logic remains
                                 $isCore = array_key_exists($modName, $coreModules);
                                 $isEnabled = !empty($modInfo['enabled']);
+                                $updateAvailable = false;
+                                if ($isCore) {
+                                    $localJsonPath = $modulePath . '/module.json';
+                                    $remoteJsonUrl = $coreModules[$modName]['json'] ?? '';
+                                    if (file_exists($localJsonPath) && $remoteJsonUrl) {
+                                        $updateAvailable = \App\ModuleUpdater::checkUpdate($modName, $localJsonPath, $remoteJsonUrl);
+                                    }
+                                }
                                 ?>
                                 <tr class="module-row" 
                                     data-module-name="<?= htmlspecialchars(strtolower($modName)) ?>"
@@ -314,16 +291,13 @@ if (!empty($_SESSION['module_update_error'])) {
                                         <?php if ($version) : ?>
                                             <small class="text-muted">v<?= htmlspecialchars($version) ?></small>
                                         <?php endif; ?>
-                                        <?php if ($updateAvailable) : ?>
-                                            <?php if ($isCore) : ?>
-                                                <form method="post" action="/admin/modules/update.php" style="display:inline; margin-top:5px;">
-                                                    <input type="hidden" name="module" value="<?= htmlspecialchars($modName) ?>">
-                                                    <button type="submit" class="btn btn-warning btn-sm" title="Update Available">
-                                                        <i class="fas fa-sync-alt"></i> Update
-                                                    </button>
-                                                </form>
-                                            <?php endif; ?>
-                                            <span class="badge bg-warning text-dark ms-2"><i class="fa-solid fa-triangle-exclamation"></i> Update Available</span>
+                                        <?php if ($isCore && $updateAvailable) : ?>
+                                            <form method="post" action="/admin/modules/update.php" style="display:inline; margin-top:5px;">
+                                                <input type="hidden" name="module" value="<?= htmlspecialchars($modName) ?>">
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Update Available">
+                                                    <i class="fas fa-sync-alt"></i> Update
+                                                </button>
+                                            </form>
                                         <?php elseif ($isCore) : ?>
                                             <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Up to date" style="margin-top:5px;">
                                                 <i class="fas fa-check"></i> Up to date
