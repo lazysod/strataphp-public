@@ -20,9 +20,9 @@ return [
     'category' => 'Social',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp-public',
-    'homepage' => 'https://github.com/lazysod/strataphp-public',
-    'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'homepage' => 'https://strataphp.org',
+    'support_url' => 'https://github.com/lazysod/strataphp_core_modules/issues',
     'structure_requirements' => [
         'controllers' => true,  // Needs controllers for link display
         'views' => true,        // Needs views for link pages

@@ -9,9 +9,9 @@ return [
     'category' => 'Content',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp-public',
-    'homepage' => 'https://github.com/lazysod/strataphp-public',
-    'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
+    'homepage' => 'https://strataphp.org',
+    'support_url' => 'https://github.com/lazysod/strataphp_core_modules/issues',
     'structure_requirements' => [
         'controllers' => false, // Simple module, no complex controllers needed
         'views' => false,       // Uses framework default views

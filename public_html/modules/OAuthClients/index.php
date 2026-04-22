@@ -8,7 +8,7 @@ return [
     'license' => 'MIT',
     'admin_url' => '/admin/oauth-clients',
     'homepage' => 'https://strataphp.org',
-    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'slug' => 'oauth-clients',
     'support_url' => 'https://strataphp.org'
 ];

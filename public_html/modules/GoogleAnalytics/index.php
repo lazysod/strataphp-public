@@ -9,7 +9,7 @@ return [
     'category' => 'Analytics',
     'license' => 'MIT',
     'homepage' => 'https://github.com/strataphp/google_analytics-module',
-    'repository' => 'https://github.com/strataphp/google_analytics-module.git',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'support_url' => 'https://github.com/strataphp/google_analytics-module/issues',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true,

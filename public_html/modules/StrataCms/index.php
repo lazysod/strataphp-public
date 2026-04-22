@@ -8,10 +8,10 @@ return [
     'author' => 'StrataPHP Framework',
     'category' => 'Content',
     'license' => 'MIT',
-    'homepage' => 'https://github.com/strataphp/cms-module',
-    'repository' => 'https://github.com/strataphp/cms-module.git',
+    'homepage' => 'https://strataphp.org',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'support_url' => 'https://github.com/strataphp/cms-module/issues',
-    'documentation' => 'https://docs.strataphp.com/modules/cms',
+    'documentation' => 'https://strataphp.org',
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => false,
     'suitable_as_default' => false,

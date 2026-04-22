@@ -8,7 +8,7 @@ return [
     'category' => 'API',
     'license' => 'MIT',
     'framework_version' => '1.0.0',
-    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'homepage' => 'https://github.com/lazysod/strataphp-public',
     'support_url' => 'https://github.com/lazysod/strataphp-public/issues',
     'structure_requirements' => [

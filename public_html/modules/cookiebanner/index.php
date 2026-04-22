@@ -10,7 +10,7 @@ return [
     'category' => 'Utility',
     'license' => 'MIT',
     'homepage' => 'https://strataphp.org',
-    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'support_url' => 'https://strataphp.org',
     'enabled' => false,
     'suitable_as_default' => false,

@@ -10,7 +10,7 @@ return [
     'update_url' => '', // Optional: URL to check for updates
     'enabled' => true,
     'suitable_as_default' => true,
-    'repository' => 'https://github.com/lazysod/strataphp-public',
+    'repository' => 'https://github.com/lazysod/strataphp_core_modules',
     'homepage' => 'https://strataphp.org',
     'license' => 'MIT',
     'support_url' => 'https://strataphp.org/contact',
