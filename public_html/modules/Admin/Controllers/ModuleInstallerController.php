@@ -29,15 +29,23 @@ class ModuleInstallerController
             exit;
         }
         
+        // Ensure CSRF token is set in session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
         $data = [
             'title' => 'Module Installer',
-            'modules' => $this->getInstalledModules(),
+            'installedModules' => $this->getInstalledModules(),
             'maxFileSize' => $this->getMaxUploadSize(),
             'tempDir' => sys_get_temp_dir(),
             'tempDirInfo' => $this->getTempDirectoryInfo(),
             'controller' => $this
         ];
-        
+
         // Include the view directly since it's in the module's views directory
         extract($data);
         include dirname(__DIR__) . '/views/module-installer.php';
@@ -48,24 +56,30 @@ class ModuleInstallerController
      */
     public function uploadInstall()
     {
+        // error_log('UPLOAD: uploadInstall() called');
         if (!$this->isAuthenticated()) {
+            // error_log('UPLOAD: Not authenticated');
             return $this->jsonResponse(['success' => false, 'message' => 'Unauthorized']);
         }
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // error_log('UPLOAD: Invalid request method');
             return $this->jsonResponse(['success' => false, 'message' => 'Invalid request method']);
         }
         
         // Validate CSRF token
         if (!$this->validateCsrfToken()) {
+            // error_log('UPLOAD: Invalid CSRF token');
             return $this->jsonResponse(['success' => false, 'message' => 'Invalid CSRF token']);
         }
         
         try {
+            // error_log('UPLOAD: Passed CSRF and method checks');
             // Debug: Log $_FILES information
-            
+            // error_log('UPLOAD: $_FILES=' . print_r($_FILES, true));
             // Check if file was uploaded
             if (!isset($_FILES['module_zip'])) {
+                // error_log('UPLOAD: No file uploaded');
                 throw new \Exception('No file uploaded: module_zip field not found in request');
             }
             
@@ -80,11 +94,10 @@ class ModuleInstallerController
                     UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
                     UPLOAD_ERR_EXTENSION => 'File upload stopped by PHP extension'
                 ];
-                
                 $errorMsg = isset($errorMessages[$uploadError])
                     ? $errorMessages[$uploadError]
                     : "Unknown upload error code: $uploadError";
-                    
+                // error_log('UPLOAD: Upload error: ' . $errorMsg);
                 throw new \Exception("Upload error: $errorMsg");
             }
             
@@ -94,11 +107,9 @@ class ModuleInstallerController
             if (!$this->isValidZipFile($uploadedFile)) {
                 throw new \Exception('Invalid file type. Only ZIP files are allowed.');
             }
-            
             // Create temporary directory for extraction
             $tempDir = $this->createTempDirectory();
             $zipPath = $tempDir . '/' . basename($uploadedFile['name']);
-            
             // Move uploaded file to temp directory
             if (!move_uploaded_file($uploadedFile['tmp_name'], $zipPath)) {
                 throw new \Exception('Failed to move uploaded file');
@@ -109,9 +120,9 @@ class ModuleInstallerController
             if (!$this->extractZipFile($zipPath, $extractDir)) {
                 throw new \Exception('Failed to extract ZIP file');
             }
-            
             // Find module directory in extracted files
             $modulePath = $this->findModuleDirectory($extractDir);
+
             if (!$modulePath) {
                 // Provide more detailed error information
                 $allFiles = $this->listExtractedContents($extractDir);
@@ -124,16 +135,13 @@ class ModuleInstallerController
                 $errorMsg .= '1. Ensure your module has an index.php file with valid metadata\n';
                 $errorMsg .= '2. For repositories with multiple modules, add a .strataphp-modules file\n';
                 $errorMsg .= '3. See documentation for proper module structure';
-                
                 throw new \Exception($errorMsg);
             }
             
             // Install the module using our existing installer
             $result = $this->installModuleFromPath($modulePath);
-            
             // Clean up temporary files (including uploaded ZIP)
             $this->cleanupTempDirectory($tempDir);
-            
             return $this->jsonResponse([
                 'success' => true,
                 'message' => 'Module installed successfully!',
@@ -144,7 +152,6 @@ class ModuleInstallerController
             if (isset($tempDir)) {
                 $this->cleanupTempDirectory($tempDir);
             }
-            
             return $this->jsonResponse([
                 'success' => false,
                 'message' => 'Installation failed: ' . $e->getMessage()
@@ -184,8 +191,9 @@ class ModuleInstallerController
             
             // Use the CLI installer script
             $installerPath = dirname(__DIR__, 4) . '/bin/install-module.php';
-            $command = "php " . escapeshellarg($installerPath) . " " . escapeshellarg($sourceUrl) . " 2>&1";
-            
+            $phpPath = $this->findPhpExecutable();
+            $command = $phpPath . " " . escapeshellarg($installerPath) . " " . escapeshellarg($sourceUrl) . " 2>&1";
+
             $output = [];
             $returnCode = 0;
             exec($command, $output, $returnCode);
@@ -319,27 +327,42 @@ class ModuleInstallerController
         
         if (is_dir($modulesDir)) {
             $dirs = scandir($modulesDir);
+            // Build a lowercase map of config keys for case-insensitive lookup
+            $configModules = $this->config['modules'] ?? [];
+            $configKeyMap = [];
+            foreach ($configModules as $key => $val) {
+                $configKeyMap[strtolower($key)] = $key;
+            }
             foreach ($dirs as $dir) {
                 if ($dir === '.' || $dir === '..') {
                     continue;
                 }
-                
                 $moduleDir = $modulesDir . '/' . $dir;
                 $indexFile = $moduleDir . '/index.php';
-                
                 if (is_dir($moduleDir) && file_exists($indexFile)) {
                     $moduleData = include $indexFile;
                     if (!is_array($moduleData)) {
-                        // Skip or log error if index.php does not return array
                         continue;
                     }
                     $moduleData['directory'] = $dir;
-                    $moduleData['enabled'] = $this->config['modules'][$dir]['enabled'] ?? false;
+                    // Case-insensitive config lookup
+                    $configKey = $configKeyMap[strtolower($dir)] ?? null;
+                    if ($configKey && isset($configModules[$configKey])) {
+                        // Use config value if set, otherwise fallback to metadata
+                        $moduleData['enabled'] = isset($configModules[$configKey]['enabled']) && $configModules[$configKey]['enabled'] !== ''
+                            ? $configModules[$configKey]['enabled']
+                            : ($moduleData['enabled'] ?? false);
+                        $moduleData['suitable_as_default'] = isset($configModules[$configKey]['suitable_as_default']) && $configModules[$configKey]['suitable_as_default'] !== ''
+                            ? $configModules[$configKey]['suitable_as_default']
+                            : ($moduleData['suitable_as_default'] ?? false);
+                    } else {
+                        $moduleData['enabled'] = $moduleData['enabled'] ?? false;
+                        $moduleData['suitable_as_default'] = $moduleData['suitable_as_default'] ?? false;
+                    }
                     $modules[] = $moduleData;
                 }
             }
         }
-        
         return $modules;
     }
     
@@ -389,19 +412,23 @@ class ModuleInstallerController
      */
     private function isValidZipFile($file)
     {
+        // error_log('UPLOAD: isValidZipFile() called');
         // Check file extension
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        // error_log('UPLOAD: ZIP extension check: ' . $extension);
         if ($extension !== 'zip') {
+            // error_log('UPLOAD: isValidZipFile() failed extension');
             return false;
         }
-        
         // Check MIME type
         $allowedMimes = ['application/zip', 'application/x-zip-compressed'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
-        
-        return in_array($mimeType, $allowedMimes);
+        // error_log('UPLOAD: ZIP mime check: ' . $mimeType);
+        $result = in_array($mimeType, $allowedMimes);
+        // error_log('UPLOAD: isValidZipFile() result: ' . ($result ? 'true' : 'false'));
+        return $result;
     }
     
     /**
@@ -492,27 +519,31 @@ class ModuleInstallerController
      */
     private function findModuleDirectory($extractDir)
     {
+        // error_log('UPLOAD: findModuleDirectory() called with extractDir=' . $extractDir);
         // First, check for a .strataphp-modules file that specifies module locations
         $moduleSpecFile = $extractDir . '/.strataphp-modules';
         if (file_exists($moduleSpecFile)) {
+            // error_log('UPLOAD: .strataphp-modules file found: ' . $moduleSpecFile);
             $specifiedPath = $this->findModuleFromSpec($extractDir, $moduleSpecFile);
             if ($specifiedPath) {
+                // error_log('UPLOAD: findModuleDirectory() returning from spec: ' . $specifiedPath);
                 return $specifiedPath;
             }
         }
-        
         $possibleModules = $this->scanForModules($extractDir);
-        
+        // error_log('UPLOAD: scanForModules found ' . count($possibleModules) . ' possible modules');
         // If exactly one module found, return it
         if (count($possibleModules) === 1) {
+            // error_log('UPLOAD: findModuleDirectory() returning single found: ' . $possibleModules[0]);
             return $possibleModules[0];
         }
-        
         // If multiple modules found, prefer the one with the most complete structure
         if (count($possibleModules) > 1) {
-            return $this->selectBestModule($possibleModules);
+            $best = $this->selectBestModule($possibleModules);
+            // error_log('UPLOAD: findModuleDirectory() returning best of multiple: ' . $best);
+            return $best;
         }
-        
+        // error_log('UPLOAD: findModuleDirectory() returning null, no modules found');
         return null;
     }
     
@@ -526,7 +557,7 @@ class ModuleInstallerController
             if (is_readable($specFile)) {
                 $content = file_get_contents($specFile);
             } else {
-                error_log('Spec file not readable: ' . $specFile);
+                // error_log('Spec file not readable: ' . $specFile);
                 throw new \Exception('Spec file not readable');
             }
             $lines = array_filter(array_map('trim', explode("\n", $content)));
@@ -592,27 +623,27 @@ class ModuleInstallerController
     {
         // Must have index.php
         if (!file_exists("$dir/index.php")) {
+            // error_log('UPLOAD: isValidModuleDirectory() failed: index.php missing in ' . $dir);
             return false;
         }
-        
         // Validate module metadata
         try {
             $metadata = include "$dir/index.php";
-            
-            // Must return an array with required fields
             if (!is_array($metadata)) {
+                // error_log('UPLOAD: isValidModuleDirectory() failed: index.php did not return array in ' . $dir);
                 return false;
             }
-            
             $requiredFields = ['name', 'slug', 'version', 'description'];
             foreach ($requiredFields as $field) {
                 if (!isset($metadata[$field]) || empty($metadata[$field])) {
+                    // error_log('UPLOAD: isValidModuleDirectory() failed: missing or empty ' . $field . ' in ' . $dir);
                     return false;
                 }
             }
-            
+            // error_log('UPLOAD: isValidModuleDirectory() success: ' . $dir);
             return true;
         } catch (\Exception $e) {
+            // error_log('UPLOAD: isValidModuleDirectory() exception in ' . $dir . ': ' . $e->getMessage());
             return false;
         }
     }
@@ -710,29 +741,33 @@ class ModuleInstallerController
         // Load module metadata
         $indexFile = $modulePath . '/index.php';
         if (!file_exists($indexFile)) {
+            // error_log('UPLOAD: installModuleFromPath() failed: index.php not found in ' . $modulePath);
             throw new \Exception('Module index.php not found');
         }
-        
         $moduleData = include $indexFile;
+        // error_log('UPLOAD: installModuleFromPath() loaded metadata: ' . print_r($moduleData, true));
         $moduleName = $moduleData['slug'] ?? basename($modulePath);
-        
         // Check if module already exists
-        $targetDir = dirname(__DIR__, 3) . '/modules/' . $moduleName;
+        $targetDir = dirname(__DIR__, 2) . '/modules/' . $moduleName;
+        // error_log('UPLOAD: installModuleFromPath() targetDir=' . $targetDir);
         if (is_dir($targetDir)) {
+            // error_log('UPLOAD: installModuleFromPath() failed: module already exists at ' . $targetDir);
             throw new \Exception("Module '{$moduleName}' already exists");
         }
-        
         // Copy module files
+        // error_log('UPLOAD: installModuleFromPath() about to copy module files to ' . $targetDir);
         if (!$this->copyDirectory($modulePath, $targetDir)) {
+            // error_log('UPLOAD: installModuleFromPath() failed: could not copy module files');
             throw new \Exception('Failed to copy module files');
         }
-        
+        // error_log('UPLOAD: installModuleFromPath() module files copied');
         // Update composer autoload
+        // error_log('UPLOAD: installModuleFromPath() updating composer autoload');
         $this->updateComposerAutoload($moduleName);
-        
         // Add to config
+        // error_log('UPLOAD: installModuleFromPath() adding module to config');
         $this->addModuleToConfig($moduleName);
-        
+        // error_log('UPLOAD: installModuleFromPath() completed successfully');
         return $moduleData;
     }
     
@@ -741,34 +776,37 @@ class ModuleInstallerController
      */
     private function copyDirectory($source, $destination)
     {
+        // error_log('UPLOAD: copyDirectory() called: source=' . $source . ' destination=' . $destination);
         if (!is_dir($source)) {
+            // error_log('UPLOAD: copyDirectory() failed: source is not a directory');
             return false;
         }
-        
         if (!mkdir($destination, 0755, true)) {
+            // error_log('UPLOAD: copyDirectory() failed: could not create destination directory ' . $destination);
             return false;
         }
-        
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
             \RecursiveIteratorIterator::SELF_FIRST
         );
-        
         foreach ($iterator as $item) {
             $relativePath = str_replace($source . DIRECTORY_SEPARATOR, '', $item->getPathname());
             $targetPath = $destination . DIRECTORY_SEPARATOR . $relativePath;
-            
             if ($item->isDir()) {
                 if (!mkdir($targetPath, 0755, true)) {
+                    // error_log('UPLOAD: copyDirectory() failed: could not create subdirectory ' . $targetPath);
                     return false;
                 }
+                // error_log('UPLOAD: copyDirectory() created directory ' . $targetPath);
             } else {
                 if (!copy($item, $targetPath)) {
+                    // error_log('UPLOAD: copyDirectory() failed: could not copy file ' . $item->getPathname() . ' to ' . $targetPath);
                     return false;
                 }
+                // error_log('UPLOAD: copyDirectory() copied file ' . $item->getPathname() . ' to ' . $targetPath);
             }
         }
-        
+        // error_log('UPLOAD: copyDirectory() completed successfully');
         return true;
     }
     
@@ -853,35 +891,10 @@ class ModuleInstallerController
      */
     private function findPhpExecutable()
     {
-        // Try common PHP paths in order of preference
-        $possiblePaths = [
-            PHP_BINARY, // Current PHP binary (most reliable)
-            '/usr/bin/php', // Standard Linux/cPanel path
-            '/usr/local/bin/php', // Alternative Linux path
-            '/Applications/MAMP/bin/php/php8.2.0/bin/php', // MAMP 8.2
-            '/Applications/MAMP/bin/php/php8.1.0/bin/php', // MAMP 8.1
-            '/Applications/MAMP/bin/php/php8.0.0/bin/php', // MAMP 8.0
-            'php' // Fallback to system PATH
-        ];
-        
-        foreach ($possiblePaths as $path) {
-            if ($path === 'php') {
-                // Test if php command is available in PATH
-                $output = [];
-                $returnCode = 0;
-                exec('which php 2>/dev/null', $output, $returnCode);
-                if ($returnCode === 0 && !empty($output[0])) {
-                    return 'php';
-                }
-            } else {
-                // Test if the specific path exists and is executable
-                if (file_exists($path) && is_executable($path)) {
-                    return $path;
-                }
-            }
+        // Use php_path from config if set, fallback to 'php'
+        if (!empty($this->config['php_path'])) {
+            return $this->config['php_path'];
         }
-        
-        // If nothing found, fall back to 'php' and hope for the best
         return 'php';
     }
     

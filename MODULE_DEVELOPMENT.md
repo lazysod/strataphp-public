@@ -79,4 +79,20 @@ Refer to the module’s README for any additional setup steps.
 - Use CLI tools for validation
 - Review logs in `storage/logs/`
 
+## Logging in Modules
+StrataPHP provides a built-in Logger class for writing log messages to `storage/logs/app.log` (or the path set in your config). Use this for error, info, or warning messages in your modules.
+
+**Example:**
+```php
+use App\Logger;
+
+$logger = new Logger($config); // Pass the app config array
+$logger->info('Module loaded', ['module' => 'MyModule']);
+$logger->error('Something went wrong', ['exception' => $e->getMessage()]);
+```
+
+- Log files are stored in `storage/logs/` by default.
+- Log levels: `info`, `warning`, `error`.
+- Always log sensitive errors instead of displaying them to users.
+
 For advanced topics, see the full framework documentation.

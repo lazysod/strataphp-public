@@ -10,7 +10,7 @@ if (!isset($_SESSION[$sessionPrefix . 'admin']) || $_SESSION[$sessionPrefix . 'a
 }
 
 // Prepare CSRF token and formatted file size for view
-$csrfToken = $_SESSION[$sessionPrefix . 'csrf_token'] ?? '';
+$csrfToken = $_SESSION['csrf_token'] ?? '';
 $maxFileSizeFormatted = (function ($bytes) {
     if ($bytes==0) {
         return'0 Bytes';
@@ -215,7 +215,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                         <h5 class="mb-0"><i class="fas fa-cubes me-2"></i>Installed Modules</h5>
                     </div>
                     <div class="card-body">
-                        <?php if (empty($modules)) : ?>
+                        <?php if (empty($installedModules)) : ?>
                             <div class="text-center py-4">
                                 <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                                 <h5>No modules installed</h5>
@@ -223,7 +223,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php'; ?>
                             </div>
                         <?php else : ?>
                             <div class="row">
-                                <?php foreach ($modules as $module) : ?>
+                                <?php foreach ($installedModules as $module) : ?>
                                     <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="card module-card h-100">
                                             <div class="card-body">

@@ -707,3 +707,57 @@ The StrataPHP CMS module provides a modern, extensible content management system
 - Deleting a file via the UI removes both the original and its thumbnail (if present).
 
 See the main documentation and `INSTALL.md` for setup and advanced configuration.
+
+---
+
+## Git Repository Structure & Multi-Module Support
+
+StrataPHP supports installing modules directly from git repositories. You can structure your repository in two ways:
+
+### 1. Single-Module Repository
+- Place all required module files (index.php, routes.php, etc.) at the root of the repository.
+- Example:
+  ```
+  your-module-repo/
+  ├── index.php
+  ├── routes.php
+  ├── README.md
+  ├── CHANGELOG.md
+  ├── controllers/
+  ├── models/
+  ├── views/
+  └── assets/
+  ```
+
+### 2. Multi-Module Repository
+- Place each module in its own subdirectory.
+- Add a `.strataphp-modules` file at the root of the repository. List each module directory (one per line).
+- Example structure:
+  ```
+  your-multi-module-repo/
+  ├── .strataphp-modules
+  ├── blog/
+  │   ├── index.php
+  │   ├── ...
+  ├── shop/
+  │   ├── index.php
+  │   ├── ...
+  ```
+- Example `.strataphp-modules` file:
+  ```
+  blog
+  shop
+  ```
+- The installer will read this file and install each listed module.
+
+**Tip:** Each module directory listed in `.strataphp-modules` must contain a valid `index.php` with module metadata.
+
+### Branches
+- To install from a specific branch, use the default branch or update your installer to support branch selection.
+
+### Recommended Practices
+- Always include a README.md at the repo root describing the modules and their usage.
+- Keep your `.strataphp-modules` file up to date if you add or remove modules.
+- Test your repo with the installer to ensure compatibility.
+
+---
