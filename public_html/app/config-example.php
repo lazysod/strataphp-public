@@ -14,6 +14,7 @@ $modulesConfig['bad_words'] = $badWords;
 return array(
     'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
+    'php_path' => '/usr/bin/php',
     'site_description' => 'A simple PHP framework',
     'admin_email' => getenv('ADMIN_EMAIL') ?: 'your-admin@example.com',
     'form_email' => getenv('FORM_EMAIL') ?: 'your-form@example.com',
