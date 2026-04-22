@@ -39,9 +39,7 @@
             "App\\Modules\\ModuleDirectory\\Controllers\\": "public_html/modules/module_directory/controllers/",
             "App\\Modules\\ModuleDirectory\\Models\\": "public_html/modules/module_directory/models/",
             "App\\Modules\\GoogleAnalytics\\Controllers\\": "public_html/modules/GoogleAnalytics/Controllers/",
-            "App\\Modules\\GoogleAnalytics\\Models\\": "public_html/modules/GoogleAnalytics/Models/",
-            "Modules\\Blog\\Controllers\\": "public_html/modules/blog/controllers/",
-            "Modules\\Blog\\Models\\": "public_html/modules/blog/models/"
+            "App\\Modules\\GoogleAnalytics\\Models\\": "public_html/modules/GoogleAnalytics/Models/"
         }
     },
     "require": {

@@ -18,11 +18,13 @@ class ModuleInstaller
 {
     private $modulesPath;
     private $config;
+    private $phpPath;
     
     public function __construct()
     {
         $this->modulesPath = __DIR__ . '/../public_html/modules/';
         $this->config = include __DIR__ . '/../public_html/app/config.php';
+        $this->phpPath = !empty($this->config['php_path']) ? $this->config['php_path'] : 'php';
     }
     
     public function install($source)
@@ -100,20 +102,44 @@ class ModuleInstaller
     
     private function processModule($sourceDir)
     {
-        // Validate module structure
-        if (!$this->validateModule($sourceDir)) {
+        // Check for .strataphp-modules file
+        $specFile = $sourceDir . '/.strataphp-modules';
+        if (file_exists($specFile)) {
+            echo "🔎 .strataphp-modules found. Installing listed modules...\n";
+            $content = file_get_contents($specFile);
+            $lines = array_filter(array_map('trim', explode("\n", $content)));
+            $anySuccess = false;
+            foreach ($lines as $line) {
+                if ($line === '' || strpos($line, '#') === 0) continue;
+                $modulePath = $sourceDir . '/' . ltrim($line, '/');
+                if (file_exists($modulePath . '/index.php')) {
+                    echo "\n➡️  Installing module: $line\n";
+                    $ok = $this->processSingleModule($modulePath);
+                    if ($ok) $anySuccess = true;
+                } else {
+                    echo "❌ Skipping '$line': index.php not found\n";
+                }
+            }
             $this->cleanup($sourceDir);
+            return $anySuccess;
+        } else {
+            // Single module at root
+            return $this->processSingleModule($sourceDir);
+        }
+    }
+
+    private function processSingleModule($moduleDir)
+    {
+        // Validate module structure
+        if (!$this->validateModule($moduleDir)) {
             return false;
         }
-        
         // Get module metadata
-        $metadata = include $sourceDir . '/index.php';
-        $moduleName = $metadata['slug'] ?? basename($sourceDir);
-        
+        $metadata = include $moduleDir . '/index.php';
+        $moduleName = $metadata['slug'] ?? basename($moduleDir);
         echo "📋 Module: {$metadata['name']} v{$metadata['version']}\n";
         echo "📋 Author: {$metadata['author']}\n";
         echo "📋 Description: {$metadata['description']}\n\n";
-        
         // Check if module already exists
         $targetDir = $this->modulesPath . $moduleName;
         if (is_dir($targetDir)) {
@@ -121,31 +147,21 @@ class ModuleInstaller
             $response = trim(fgets(STDIN));
             if (strtolower($response) !== 'y') {
                 echo "❌ Installation cancelled\n";
-                $this->cleanup($sourceDir);
                 return false;
             }
             $this->removeDirectory($targetDir);
         }
-        
         // Copy module files
         echo "📂 Installing to: $targetDir\n";
-        $this->copyDirectory($sourceDir, $targetDir);
-        
+        $this->copyDirectory($moduleDir, $targetDir);
         // Update composer autoload if needed
         $this->updateComposerAutoload($moduleName, $metadata);
-        
         // Add to config
         $this->addToConfig($moduleName, $metadata);
-        
         // Run module install script if exists
         $this->runInstallScript($targetDir);
-        
-        // Cleanup temp files
-        $this->cleanup($sourceDir);
-        
         echo "\n✅ Module '$moduleName' installed successfully!\n";
         echo "🔧 Visit /admin/modules to enable the module\n";
-        
         return true;
     }
     

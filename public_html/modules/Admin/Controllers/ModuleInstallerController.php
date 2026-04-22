@@ -191,8 +191,9 @@ class ModuleInstallerController
             
             // Use the CLI installer script
             $installerPath = dirname(__DIR__, 4) . '/bin/install-module.php';
-            $command = "php " . escapeshellarg($installerPath) . " " . escapeshellarg($sourceUrl) . " 2>&1";
-            
+            $phpPath = $this->findPhpExecutable();
+            $command = $phpPath . " " . escapeshellarg($installerPath) . " " . escapeshellarg($sourceUrl) . " 2>&1";
+
             $output = [];
             $returnCode = 0;
             exec($command, $output, $returnCode);
@@ -890,35 +891,10 @@ class ModuleInstallerController
      */
     private function findPhpExecutable()
     {
-        // Try common PHP paths in order of preference
-        $possiblePaths = [
-            PHP_BINARY, // Current PHP binary (most reliable)
-            '/usr/bin/php', // Standard Linux/cPanel path
-            '/usr/local/bin/php', // Alternative Linux path
-            '/Applications/MAMP/bin/php/php8.2.0/bin/php', // MAMP 8.2
-            '/Applications/MAMP/bin/php/php8.1.0/bin/php', // MAMP 8.1
-            '/Applications/MAMP/bin/php/php8.0.0/bin/php', // MAMP 8.0
-            'php' // Fallback to system PATH
-        ];
-        
-        foreach ($possiblePaths as $path) {
-            if ($path === 'php') {
-                // Test if php command is available in PATH
-                $output = [];
-                $returnCode = 0;
-                exec('which php 2>/dev/null', $output, $returnCode);
-                if ($returnCode === 0 && !empty($output[0])) {
-                    return 'php';
-                }
-            } else {
-                // Test if the specific path exists and is executable
-                if (file_exists($path) && is_executable($path)) {
-                    return $path;
-                }
-            }
+        // Use php_path from config if set, fallback to 'php'
+        if (!empty($this->config['php_path'])) {
+            return $this->config['php_path'];
         }
-        
-        // If nothing found, fall back to 'php' and hope for the best
         return 'php';
     }
     
