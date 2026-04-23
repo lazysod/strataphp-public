@@ -1,33 +1,53 @@
 <?php
 // List of core modules and their remote metadata and zip URLs
 return [
-        'admin' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/Admin/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'Admin' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/Admin/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
         'home' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/home/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/home/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
-        'links' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/links/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'Links' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/Links/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
-        'user' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/user/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'User' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/User/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
-        'media' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/media/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'Media' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/Media/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
-        'cms' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/StrataCms/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'StrataCms' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/StrataCms/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ],
-        'contact' => [
-            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp-public/master/public_html/modules/contact/module.json',
-            'zip'  => 'https://github.com/lazysod/strataphp-public/archive/refs/heads/master.zip'
+        'Contact' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/Contact/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
+        ],
+        'OAuthClients' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/OAuthClients/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
+        ],
+        'GoogleAnalytics' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/GoogleAnalytics/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
+        ],
+        'HelloWorld' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/HelloWorld/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
+        ],
+        'api' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/api/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
+        ],
+        'CookieBanner' => [
+            'json' => 'https://raw.githubusercontent.com/lazysod/strataphp_core_modules/main/modules/CookieBanner/index.php',
+            'zip'  => 'https://github.com/lazysod/strataphp_core_modules/archive/refs/heads/main.zip'
         ]
     ];
 

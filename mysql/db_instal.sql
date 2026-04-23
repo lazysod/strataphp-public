@@ -80,6 +80,7 @@ CREATE TABLE `users` (
 
 -- Table structure for table `user_sessions`
 DROP TABLE IF EXISTS `user_sessions`;
+
 CREATE TABLE `user_sessions` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -88,8 +89,10 @@ CREATE TABLE `user_sessions` (
   `ip_address` varchar(45) DEFAULT NULL,
   `device_info` varchar(255) DEFAULT NULL,
   `session_token` varchar(128) NOT NULL,
-  -- Table structure for `user_activation`
-  DROP TABLE IF EXISTS `user_activation`;
+  `revoked` tinyint(1) DEFAULT '0',
+  `last_seen` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  `expires_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Indexes for table `user_sessions`

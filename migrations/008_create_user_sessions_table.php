@@ -10,10 +10,13 @@ return [
             user_id INT NOT NULL,
             device_id VARCHAR(128) NOT NULL,
             device_type VARCHAR(32) DEFAULT NULL,
+            ip_address VARCHAR(45) DEFAULT NULL,
+            device_info VARCHAR(255) DEFAULT NULL,
             session_token VARCHAR(128) NOT NULL,
             revoked TINYINT(1) DEFAULT 0,
             last_seen DATETIME NOT NULL,
             created_at DATETIME NOT NULL,
+            expires_at DATETIME DEFAULT NULL,
             INDEX(user_id),
             INDEX(device_id),
             INDEX(session_token)
