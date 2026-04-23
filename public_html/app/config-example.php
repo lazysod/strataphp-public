@@ -12,6 +12,8 @@ $modulesConfig = include __DIR__ . '/modules.php';
 $badWords = file_exists(__DIR__ . '/bad_words.php') ? include __DIR__ . '/bad_words.php' : [];
 $modulesConfig['bad_words'] = $badWords;
 return array(
+        // Number of days before a session expires (used for expires_at in user_sessions)
+    'session_expiry_days' => 1,
     'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
     'php_path' => '/usr/bin/php',

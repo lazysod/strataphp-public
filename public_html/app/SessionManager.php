@@ -19,11 +19,14 @@ class SessionManager
         $device_type = $this->detectDeviceType();
         $ip_address = $_SERVER['REMOTE_ADDR'] ?? '';
         $session_token = bin2hex(random_bytes(32));
-        $now = date('Y-m-d H:i:s');
 
-        // Insert session into DB (now with ip_address)
-        $sql = "INSERT INTO user_sessions (user_id, device_id, device_type, ip_address, session_token, revoked, last_seen, created_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?)";
-        $this->db->query($sql, [$user_id, $device_id, $device_type, $ip_address, $session_token, $now, $now]);
+        $now = date('Y-m-d H:i:s');
+        $expiryDays = isset($this->config['session_expiry_days']) ? (int)$this->config['session_expiry_days'] : 1;
+        $expires_at = date('Y-m-d H:i:s', strtotime("+{$expiryDays} days"));
+
+        // Insert session into DB (now with ip_address and expires_at)
+        $sql = "INSERT INTO user_sessions (user_id, device_id, device_type, ip_address, session_token, revoked, last_seen, created_at, expires_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)";
+        $this->db->query($sql, [$user_id, $device_id, $device_type, $ip_address, $session_token, $now, $now, $expires_at]);
         $session_id = $this->db->insertId();
 
         // Set session_id in $_SESSION for tracking current session

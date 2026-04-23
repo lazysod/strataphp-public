@@ -35,7 +35,7 @@ class AdminSessionsController
                 exit;
             }
             // Get all active sessions for this admin user
-            $sql = "SELECT us.*, u.display_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE u.id = ? AND us.revoked = 0 ORDER BY us.last_seen DESC";
+            $sql = "SELECT us.*, u.display_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE u.id = ? AND us.revoked = 0 AND (us.expires_at IS NULL OR us.expires_at > NOW()) ORDER BY us.last_seen DESC";
             $sessions = $db->fetchAll($sql, [$admin_id]);
             $debug_sql = $sql;
             $debug_sessions = $sessions;
