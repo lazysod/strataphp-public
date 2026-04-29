@@ -70,7 +70,7 @@ return array (
     ),
     'OAuthClients' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => false,
       'category' => 'Admin',
       'name' => 'OAuth Clients',

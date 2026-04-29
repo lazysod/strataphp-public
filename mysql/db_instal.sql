@@ -14,7 +14,6 @@ CREATE TABLE `login_tracker` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-  -- Table structure for `migration_lock`
 DROP TABLE IF EXISTS `rank`;
 CREATE TABLE `rank` (
     `id` int(255) NOT NULL AUTO_INCREMENT,
@@ -24,7 +23,6 @@ CREATE TABLE `rank` (
     `admin` int(1) DEFAULT '0',
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-DROP TABLE IF EXISTS `migration_lock`;
 CREATE TABLE `migration_lock` (
     `id` int(255) NOT NULL AUTO_INCREMENT,
     `user_id` int(255) NOT NULL,
@@ -36,7 +34,6 @@ CREATE TABLE `migration_lock` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
-  `display_name` varchar(100) DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `second_name` varchar(50) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
@@ -76,8 +73,8 @@ CREATE TABLE `user_sessions` (
   `expires_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  KEY `device_id` (`device_id`),
-  KEY `session_token` (`session_token`)
+  KEY `session_token` (`session_token`),
+  KEY `session_lookup` (`session_token`, `device_id`, `revoked`, `expires_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table structure for table `links`
