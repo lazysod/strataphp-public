@@ -153,22 +153,25 @@ class User
         $_SESSION[$sessionPrefix . 'session'] = $session_array;
     }
 
-    public function session_check()
-    {
-        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
-        if (isset($_SESSION[$sessionPrefix . 'session'])) {
-            $now = date('Y-m-d H:i:s');
-            if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-                session_destroy();
-                unset($_COOKIE[$sessionPrefix . 'cookie_login']);
-                header('location: ' . $this->config['base_url'] . '/user/login');
-                exit;
+public function session_check()
+{
+    $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+    if (isset($_SESSION[$sessionPrefix . 'session'])) {
+        $now = date('Y-m-d H:i:s');
+        if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
+
+            $_SESSION = []; // clear session instead of destroy
+            if (ini_get("session.use_cookies")) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
             }
+            session_destroy(); // this is ok AFTER bootstrap started it
+            
+            header('location: ' . $this->config['base_url'] . '/user/login');
+            exit;
         }
     }
+}
 
     public function cookie_check()
     {
@@ -450,10 +453,10 @@ class User
                     $this->db->query($update, [$now, $_SESSION[$sessionPrefix . 'user_id']]);
 
                     // New session management
-                    require_once __DIR__ . '/SessionManager.php';
-                    $sessionManager = new SessionManager($this->db, $this->config);
-                    $persistent = (isset($user['remember']) && $user['remember'] > 0) ? true : false;
-                    $sessionManager->createSession($row['id'], $persistent);
+                    // require_once __DIR__ . '/SessionManager.php';
+                    // $sessionManager = new SessionManager($this->db, $this->config);
+                    // $persistent = (isset($user['remember']) && $user['remember'] > 0) ? true : false;
+                    // $sessionManager->createSession($row['id'], $persistent);
 
                     return [
                         'status' => 'success',

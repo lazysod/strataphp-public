@@ -1,0 +1,344 @@
+=== FILE TREE ===
+total 144
+drwxr-xr-x  24 barry  staff    768 Apr 29 21:13 .
+drwxr-xr-x@ 33 barry  staff   1056 Apr 29 21:38 ..
+-rw-r--r--@  1 barry  staff  18436 Apr 23 09:36 .DS_Store
+-rw-r--r--   1 barry  staff    121 Mar  8 08:44 .htaccess
+drwxr-xr-x   8 barry  staff    256 Apr 29 20:29 admin
+drwxr-xr-x   5 barry  staff    160 Apr 29 20:29 ajax
+drwxr-xr-x@ 32 barry  staff   1024 Apr 29 20:29 app
+drwxr-xr-x   5 barry  staff    160 Aug 12  2025 assets
+-rw-r--r--   1 barry  staff   1280 Apr 29 21:09 bootstrap.php
+drwxr-xr-x   6 barry  staff    192 Apr  7 11:19 controllers
+-rw-r--r--   1 barry  staff   7507 Apr  7 11:19 index.php
+drwxr-xr-x   5 barry  staff    160 Mar  8 08:44 js
+-rw-r--r--   1 barry  staff    862 Mar  8 08:44 logout.php
+drwxr-xr-x   3 barry  staff     96 Mar  8 08:44 models
+drwxr-xr-x  15 barry  staff    480 Apr 22 16:18 modules
+drwxr-xr-x   3 barry  staff     96 Mar  8 08:44 mysql
+drwxr-xr-x   6 barry  staff    192 Mar  8 08:44 public_uploads
+drwxr-xr-x   8 barry  staff    256 Mar  8 08:44 storage
+-rw-r--r--   1 barry  staff  18789 Apr  7 11:19 strataphp-docs.html
+-rw-r--r--   1 barry  staff    768 Apr 29 21:12 test.php
+-rw-r--r--   1 barry  staff    254 Apr 29 21:23 test_debug_log.php
+drwxr-xr-x@  5 barry  staff    160 Mar  8 08:44 themes
+-rw-r--r--   1 barry  staff    469 Apr 29 21:13 trace.php
+drwxr-xr-x  11 barry  staff    352 Apr  7 11:19 views
+
+=== .HTACCESS ===
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+=== BOOTSTRAP.PHP LINES 1-40 ===
+<?php
+// bootstrap.php - NO WHITESPACE OR OUTPUT BEFORE THIS LINE
+
+// 1. Error handling: log only, never echo
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
+// 2. Composer autoloader
+require_once dirname(__DIR__). '/vendor/autoload.php';
+
+// 3. Load .env
+$dotenvPath = dirname(__DIR__);
+if (file_exists($dotenvPath. '/.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable($dotenvPath);
+    $dotenv->load();
+}
+
+// 4. Load global config
+$configFile = __DIR__. '/app/config.php';
+$config = file_exists($configFile) ? require $configFile : [];
+global $config;
+
+// 5. SESSION START - before any possible output
+$sessionName = $config['session_name']?? 'STRATASESSID';
+$sessionSecure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+// SET ALL SESSION PARAMS BEFORE session_start()
+session_name($sessionName);
+session_set_cookie_params([
+    'lifetime' => $config['session_lifetime']?? 0,
+    'path' => '/',
+    'domain' => $config['cookie_domain']?? '',
+    'secure' => $sessionSecure,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+
+=== PUBLIC_HTML/INDEX.PHP LINES 100-150 ===
+                    $_SESSION[$sessionPrefix . 'last_log'] = $userData['last_access'];
+                    $_SESSION[$sessionPrefix . 'avatar'] = $userData['avatar'];
+                    $_SESSION[$sessionPrefix . 'user'] = [
+                        'id' => $userData['id'],
+                        'email' => $userData['email'],
+                        'is_admin' => ($rank['admin'] > 0 ? 1 : 0),
+                        'rank_title' => $rank['title'],
+                        'rank_level' => $rank['level'],
+                        'avatar' => (new App\User($db, $config))->gravatar($userData['email'])
+                    ];
+                }
+            }
+        } else {
+            // Session not found or revoked - clear session and redirect to login
+            $_SESSION = [];
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(
+                    session_name(), '', time() - 42000,
+                    $params['path'], $params['domain'],
+                    $params['secure'], $params['httponly']
+                );
+            }
+            
+            // Remove session management cookies
+            setcookie(PREFIX . 'session_token', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
+            setcookie(PREFIX . 'device_id', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
+            
+            session_destroy();
+            header('Location: /user/login');
+            exit;
+        }
+    } elseif (isset($_SESSION[$sessionPrefix . 'user_id'])) {
+        // User has session variables but no session cookies - session was revoked
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(), '', time() - 42000,
+                $params['path'], $params['domain'],
+                $params['secure'], $params['httponly']
+            );
+        }
+        session_destroy();
+        header('Location: /user/login');
+        exit;
+    }
+}
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+
+=== ADMIN ROUTES ===
+<?php
+
+$router->get('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
+$router->post('/admin/dashboard/profile', [\App\Modules\Admin\Controllers\AdminProfileController::class, 'profile']);
+
+// Manual CORS preflight handler for /oauth/userinfo
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' && strpos($_SERVER['REQUEST_URI'], '/oauth/userinfo') !== false) {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Content-Type: application/json');
+    http_response_code(200);
+    exit;
+}
+// Google Analytics Admin Settings Route (protected by admin middleware)
+$router->get('/admin/google-analytics-settings', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'settings']);
+$router->post('/admin/google-analytics-settings/save', [\App\Modules\GoogleAnalytics\Controllers\GoogleAnalyticsAdminController::class, 'saveSettings']);
+use App\Controllers\AdminController;
+use App\Modules\Admin\Controllers\ModuleInstallerController;
+use App\Modules\Admin\Controllers\ModuleDetailsController;
+use App\Modules\Admin\Controllers\ModuleManagerController;
+use App\Modules\Admin\Controllers\AdminLinksController;
+
+$router->get('/admin', [\App\Modules\Admin\Controllers\AdminController::class, 'index']);
+$router->get('/admin/dashboard', [\App\Modules\Admin\Controllers\AdminController::class, 'dashboard']);
+// Links Admin Routes
+$router->get('/admin/links', [\App\Modules\Admin\Controllers\AdminLinksController::class, 'index']);
+$router->post('/admin/links', [\App\Modules\Admin\Controllers\AdminLinksController::class, 'index']);
+$router->get('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->post('/admin/links/add', [AdminLinksController::class, 'add']);
+$router->get('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/edit/{id}', [AdminLinksController::class, 'edit']);
+$router->post('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+$router->get('/admin/links/delete/{id}', [AdminLinksController::class, 'delete']);
+$router->post('/admin/links/order', [AdminLinksController::class, 'order']);
+
+// Module Installer Routes
+$router->get('/admin/module-installer', [ModuleInstallerController::class, 'index']);
+$router->post('/admin/module-installer/upload', [ModuleInstallerController::class, 'uploadInstall']);
+$router->post('/admin/module-installer/url', [ModuleInstallerController::class, 'urlInstall']);
+$router->post('/admin/module-installer/generate', [ModuleInstallerController::class, 'generateModule']);
+
+// Module Details Routes
+$router->get('/admin/modules/details/{module}', [ModuleDetailsController::class, 'show']);
+$router->post('/admin/modules/validate/{module}', [ModuleDetailsController::class, 'validate']);
+$router->get('/admin/modules/validate-all', [ModuleDetailsController::class, 'validateAll']);
+
+// Module Manager Routes
+$router->get('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules', [ModuleManagerController::class, 'index']);
+$router->post('/admin/modules/delete/{module}', [ModuleManagerController::class, 'delete']);
+
+// Admin User Management Routes
+$router->get('/admin/users', [\App\Modules\Admin\Controllers\UserAdminController::class, 'index']);
+$router->get('/admin/users/add', [\App\Modules\Admin\Controllers\UserAdminController::class, 'add']);
+$router->post('/admin/users/add', [\App\Modules\Admin\Controllers\UserAdminController::class, 'add']);
+$router->get('/admin/users/edit/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'edit']);
+$router->post('/admin/users/edit/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'edit']);
+$router->get('/admin/users/suspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'suspend']);
+$router->get('/admin/users/unsuspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'unsuspend']);
+$router->get('/admin/users/delete/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'delete']);
+
+
+
+$router->get('/admin/reset-password', [AdminController::class, 'resetPassword']);
+$router->post('/admin/reset-password', [AdminController::class, 'resetPassword']);
+$router->get('/admin/reset-request', [AdminController::class, 'resetRequest']);
+$router->post('/admin/reset-request', [AdminController::class, 'resetRequest']);
+
+$router->get('/admin/sessions', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'index']);
+$router->post('/admin/sessions/revoke', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'revoke']);
+$router->post('/admin/sessions/update-device', [\App\Modules\Admin\Controllers\AdminSessionsController::class, 'updateDevice']);
+
+// oauth client management
+$router->get('/admin/oauth-clients', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'index']);
+$router->post('/admin/oauth-clients', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'index']);
+$router->get('/admin/oauth-clients/add', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'add']);
+$router->post('/admin/oauth-clients/add', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'add']);
+$router->get('/admin/oauth-clients/edit/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'edit']);
+$router->post('/admin/oauth-clients/edit/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'edit']);
+$router->get('/admin/oauth-clients/delete/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'delete']);
+$router->post('/admin/oauth-clients/delete/{id}', [\App\Modules\Admin\Controllers\OAuthClientController::class, 'delete']);
+
+// OAuth2 endpoints
+$router->get('/oauth/authorize', [\App\Modules\Admin\Controllers\OAuthAuthorizeController::class, 'authorize']);
+$router->post('/oauth/authorize', [\App\Modules\Admin\Controllers\OAuthAuthorizeController::class, 'authorize']);
+
+// OAuth2 userinfo endpoint
+$router->get('/oauth/userinfo', [\App\Modules\Admin\Controllers\OAuthUserInfoController::class, 'userinfo']);
+
+$router->get('/test', function () {
+    echo 'test';
+});
+
+=== CONFIG SESSION ===
+  define('LOG_PATH', BASE_PATH . '/storage/logs/app.log');
+}
+require_once __DIR__ . '/App/ThemeConfigException.php';
+$modulesConfig = include __DIR__ . '/modules.php';
+return array(
+    // Number of days before a session expires (used for expires_at in user_sessions)
+    'session_expiry_days' => 1,
+  'api_key' => 'changeme123',
+  'site_name' => 'StrataPHP',
+  'php_path' => '/Applications/MAMP/bin/php/php8.2.0/bin/php',
+  'site_description' => 'A simple PHP framework',
+  'admin_email' => 'your-admin@example.com',
+--
+    'from_name' => 'StrataPHP',
+  ),
+  'version' => '1.0.0',
+  'debug' => true,
+  'timezone' => 'Europe/London',
+  'session_lifetime' => 3600,
+  'session_heartbeat_interval' => 300,
+  'maintenance_mode' => false,
+  'allowed_ips' => array('127.0.0.1'),
+  'salt' => 'b7f8c2e1a9d42a3e2c1b8d7f5e4c3a2',
+  'base_path' => BASE_PATH,
+  'theme' => 'default',
+--
+  'assets_path' => '/assets',
+  'uploads_path' => '/storage/uploads',
+  'prefix' => 'framework',
+  'token_expiry' => 3600,
+  'modules' => $modulesConfig['modules'],
+  'session_prefix' => 'app_',
+  'csrf_token' => true,
+  'login_redirect' => '/',
+  'system_pages' => array(
+    404 => '/views/errors/404.php',
+    500 => '/views/errors/500.php',
+
+=== ALL session_name CALLS ===
+public_html/app/User.php:170:                setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+public_html/index.php:118:                    session_name(), '', time() - 42000,
+public_html/index.php:138:                session_name(), '', time() - 42000,
+public_html/logout.php:8:        session_name(), '', time() - 42000,
+public_html/bootstrap.php:25:$sessionName = $config['session_name']?? 'STRATASESSID';
+public_html/bootstrap.php:29:session_name($sessionName);
+public_html/modules/Admin/Controllers/AdminSessionsController.php:43:                'session_name' => session_name(),
+public_html/modules/Admin/Controllers/AdminSessionsController.php:90:                'session_name' => session_name(),
+public_html/modules/Admin/Controllers/AdminSessionsController.php:136:                'session_name' => session_name(),
+public_html/views/admin/logout.php:12:        session_name(), '', time() - 42000,
+
+=== ALL session_start CALLS ===
+public_html/app/User.php:164:            //     session_start();
+public_html/bootstrap.php:28:// SET ALL SESSION PARAMS BEFORE session_start()
+public_html/bootstrap.php:40:    session_start();
+public_html/modules/Admin/Controllers/ModuleDetailsController.php:23:            session_start();
+public_html/modules/Admin/Controllers/ModuleInstallerController.php:34:            session_start();
+public_html/modules/Admin/Controllers/ModuleInstallerController.php:375:            session_start();
+public_html/modules/Admin/Controllers/ModuleInstallerController.php:388:            session_start();
+public_html/modules/Admin/Controllers/ModuleInstallerController.php:402:            session_start();
+public_html/modules/Admin/views/module-validation-report.php:4:    session_start();
+public_html/modules/User/Controllers/SSOController.php:33:                session_start();
+public_html/modules/User/Controllers/SSOController.php:61:                session_start();
+public_html/modules/User/ajax/resendActivation.php:10:session_start();
+public_html/modules/StrataCms/ThemeManager.php:466:                    session_start();
+public_html/modules/StrataCms/Controllers/AdminController.php:61:            session_start();
+public_html/modules/StrataCms/themes/modern/templates/default.php:108:                        session_start();
+public_html/modules/GoogleAnalytics/settings.php:8:session_start();
+public_html/modules/GoogleAnalytics/save_settings.php:11:session_start();
+public_html/modules/GoogleAnalytics/Controllers/GoogleAnalyticsAdminController.php:15:            session_start();
+public_html/modules/GoogleAnalytics/Controllers/GoogleAnalyticsAdminController.php:37:            session_start();
+public_html/modules/GoogleAnalytics/views/settings.php:3:    session_start();
+public_html/modules/Media/Controllers/ImageController.php:119:            session_start();
+public_html/views/admin/logout.php:3:session_start();
+public_html/views/admin/partials/nav.php:4:  session_start();
+public_html/themes/cms/modern/templates/base.php:681:                if (session_status() === PHP_SESSION_NONE) session_start();
+public_html/ajax/file_browser.php:17:session_start();
+public_html/ajax/upload_image.php:24:    session_start();
+
+=== ALL session_regenerate CALLS ===
+public_html/app/SessionManager.php:19:            session_regenerate_id(true);
+public_html/admin/admin_login.php:37:                // Repopulate session variables after session_regenerate_id
+
+=== ALL header.*Location.*login ===
+public_html/index.php:129:            header('Location: /user/login');
+public_html/index.php:144:        header('Location: /user/login');
+public_html/admin/index.php:8:header('Location: /admin/admin_login.php');
+public_html/admin/modules/update.php:7:    header('Location: /admin/admin_login.php');
+public_html/admin/modules/index.php:6:    header('Location: /admin/admin_login.php');
+public_html/admin/modules/save.php:6:    header('Location: /admin/admin_login.php');
+public_html/modules/OAuthClients/controllers/OAuthAuthorizeController.php:58:            header('Location: /user/login');
+public_html/modules/Admin/Controllers/AdminLinksController.php:33:                header('Location: /admin/admin_login.php');
+public_html/modules/Admin/Controllers/AdminLinksController.php:37:            header('Location: /admin/admin_login.php');
+public_html/modules/Admin/Controllers/OAuthAuthorizeController.php:49:                header('Location: /user/login');
+public_html/modules/Admin/Controllers/AdminSessionsController.php:53:                header('Location: /admin/login');
+public_html/modules/Admin/Controllers/AdminProfileController.php:24:            header('Location: /admin/login');
+public_html/modules/Admin/Controllers/ModuleDetailsController.php:37:            header('Location: /admin/admin_login.php');
+public_html/modules/Admin/Controllers/ModuleDetailsController.php:102:            header('Location: /admin/admin_login.php');
+public_html/modules/Admin/Controllers/ModuleDetailsController.php:162:            header('Location: /admin/admin_login.php');
+public_html/modules/Admin/Controllers/ModuleInstallerController.php:28:            header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/module-details.php:13:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/sessions.php:10:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/module_manager.php:24:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/admin_dashboard.php:8:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/module-installer.php:8:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/module-validation-report.php:13:    header('Location: /admin/admin_login.php');
+public_html/modules/Admin/views/oauth_clients/list.php:6:    header('Location: /admin/admin_login.php');
+public_html/modules/User/Controllers/SSOController.php:40:                header('Location: /user/login');
+public_html/modules/User/Controllers/SSOController.php:64:                header('Location: /user/login');
+public_html/modules/User/Controllers/UserProfileController.php:36:                header('Location: /user/login');
+public_html/modules/User/Controllers/UserSessionsController.php:26:            header('Location: /user/login');
+public_html/modules/User/Controllers/UserSessionsController.php:57:                header('Location: /user/login');
+public_html/modules/User/Controllers/UserSessionsController.php:99:            header('Location: /user/login');
+public_html/modules/User/Controllers/UserSessionsController.php:157:            header('Location: /user/login');
+public_html/modules/StrataCms/Controllers/AdminController.php:69:            header('Location: /admin/admin_login.php');
+public_html/modules/GoogleAnalytics/Controllers/GoogleAnalyticsAdminController.php:20:            header('Location: /admin/admin_login.php');
+public_html/modules/GoogleAnalytics/Controllers/GoogleAnalyticsAdminController.php:42:            header('Location: /admin/admin_login.php');
+public_html/modules/GoogleAnalytics/views/settings.php:8:    header('Location: /admin/admin_login.php');
+public_html/controllers/AdminController.php:24:            header('Location: /admin/login');
+public_html/views/admin/admin_profile.php:6:    header('Location: /admin/admin_login.php');
+public_html/views/admin/admin_dashboardOLD.php:8:    header('Location: /admin/admin_login.php');

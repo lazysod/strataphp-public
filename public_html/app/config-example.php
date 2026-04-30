@@ -14,6 +14,7 @@ $modulesConfig['bad_words'] = $badWords;
 return array(
         // Number of days before a session expires (used for expires_at in user_sessions)
     'session_expiry_days' => 1,
+    'cookie_secure' => false,
     'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
     'php_path' => '/usr/bin/php',
