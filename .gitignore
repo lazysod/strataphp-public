@@ -34,5 +34,4 @@ npm-debug.log
 
 # Misc
 .env
-lazylinks/*
 public_html/storage/uploads/*
