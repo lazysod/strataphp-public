@@ -29,6 +29,7 @@ return array(
         'username' => getenv('DB_USERNAME') ?: 'root',
         'password' => getenv('DB_PASSWORD') ?: 'root',
         'database' => getenv('DB_DATABASE') ?: 'db_name',
+        'port' => 8889,
     ),
     'mail' => array(
         'host' => getenv('MAIL_HOST') ?: 'smtp.example.com',

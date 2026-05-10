@@ -23,6 +23,7 @@ return [
         $db->query("ALTER TABLE cms_pages ADD COLUMN site_id INT NULL AFTER id;");
         // 3. Add FK constraint (optional, safe to skip if issues)
         $db->query("ALTER TABLE cms_pages ADD CONSTRAINT fk_cms_pages_site_id FOREIGN KEY (site_id) REFERENCES sites(id) ON DELETE SET NULL;");
+        echo "✅ Created sites table and added site_id to cms_pages\n";
     },
     'down' => function(DB $db) {
         // Remove FK constraint first (if exists)
@@ -31,5 +32,6 @@ return [
         $db->query("ALTER TABLE cms_pages DROP COLUMN IF EXISTS site_id;");
         // Drop sites table
         $db->query("DROP TABLE IF EXISTS sites;");
+        echo "✅ Removed sites table and site_id from cms_pages\n";
     }
 ];
