@@ -957,14 +957,74 @@ MD;
 if ($argc < 2) {
     echo "🎨 StrataPHP Module Generator\n\n";
     echo "Usage: php create-module.php <module-name>\n";
+    echo "       php create-module.php --validate <module-name>\n\n";
     echo "Example: php create-module.php blog\n";
     echo "Example: php create-module.php user-management\n";
-    echo "Example: php create-module.php contact_form\n\n";
+    echo "Example: php create-module.php contact_form\n";
+    echo "Example: php create-module.php --validate blog\n\n";
     echo "Naming conventions:\n";
     echo "  • Use lowercase letters, numbers, and hyphens/underscores\n";
     echo "  • Must start with a letter\n";
     echo "  • Will be normalized to: slug (metadata), directory_name, ClassName\n";
     exit(1);
+}
+
+if ($argv[1] === '--validate' && isset($argv[2])) {
+    $moduleName = $argv[2];
+    // Validate input format
+    if (!preg_match('/^[a-zA-Z][a-zA-Z0-9\-_]*$/', $moduleName)) {
+        echo "❌ Invalid module name format!\n";
+        exit(1);
+    }
+    $modulesPath = __DIR__ . '/../public_html/modules/';
+    $normalizedName = strtolower(str_replace('_', '-', $moduleName));
+    $dirName = str_replace('-', '_', $normalizedName);
+    $moduleDir = $modulesPath . $dirName;
+    $errors = [];
+    if (!is_dir($moduleDir)) {
+        $errors[] = "Module directory not found: $moduleDir";
+    } else {
+        // Check index.php metadata
+        $indexFile = $moduleDir . '/index.php';
+        if (!file_exists($indexFile)) {
+            $errors[] = "Missing index.php metadata file.";
+        } else {
+            $meta = @include $indexFile;
+            if (!is_array($meta)) {
+                $errors[] = "index.php does not return a metadata array.";
+            } else {
+                foreach (["name", "slug", "version"] as $field) {
+                    if (empty($meta[$field])) {
+                        $errors[] = "index.php metadata missing or empty: $field";
+                    }
+                }
+            }
+        }
+        // Check required folders
+        foreach (["controllers", "models", "views"] as $folder) {
+            if (!is_dir($moduleDir . "/$folder")) {
+                $errors[] = "Missing $folder/ directory.";
+            }
+        }
+        // Check PSR-4 namespace in controllers
+        $controllerFiles = glob($moduleDir . '/controllers/*.php');
+        foreach ($controllerFiles as $file) {
+            $contents = file_get_contents($file);
+            if (!preg_match('/namespace\\s+(App\\\\Modules|StrataPHP\\\\Modules)\\\\[A-Za-z0-9_]+\\\\Controllers;/', $contents)) {
+                $errors[] = basename($file) . ": Namespace does not match PSR-4 convention.";
+            }
+        }
+    }
+    if ($errors) {
+        echo "❌ Validation failed for module '$moduleName':\n";
+        foreach ($errors as $err) {
+            echo "  - $err\n";
+        }
+        exit(1);
+    } else {
+        echo "✅ Module '$moduleName' passed validation.\n";
+        exit(0);
+    }
 }
 
 $moduleName = $argv[1];
