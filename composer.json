@@ -32,8 +32,6 @@
             "App\\Modules\\": "public_html/modules/",
             "App\\Modules\\Api\\Controllers\\": "public_html/modules/api/Controllers/Api/",
             "App\\Modules\\Api\\Tests\\": "public_html/modules/api/Tests/",
-            "App\\Modules\\OAuthClients\\Controllers\\": "public_html/modules/OAuthClients/Controllers/",
-            "App\\Modules\\OAuthClients\\Models\\": "public_html/modules/OAuthClients/models/",
             "App\\Modules\\StrataCms\\Controllers\\": "public_html/modules/StrataCms/Controllers/",
             "App\\Modules\\StrataCms\\Models\\": "public_html/modules/StrataCms/Models/",
             "App\\Modules\\ModuleDirectory\\Controllers\\": "public_html/modules/module_directory/controllers/",
