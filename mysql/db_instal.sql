@@ -237,8 +237,6 @@ CREATE TABLE `cms_menu_items` (
   FOREIGN KEY (`parent_id`) REFERENCES `cms_menu_items`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Add applied_by to migrations table
-ALTER TABLE `migrations` ADD COLUMN IF NOT EXISTS `applied_by` VARCHAR(255) DEFAULT NULL AFTER `applied_at`;
 
 --
 -- REQUIRED TABLE: Migrations (tracks applied migrations, must not remove)
