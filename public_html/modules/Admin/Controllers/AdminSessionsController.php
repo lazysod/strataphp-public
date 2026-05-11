@@ -1,15 +1,6 @@
-use App\Logger;
-// Debug-to-file function for session troubleshooting
-if (!function_exists('debug_to_file')) {
-    function debug_to_file($msg) {
-        $logfile = __DIR__ . '/../../../../storage/logs/session_debug.log';
-        file_put_contents($logfile, date('c') . ' ' . $msg . "\n", FILE_APPEND);
-    }
-}
-
 <?php
 namespace App\Modules\Admin\Controllers;
-
+use App\Logger;
 /**
  * Admin Sessions Controller
  *
