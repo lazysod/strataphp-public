@@ -43,3 +43,6 @@ if (session_status() === PHP_SESSION_NONE) {
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+
+// 7. define logger instance globally
+$logger = App\Logger::getInstance($config); // instantiates once

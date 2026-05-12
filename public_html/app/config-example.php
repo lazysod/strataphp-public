@@ -11,9 +11,16 @@ $modulesConfig = include __DIR__ . '/modules.php';
 
 $badWords = file_exists(__DIR__ . '/bad_words.php') ? include __DIR__ . '/bad_words.php' : [];
 $modulesConfig['bad_words'] = $badWords;
+// Log levels: 
+/*
+         Dev: 'log_level' => 'DEBUG' - DEBUG, INFO, WARNING, ERROR
+     Staging: 'log_level' => 'INFO' - INFO, WARNING, ERROR
+  Production: 'log_level' => 'WARNING' - WARNING, ERROR only
+*/
 return array(
         // Number of days before a session expires (used for expires_at in user_sessions)
     'session_expiry_days' => 1,
+    'log_level' => 'DEBUG', // <-- add this, defaults to INFO otherwise
     'cookie_secure' => false,
     'api_key' => 'changeme123',
     'site_name' => 'StrataPHP',
