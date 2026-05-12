@@ -6,6 +6,7 @@ use App\TokenManager;
 use App\DB;
 use App\User;
 use App\Modules\User\Helpers\CmsHelper;
+use App\SessionManager;
 
 // modules/user/controllers/UserLoginController.php
 // Refactored as a class for router compatibility
@@ -28,7 +29,7 @@ class UserLoginController
      */
     public function index()
     {
-        error_log('LOGIN CONTROLLER: HIT ' . $_SERVER['REQUEST_METHOD']);
+
         try {
             require_once dirname(__DIR__, 3) . '/bootstrap.php';
             $config = require dirname(__DIR__, 3) . '/app/config.php';
@@ -77,6 +78,7 @@ class UserLoginController
                         'remember' => isset($_POST['remember']) ? 1 : 0,
                     ];
                     $result = $user->login($loginInfo);
+                    
                     if ($result['status'] === 'success') {
                         // Set persistent login cookie if 'remember me' is checked
                         if ($loginInfo['remember']) {
@@ -91,8 +93,10 @@ class UserLoginController
                             header('Location: ' . $redirect);
                             exit;
                         }
-                        error_log('LOGIN SUCCESS: app_user_id=' . ($_SESSION[$sessionPrefix . 'user_id'] ?? 'NOT_SET'));
-                        error_log('LOGIN SUCCESS: about to redirect');
+                        // Log user session after successful login (before redirect)
+                        $sessionManager = new SessionManager($db, $config);
+                        $persistent = (isset($loginInfo['remember']) && $loginInfo['remember'] > 0) ? true : false;
+                        $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], $persistent);
                         header('Location: /');
                         exit;
                     } else {

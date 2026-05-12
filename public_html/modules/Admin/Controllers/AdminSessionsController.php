@@ -16,12 +16,14 @@ class AdminSessionsController
      */
     public function index()
     {
+        $logger = Logger::getInstance();
         try {
             $bootstrapPath = realpath(__DIR__ . '/../../../bootstrap.php');
             if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
+
+                $logger->error('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
@@ -68,7 +70,8 @@ class AdminSessionsController
             if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
+                $logger = Logger::getInstance();
+                $logger->error('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
@@ -109,12 +112,14 @@ class AdminSessionsController
      */
     public function updateDevice()
     {
+        
         try {
             $bootstrapPath = realpath(__DIR__ . '/../../../bootstrap.php');
             if ($bootstrapPath && file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
             } else {
-                error_log('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
+                $logger = Logger::getInstance();
+                $logger->error('AdminSessionsController: bootstrap.php not found at ' . ($bootstrapPath ?: 'resolved path'));
                 http_response_code(500);
                 echo '<h1>Critical error: bootstrap.php not found.</h1>';
                 exit;
@@ -122,7 +127,7 @@ class AdminSessionsController
             global $config;
             $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'app_');
             $db = new \App\DB($config);
-            $logger = new Logger($config);
+            $logger = Logger::getInstance();
             $logger->info('ADMIN SESSIONS UPDATEDEVICE', [
                 'session_name' => session_name(),
                 'session_id' => session_id(),

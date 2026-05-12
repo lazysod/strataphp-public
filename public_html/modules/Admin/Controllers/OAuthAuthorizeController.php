@@ -2,10 +2,11 @@
 namespace App\Modules\Admin\Controllers;
 
 use App\DB;
-
+use App\Logger;
 class OAuthAuthorizeController
 {
     protected $db;
+    protected $logger;
     /**
      * OAuthAuthorizeController constructor.
      * Initializes the database connection.
@@ -73,7 +74,7 @@ class OAuthAuthorizeController
             }
             include __DIR__ . '/../views/oauth_clients/authorize.php';
         } catch (\Exception $e) {
-            error_log('OAuth authorize error: ' . $e->getMessage());
+            $this->logger->error('OAuth authorize error: ' . $e->getMessage());
             include __DIR__ . '/../views/oauth_clients/authorize_error.php';
         }
     }

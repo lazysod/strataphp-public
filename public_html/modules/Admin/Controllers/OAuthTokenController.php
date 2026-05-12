@@ -2,10 +2,12 @@
 namespace App\Modules\Admin\Controllers;
 
 use App\DB;
-
+use App\Logger;
 class OAuthTokenController
 {
     protected $db;
+    protected $logger;
+    
     /**
      * OAuthTokenController constructor.
      * Initializes the database connection.
@@ -15,6 +17,7 @@ class OAuthTokenController
     {
         global $config;
         $this->db = new DB($config);
+        $this->logger = Logger::getInstance();
     }
 
 
@@ -83,7 +86,7 @@ class OAuthTokenController
             ]);
         } catch (\Exception $e) {
             http_response_code(500);
-            error_log('OAuth token error: ' . $e->getMessage());
+            $this->logger->error('OAuth token error: ' . $e->getMessage());
             echo json_encode(['error' => 'server_error', 'error_description' => 'Internal server error']);
         }
     }

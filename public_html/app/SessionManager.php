@@ -15,10 +15,9 @@ class SessionManager
     public function createSession($user_id, $persistent = false)
     {
         // 1. Regenerate BEFORE we write anything. If this fails, we bail before login.
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            // session_regenerate_id(true);
-        }
-
+        // if (session_status() === PHP_SESSION_ACTIVE) {
+        //     // session_regenerate_id(true);
+        // }
         $device_id = $this->getOrCreateDeviceId();
         $device_type = $this->detectDeviceType();
         $ip_address = $this->getClientIp();
@@ -36,6 +35,11 @@ class SessionManager
 
         $sessionPrefix = $this->config['session_prefix']?? 'app_';
         $_SESSION[$sessionPrefix. 'session_id'] = $session_id;
+        // 
+        $logger = Logger::getInstance();
+        $logger->debug('SessionManager: createSession called', ['user_id' => $user_id]);
+        $logger->info('Session created!', ['session_id' => $session_id]);
+        $logger->error('DB insert failed', ['error' => json_encode($this->db->errorInfo())]);
 
         // Only set cookies if headers not sent. If they are, log it and skip.
         if (!headers_sent()) {
@@ -56,7 +60,8 @@ class SessionManager
             setcookie($prefix. 'session_token', $session_token, $cookieOpts);
             setcookie($prefix. 'device_id', $device_id, $cookieOpts);
         } else {
-            error_log('SessionManager: headers already sent, cannot set cookies');
+            $logger = Logger::getInstance();
+            $logger->warning('SessionManager: headers already sent, cannot set cookies');
         }
     }
 

@@ -3,7 +3,7 @@ require_once __DIR__. '/bootstrap.php';
 use App\DB;
 use App\User;
 use App\Router;
-
+use App\Logger;
 $config = $GLOBALS['config'];
 
 // Initialize the router
@@ -45,7 +45,8 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) use ($config) {
 });
 
 set_exception_handler(function($exception) use ($config) {
-    error_log("[EXCEPTION] ". $exception->getMessage(). "\n", 3, $config['log_path']);
+    $logger = Logger::getInstance();
+    $logger->error('[EXCEPTION] ' . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . $exception->getLine());
     if ($config['debug']) {
         echo '<div style="margin:2em auto;max-width:600px;padding:1em;border:1px solid #e74c3c;background:#fff3f3;color:#c0392b;font-family:sans-serif;text-align:center;">';
         echo '<strong>Oops! An unexpected error occurred:</strong><br>';

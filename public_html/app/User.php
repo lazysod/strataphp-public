@@ -3,7 +3,6 @@ namespace App;
 
 use App\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
-
 class User
 {
     private $db;
@@ -56,7 +55,8 @@ class User
     public function updateUser($id, $data)
     {
         if (empty($data) || !$id) {
-            error_log('updateUser: No data or invalid ID');
+            $logger = Logger::getInstance();
+            $logger->error('updateUser: No data or invalid ID');
             return false;
         }
         $fields = [];
@@ -67,11 +67,7 @@ class User
         }
         $params[] = (int)$id;
         $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
-        error_log('data:' . print_r($data, true));
-        error_log('updateUser SQL: ' . $sql);
-        error_log('updateUser Params: ' . print_r($params, true));
         $result = $this->db->query($sql, $params);
-        error_log('updateUser Result: ' . print_r($result, true));
         return $result;
     }
     // Fetch a user by ID
@@ -451,12 +447,6 @@ public function session_check()
                     $now = date('Y-m-d H:i:s');
                     $update = "UPDATE users SET last_access = ? WHERE id = ?";
                     $this->db->query($update, [$now, $_SESSION[$sessionPrefix . 'user_id']]);
-
-                    // New session management
-                    // require_once __DIR__ . '/SessionManager.php';
-                    // $sessionManager = new SessionManager($this->db, $this->config);
-                    // $persistent = (isset($user['remember']) && $user['remember'] > 0) ? true : false;
-                    // $sessionManager->createSession($row['id'], $persistent);
 
                     return [
                         'status' => 'success',

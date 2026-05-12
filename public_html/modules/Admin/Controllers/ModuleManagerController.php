@@ -1,15 +1,17 @@
 <?php
 namespace App\Modules\Admin\Controllers;
-
+use App\Logger;
 /**
  * Module Manager Controller
  *
  * Handles module management interface including enabling/disabling modules
  * and setting the default module
  */
+
 class ModuleManagerController
 {
-    
+    private $logger;
+
     /**
      * Display module management interface
      *
@@ -410,10 +412,10 @@ class ModuleManagerController
                 $composerContent = file_get_contents($composerPath);
                 $composer = json_decode($composerContent, true);
             } else {
-                error_log('Composer file not readable: ' . $composerPath);
+                $this->logger->error('Composer file not readable: ' . $composerPath);
             }
         } catch (\Exception $e) {
-            error_log('Error reading composer file: ' . $e->getMessage());
+            $this->logger->error('Error reading composer file: ' . $e->getMessage());
         }
         $moduleClass = ucfirst($moduleName);
         $namespace = "App\\Modules\\{$moduleClass}\\";

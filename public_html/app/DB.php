@@ -75,17 +75,20 @@ class DB
         try {
             $stmt = $this->pdo->prepare($sql);
             if (!$stmt) {
-                error_log('DB::query prepare failed: ' . $sql);
+                $logger = Logger::getInstance();
+                $logger->error('DB::query prepare failed', ['sql' => $sql]);
                 return null;
             }
             $result = $stmt->execute($params);
             if (!$result) {
-                error_log('DB::query execute failed: ' . $sql . ' Params: ' . print_r($params, true));
+                $logger = Logger::getInstance();
+                $logger->error('DB::query execute failed', ['sql' => $sql, 'params' => $params]);
                 return null;
             }
             return $stmt;
         } catch (PDOException $e) {
-            error_log('DB::query PDOException: ' . $e->getMessage() . ' SQL: ' . $sql . ' Params: ' . print_r($params, true));
+            $logger = Logger::getInstance();
+            $logger->error('DB::query PDOException', ['message' => $e->getMessage(), 'sql' => $sql, 'params' => $params]);
             return null;
         }
     }

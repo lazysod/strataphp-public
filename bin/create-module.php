@@ -17,25 +17,15 @@ class ModuleGenerator
     
     public function __construct($moduleName)
     {
-        // Validate and normalize module name format
         if (!preg_match('/^[a-zA-Z][a-zA-Z0-9\-_]*$/', $moduleName)) {
             throw new InvalidArgumentException("Module name must start with a letter and contain only letters, numbers, hyphens, and underscores");
         }
         
         $this->modulesPath = __DIR__ . '/../public_html/modules/';
-        
-        // Normalize input: convert everything to lowercase with hyphens
         $normalizedName = strtolower(str_replace('_', '-', $moduleName));
-        
-        // Slug format: lowercase alphanumeric with hyphens only (for metadata)
         $this->moduleSlug = $normalizedName;
-        
-        // Directory name: convert hyphens to underscores for file system compatibility
         $this->moduleName = str_replace('-', '_', $normalizedName);
-        
-        // Convert to proper CamelCase for class names (remove hyphens/underscores and capitalize)
         $this->moduleClass = str_replace(['-', '_'], '', ucwords($normalizedName, '-_'));
-        
         $this->namespace = "App\\Modules\\{$this->moduleClass}";
     }
     
@@ -54,10 +44,7 @@ class ModuleGenerator
             return false;
         }
         
-        // Create directory structure
         $this->createDirectories($moduleDir);
-        
-        // Generate files
         $this->generateMetadata($moduleDir);
         $this->generateRoutes($moduleDir);
         $this->generateController($moduleDir);
@@ -65,9 +52,8 @@ class ModuleGenerator
         $this->generateViews($moduleDir);
         $this->generateReadme($moduleDir);
         $this->generateChangelog($moduleDir);
-        
-        // Update composer.json
         $this->updateComposer();
+        $this->updateModulesConfig();
         
         echo "\n✅ Module '{$this->moduleName}' created successfully!\n";
         echo "📍 Location: $moduleDir\n";
@@ -111,13 +97,13 @@ return [
     'homepage' => 'https://github.com/strataphp/{$this->moduleName}-module',
     'repository' => 'https://github.com/strataphp/{$this->moduleName}-module.git',
     'support_url' => 'https://github.com/strataphp/{$this->moduleName}-module/issues',
-    'update_url' => '', // Optional: URL to check for updates
+    'update_url' => '',
     'enabled' => false,
     'suitable_as_default' => false,
-    'dependencies' => [], // Other modules this depends on
-    'permissions' => ['{$this->moduleName}.create', '{$this->moduleName}.read', '{$this->moduleName}.update', '{$this->moduleName}.delete'], // Required permissions
+    'dependencies' => [],
+    'permissions' => ['{$this->moduleName}.create', '{$this->moduleName}.read', '{$this->moduleName}.update', '{$this->moduleName}.delete'],
     'requirements' => [
-        'php' => '>=7.4',
+        'php' => '>=8.2+',
         'mysql' => '>=5.7'
     ],
     'tags' => ['{$this->moduleName}', 'content', 'cms', 'crud'],
@@ -139,18 +125,15 @@ PHP;
 use App\App;
 use {$this->namespace}\Controllers\\{$this->moduleClass}Controller;
 
-// Ensure Composer autoloader is loaded for App class
 \$composerAutoload = __DIR__ . '/../../../vendor/autoload.php';
 if (file_exists(\$composerAutoload)) {
     require_once \$composerAutoload;
 }
 
-// {$this->moduleClass} module routes
 global \$router;
 
 if (!empty(App::config('modules')['{$this->moduleName}']['enabled'])) {
     
-    // Main routes
     \$router->get('/{$this->moduleName}', [{$this->moduleClass}Controller::class, 'index']);
     \$router->get('/{$this->moduleName}/create', [{$this->moduleClass}Controller::class, 'create']);
     \$router->post('/{$this->moduleName}/create', [{$this->moduleClass}Controller::class, 'store']);
@@ -159,10 +142,8 @@ if (!empty(App::config('modules')['{$this->moduleName}']['enabled'])) {
     \$router->post('/{$this->moduleName}/{{id}}/edit', [{$this->moduleClass}Controller::class, 'update']);
     \$router->post('/{$this->moduleName}/{{id}}/delete', [{$this->moduleClass}Controller::class, 'delete']);
     
-    // API routes (optional)
     \$router->get('/api/{$this->moduleName}', [{$this->moduleClass}Controller::class, 'apiIndex']);
     
-    // Register as root if this is the default module
     if (!empty(App::config('default_module')) && App::config('default_module') === '{$this->moduleName}') {
         \$router->get('/', [{$this->moduleClass}Controller::class, 'index']);
     }
@@ -180,27 +161,30 @@ PHP;
 namespace {$this->namespace}\Controllers;
 
 use App\DB;
+use App\Logger;
 use {$this->namespace}\Models\\{$this->moduleClass};
 
 class {$this->moduleClass}Controller
 {
     private \$db;
     private \$config;
+    private \$logger;
     
     public function __construct()
     {
         \$this->config = include dirname(__DIR__, 3) . '/app/config.php';
         \$this->db = new DB(\$this->config);
+        \$this->logger = Logger::getInstance(\$this->config);
     }
     
-    /**
-     * Display a listing of the resource
-     */
     public function index()
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}Controller: index called');
             \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
             \$items = \${$this->moduleName}Model->getAll();
+            
+            \$this->logger->info('{$this->moduleClass} list loaded', ['count' => count(\$items)]);
             
             \$data = [
                 'items' => \$items,
@@ -209,33 +193,28 @@ class {$this->moduleClass}Controller
             
             include __DIR__ . '/../views/index.php';
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller index error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller index error', [
+                'error' => \$e->getMessage(),
+                'trace' => \$e->getTraceAsString()
+            ]);
             http_response_code(500);
             echo 'An error occurred while loading the {$this->moduleName}.';
         }
     }
     
-    /**
-     * Show the form for creating a new resource
-     */
     public function create()
     {
         try {
-            \$data = [
-                'title' => 'Create {$this->moduleClass}'
-            ];
-            
+            \$this->logger->debug('{$this->moduleClass}Controller: create form called');
+            \$data = ['title' => 'Create {$this->moduleClass}'];
             include __DIR__ . '/../views/create.php';
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller create error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller create error', ['error' => \$e->getMessage()]);
             http_response_code(500);
             echo 'An error occurred while loading the create form.';
         }
     }
     
-    /**
-     * Store a newly created resource
-     */
     public function store()
     {
         try {
@@ -244,11 +223,13 @@ class {$this->moduleClass}Controller
                 exit;
             }
             
-            // Basic validation
             \$title = trim(\$_POST['title'] ?? '');
             \$content = trim(\$_POST['content'] ?? '');
             
+            \$this->logger->debug('{$this->moduleClass}Controller: store attempt', ['title' => \$title]);
+            
             if (empty(\$title) || empty(\$content)) {
+                \$this->logger->warning('{$this->moduleClass} validation failed', ['reason' => 'empty title or content']);
                 \$_SESSION['error'] = 'Title and content are required';
                 header('Location: /{$this->moduleName}/create');
                 exit;
@@ -265,29 +246,33 @@ class {$this->moduleClass}Controller
             \$result = \${$this->moduleName}Model->create(\$data);
             
             if (\$result) {
+                \$this->logger->info('{$this->moduleClass} created', ['title' => \$title]);
                 \$_SESSION['success'] = '{$this->moduleClass} created successfully';
             } else {
+                \$this->logger->error('{$this->moduleClass} create failed');
                 \$_SESSION['error'] = 'Failed to create {$this->moduleName}';
             }
             
             header('Location: /{$this->moduleName}');
             exit;
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller store error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller store error', [
+                'error' => \$e->getMessage(),
+                'post' => \$_POST
+            ]);
             \$_SESSION['error'] = 'An error occurred while creating the {$this->moduleName}';
             header('Location: /{$this->moduleName}/create');
             exit;
         }
     }
     
-    /**
-     * Display the specified resource
-     */
     public function show(\$id)
     {
         try {
-            // Validate ID
+            \$this->logger->debug('{$this->moduleClass}Controller: show called', ['id' => \$id]);
+            
             if (!is_numeric(\$id) || \$id <= 0) {
+                \$this->logger->warning('Invalid {$this->moduleName} ID', ['id' => \$id]);
                 header('HTTP/1.0 404 Not Found');
                 echo '404 - Invalid {$this->moduleName} ID';
                 exit;
@@ -297,6 +282,7 @@ class {$this->moduleClass}Controller
             \$item = \${$this->moduleName}Model->getById(\$id);
             
             if (!\$item) {
+                \$this->logger->warning('{$this->moduleClass} not found', ['id' => \$id]);
                 header('HTTP/1.0 404 Not Found');
                 echo '404 - {$this->moduleClass} not found';
                 exit;
@@ -309,20 +295,22 @@ class {$this->moduleClass}Controller
             
             include __DIR__ . '/../views/show.php';
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller show error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller show error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             http_response_code(500);
             echo 'An error occurred while loading the {$this->moduleName}.';
         }
     }
     
-    /**
-     * Show the form for editing the specified resource
-     */
     public function edit(\$id)
     {
         try {
-            // Validate ID
+            \$this->logger->debug('{$this->moduleClass}Controller: edit form called', ['id' => \$id]);
+            
             if (!is_numeric(\$id) || \$id <= 0) {
+                \$this->logger->warning('Invalid ID for edit', ['id' => \$id]);
                 header('Location: /{$this->moduleName}');
                 exit;
             }
@@ -331,6 +319,7 @@ class {$this->moduleClass}Controller
             \$item = \${$this->moduleName}Model->getById(\$id);
             
             if (!\$item) {
+                \$this->logger->warning('{$this->moduleClass} not found for edit', ['id' => \$id]);
                 \$_SESSION['error'] = '{$this->moduleClass} not found';
                 header('Location: /{$this->moduleName}');
                 exit;
@@ -343,16 +332,16 @@ class {$this->moduleClass}Controller
             
             include __DIR__ . '/../views/edit.php';
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller edit error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller edit error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             \$_SESSION['error'] = 'An error occurred while loading the edit form';
             header('Location: /{$this->moduleName}');
             exit;
         }
     }
     
-    /**
-     * Update the specified resource
-     */
     public function update(\$id)
     {
         try {
@@ -361,20 +350,22 @@ class {$this->moduleClass}Controller
                 exit;
             }
             
-            // Validate ID
+            \$this->logger->debug('{$this->moduleClass}Controller: update called', ['id' => \$id]);
+            
             if (!is_numeric(\$id) || \$id <= 0) {
+                \$this->logger->warning('Invalid ID for update', ['id' => \$id]);
                 \$_SESSION['error'] = 'Invalid {$this->moduleName} ID';
                 header('Location: /{$this->moduleName}');
                 exit;
             }
             
-            // Basic validation
             \$title = trim(\$_POST['title'] ?? '');
             \$content = trim(\$_POST['content'] ?? '');
             
             if (empty(\$title) || empty(\$content)) {
+                \$this->logger->warning('{$this->moduleClass} update validation failed', ['id' => \$id]);
                 \$_SESSION['error'] = 'Title and content are required';
-                header('Location: /{$this->moduleName}/{\$id}/edit');
+                header('Location: /{$this->moduleName}/' . \$id . '/edit');
                 exit;
             }
             
@@ -389,24 +380,26 @@ class {$this->moduleClass}Controller
             \$result = \${$this->moduleName}Model->update(\$id, \$data);
             
             if (\$result) {
+                \$this->logger->info('{$this->moduleClass} updated', ['id' => \$id]);
                 \$_SESSION['success'] = '{$this->moduleClass} updated successfully';
             } else {
+                \$this->logger->error('{$this->moduleClass} update failed', ['id' => \$id]);
                 \$_SESSION['error'] = 'Failed to update {$this->moduleName}';
             }
             
             header('Location: /{$this->moduleName}');
             exit;
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller update error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller update error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             \$_SESSION['error'] = 'An error occurred while updating the {$this->moduleName}';
             header('Location: /{$this->moduleName}');
             exit;
         }
     }
     
-    /**
-     * Remove the specified resource
-     */
     public function delete(\$id)
     {
         try {
@@ -415,8 +408,10 @@ class {$this->moduleClass}Controller
                 exit;
             }
             
-            // Validate ID
+            \$this->logger->debug('{$this->moduleClass}Controller: delete called', ['id' => \$id]);
+            
             if (!is_numeric(\$id) || \$id <= 0) {
+                \$this->logger->warning('Invalid ID for delete', ['id' => \$id]);
                 \$_SESSION['error'] = 'Invalid {$this->moduleName} ID';
                 header('Location: /{$this->moduleName}');
                 exit;
@@ -426,28 +421,31 @@ class {$this->moduleClass}Controller
             \$result = \${$this->moduleName}Model->delete(\$id);
             
             if (\$result) {
+                \$this->logger->info('{$this->moduleClass} deleted', ['id' => \$id]);
                 \$_SESSION['success'] = '{$this->moduleClass} deleted successfully';
             } else {
+                \$this->logger->error('{$this->moduleClass} delete failed', ['id' => \$id]);
                 \$_SESSION['error'] = 'Failed to delete {$this->moduleName}';
             }
             
             header('Location: /{$this->moduleName}');
             exit;
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller delete error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller delete error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             \$_SESSION['error'] = 'An error occurred while deleting the {$this->moduleName}';
             header('Location: /{$this->moduleName}');
             exit;
         }
     }
     
-    /**
-     * API endpoint for listing resources
-     */
     public function apiIndex()
     {
         try {
             header('Content-Type: application/json');
+            \$this->logger->debug('{$this->moduleClass} API: index called');
             
             \${$this->moduleName}Model = new {$this->moduleClass}(\$this->db);
             \$items = \${$this->moduleName}Model->getAll();
@@ -458,7 +456,7 @@ class {$this->moduleClass}Controller
             ]);
             exit;
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass}Controller apiIndex error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass}Controller apiIndex error', ['error' => \$e->getMessage()]);
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,
@@ -481,74 +479,72 @@ PHP;
 namespace {$this->namespace}\Models;
 
 use App\DB;
+use App\Logger;
 
 class {$this->moduleClass}
 {
     private \$db;
     private \$table = '{$this->moduleName}';
+    private \$logger;
     
     public function __construct(DB \$db)
     {
         \$this->db = \$db;
-        // Validate table name for security
+        \$this->logger = Logger::getInstance();
         if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', \$this->table)) {
             throw new \\InvalidArgumentException('Invalid table name');
         }
     }
     
-    /**
-     * Get all records
-     */
     public function getAll()
     {
         try {
-            // Table name is validated in constructor, safe to use here
+            \$this->logger->debug('{$this->moduleClass}::getAll called');
             \$sql = "SELECT * FROM `" . \$this->table . "` ORDER BY created_at DESC";
             return \$this->db->fetchAll(\$sql);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model getAll error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model getAll error', ['error' => \$e->getMessage()]);
             return [];
         }
     }
     
-    /**
-     * Get a record by ID
-     */
     public function getById(\$id)
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}::getById called', ['id' => \$id]);
             \$sql = "SELECT * FROM `" . \$this->table . "` WHERE id = ?";
             return \$this->db->fetch(\$sql, [\$id]);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model getById error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model getById error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             return null;
         }
     }
     
-    /**
-     * Create a new record
-     */
     public function create(\$data)
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}::create called', ['data' => \$data]);
             \$fields = implode(', ', array_keys(\$data));
             \$placeholders = ':' . implode(', :', array_keys(\$data));
             
             \$sql = "INSERT INTO `" . \$this->table . "` (\$fields) VALUES (\$placeholders)";
-            
             return \$this->db->query(\$sql, \$data);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model create error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model create error', [
+                'error' => \$e->getMessage(),
+                'data' => \$data
+            ]);
             return false;
         }
     }
     
-    /**
-     * Update a record
-     */
     public function update(\$id, \$data)
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}::update called', ['id' => \$id]);
             \$setParts = [];
             foreach (array_keys(\$data) as \$field) {
                 \$setParts[] = "\$field = :\$field";
@@ -560,31 +556,33 @@ class {$this->moduleClass}
             
             return \$this->db->query(\$sql, \$data);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model update error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model update error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             return false;
         }
     }
     
-    /**
-     * Delete a record
-     */
     public function delete(\$id)
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}::delete called', ['id' => \$id]);
             \$sql = "DELETE FROM `" . \$this->table . "` WHERE id = ?";
             return \$this->db->query(\$sql, [\$id]);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model delete error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model delete error', [
+                'id' => \$id,
+                'error' => \$e->getMessage()
+            ]);
             return false;
         }
     }
     
-    /**
-     * Search records
-     */
     public function search(\$query)
     {
         try {
+            \$this->logger->debug('{$this->moduleClass}::search called', ['query' => \$query]);
             \$sql = "SELECT * FROM `" . \$this->table . "` 
                     WHERE title LIKE ? OR content LIKE ?
                     ORDER BY created_at DESC";
@@ -592,21 +590,25 @@ class {$this->moduleClass}
             \$searchTerm = '%' . \$query . '%';
             return \$this->db->fetchAll(\$sql, [\$searchTerm, \$searchTerm]);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model search error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model search error', [
+                'query' => \$query,
+                'error' => \$e->getMessage()
+            ]);
             return [];
         }
     }
     
-    /**
-     * Get records with pagination
-     */
     public function paginate(\$page = 1, \$perPage = 10)
     {
         try {
-            // Validate and sanitize input
             \$page = max(1, (int)\$page);
-            \$perPage = max(1, min(100, (int)\$perPage)); // Limit max per page
+            \$perPage = max(1, min(100, (int)\$perPage));
             \$offset = (\$page - 1) * \$perPage;
+            
+            \$this->logger->debug('{$this->moduleClass}::paginate called', [
+                'page' => \$page,
+                'perPage' => \$perPage
+            ]);
             
             \$sql = "SELECT * FROM `" . \$this->table . "` 
                     ORDER BY created_at DESC 
@@ -614,14 +616,14 @@ class {$this->moduleClass}
             
             return \$this->db->fetchAll(\$sql, [\$perPage, \$offset]);
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model paginate error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model paginate error', [
+                'page' => \$page,
+                'error' => \$e->getMessage()
+            ]);
             return [];
         }
     }
     
-    /**
-     * Get total count
-     */
     public function getCount()
     {
         try {
@@ -629,7 +631,7 @@ class {$this->moduleClass}
             \$result = \$this->db->fetch(\$sql);
             return \$result ? (int)\$result['count'] : 0;
         } catch (\\Exception \$e) {
-            error_log("{$this->moduleClass} model getCount error: " . \$e->getMessage());
+            \$this->logger->error('{$this->moduleClass} model getCount error', ['error' => \$e->getMessage()]);
             return 0;
         }
     }
@@ -642,7 +644,6 @@ PHP;
     
     private function generateViews($moduleDir)
     {
-        // Index view
         $indexContent = <<<PHP
 <?php
 \$title = \$data['title'] ?? '{$this->moduleClass}';
@@ -707,7 +708,6 @@ PHP;
         file_put_contents($moduleDir . '/views/index.php', $indexContent);
         echo "📄 Created: views/index.php\n";
         
-        // Create view
         $createContent = <<<PHP
 <?php
 \$title = \$data['title'] ?? 'Create {$this->moduleClass}';
@@ -748,7 +748,6 @@ PHP;
         file_put_contents($moduleDir . '/views/create.php', $createContent);
         echo "📄 Created: views/create.php\n";
         
-        // Show view
         $showContent = <<<PHP
 <?php
 \$title = \$data['item']['title'] ?? '{$this->moduleClass}';
@@ -789,18 +788,42 @@ PHP;
         file_put_contents($moduleDir . '/views/show.php', $showContent);
         echo "📄 Created: views/show.php\n";
         
-        // Edit view (similar to create)
-        $editContent = str_replace(
-            ['Create {$this->moduleClass}', 'action="/{$this->moduleName}/create"', '<button class="btn btn-primary" type="submit">Create</button>'],
-            ['Edit {$this->moduleClass}', 'action="/{$this->moduleName}/<?= $data[\'item\'][\'id\'] ?>/edit"', '<button class="btn btn-primary" type="submit">Update</button>'],
-            $createContent
-        );
-        
-        $editContent = str_replace(
-            ['name="title" type="text" required>', 'name="content" style="height: 200px" required></textarea>'],
-            ['name="title" type="text" value="<?= htmlspecialchars($data[\'item\'][\'title\']) ?>" required>', 'name="content" style="height: 200px" required><?= htmlspecialchars($data[\'item\'][\'content\']) ?></textarea>'],
-            $editContent
-        );
+        $editContent = <<<PHP
+<?php
+\$title = \$data['title'] ?? 'Edit {$this->moduleClass}';
+\$showNav = true;
+require __DIR__ . '/../../../views/partials/header.php';
+?>
+
+<section class="py-5">
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="fw-bolder mb-4">Edit {$this->moduleClass}</h1>
+                
+                <form method="post" action="/{$this->moduleName}/<?= \$data['item']['id'] ?>/edit">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="title" name="title" type="text" value="<?= htmlspecialchars(\$data['item']['title']) ?>" required>
+                        <label for="title">Title</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="content" name="content" style="height: 200px" required><?= htmlspecialchars(\$data['item']['content']) ?></textarea>
+                        <label for="content">Content</label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/{$this->moduleName}" class="btn btn-secondary">Cancel</a>
+                        <button class="btn btn-primary" type="submit">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php require __DIR__ . '/../../../views/partials/footer.php'; ?>
+PHP;
         
         file_put_contents($moduleDir . '/views/edit.php', $editContent);
         echo "📄 Created: views/edit.php\n";
@@ -820,6 +843,7 @@ A {$this->moduleName} module for StrataPHP framework.
 - Clean MVC structure
 - Bootstrap-styled views
 - API endpoints
+- Logger integration with configurable levels
 
 ## Installation
 
@@ -841,6 +865,8 @@ CREATE TABLE {$this->moduleName} (
 
 ## Routes
 
+The following routes are automatically generated:
+
 - `GET /{$this->moduleName}` - List all items
 - `GET /{$this->moduleName}/create` - Show create form
 - `POST /{$this->moduleName}/create` - Store new item
@@ -850,18 +876,90 @@ CREATE TABLE {$this->moduleName} (
 - `POST /{$this->moduleName}/{id}/delete` - Delete item
 - `GET /api/{$this->moduleName}` - API endpoint
 
+## Structure
+
+```
+{$this->moduleName}/
+├── index.php                    # Module metadata
+├── routes.php                   # Route definitions
+├── controllers/
+│   └── {$this->moduleClass}Controller.php
+├── models/
+│   └── {$this->moduleClass}.php
+├── views/
+│   ├── index.php
+│   ├── create.php
+│   ├── show.php
+│   └── edit.php
+├── assets/
+│   ├── css/
+│   └── js/
+├── README.md
+└── CHANGELOG.md
+```
+
+## Configuration
+
+After generation, the module is automatically:
+1. Added to composer.json autoload
+2. Available in admin module manager
+3. Disabled by default (enable in admin panel)
+
+## Next Steps
+
+1. Run `composer dump-autoload`
+2. Create database table for your module
+3. Enable module in admin panel (`/admin/modules`)
+4. Customize generated views and logic
+
 ## Customization
 
-1. Modify the model in `models/{$this->moduleClass}.php`
-2. Update views in `views/` directory
-3. Add custom routes in `routes.php`
-4. Update database schema as needed
+### Adding Fields
+1. Update database table schema
+2. Modify model methods in `models/{$this->moduleClass}.php`
+3. Update form fields in views
+4. Adjust controller validation
+
+### Styling
+- Edit Bootstrap classes in view files
+- Add custom CSS in `assets/css/`
+- Add JavaScript functionality in `assets/js/`
+
+### API Enhancement
+- Extend `apiIndex()` method in controller
+- Add additional API endpoints in routes
+- Implement authentication for API routes
+
+## Security Notes
+
+The generated module includes:
+- Input validation and sanitization
+- SQL injection prevention via prepared statements
+- XSS protection via output escaping
+- Error handling with logging
+- CSRF-aware form handling pattern
+
+## Troubleshooting
+
+### Module not appearing
+- Check composer autoload: `composer dump-autoload`
+- Verify module directory in `public_html/modules/`
+- Check `index.php` metadata format
+
+### Routes not working
+- Ensure module is enabled in config/admin
+- Check route file syntax
+- Verify controller namespace and class names
+
+### Database errors
+- Create required table schema
+- Check database connection in config
+- Verify table name matches module name
 
 ## License
 
 Same as StrataPHP framework.
 MD;
-        
         file_put_contents($moduleDir . '/README.md', $content);
         echo "📄 Created: README.md\n";
     }
@@ -932,8 +1030,35 @@ The module expects a `{$this->moduleName}` table with at least these fields:
 - Error handling logs to system error log
 - Session messages used for user feedback
 - Follows StrataPHP framework conventions
+
+## Future Enhancements
+
+Consider adding these features in future versions:
+- File upload support
+- Rich text editor integration
+- Category/tag system
+- Comment system
+- SEO metadata fields
+- Soft delete functionality
+- Activity logging
+- Bulk operations
+- Export/import functionality
+- Advanced search filters
+
+## Contributing
+
+When modifying this module:
+1. Update this changelog
+2. Increment version in `index.php`
+3. Test all CRUD operations
+4. Verify security measures
+5. Update documentation
+
+---
+
+Generated by StrataPHP Module Generator v1.0.0
+
 MD;
-        
         file_put_contents($moduleDir . '/CHANGELOG.md', $content);
         echo "📄 Created: CHANGELOG.md\n";
     }
@@ -950,6 +1075,37 @@ MD;
         
         file_put_contents($composerFile, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         echo "📝 Updated: composer.json\n";
+    }
+
+    private function updateModulesConfig()
+    {
+        $modulesFile = __DIR__ . '/../public_html/app/modules.php';
+
+        if (!file_exists($modulesFile)) {
+            echo "⚠️ Skipped: public_html/app/modules.php not found\n";
+            return;
+        }
+
+        $modulesConfig = include $modulesFile;
+
+        if (!is_array($modulesConfig) || !isset($modulesConfig['modules']) || !is_array($modulesConfig['modules'])) {
+            echo "⚠️ Skipped: invalid modules config format\n";
+            return;
+        }
+
+        if (!isset($modulesConfig['modules'][$this->moduleName])) {
+            $modulesConfig['modules'][$this->moduleName] = [
+                'enabled' => false,
+                'suitable_as_default' => false,
+            ];
+
+            $modulesExport = var_export($modulesConfig, true);
+            file_put_contents($modulesFile, "<?php\nreturn " . $modulesExport . ";\n", LOCK_EX);
+            echo "📝 Updated: public_html/app/modules.php\n";
+            return;
+        }
+
+        echo "ℹ️ Module already present in public_html/app/modules.php\n";
     }
 }
 

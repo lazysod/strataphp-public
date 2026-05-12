@@ -2,13 +2,18 @@
 namespace App\Modules\Admin\Controllers;
 
 use App\DB;
-
+use App\Logger;
 class OAuthClientController
 {
     /**
      * Delete an OAuth client by ID.
      * @param int $id Client ID
      */
+
+
+    protected $db;
+    protected $logger;
+    
     public function delete($id)
     {
         try {
@@ -27,14 +32,12 @@ class OAuthClientController
             header('Location: /admin/oauth-clients');
             exit;
         } catch (\Exception $e) {
-            error_log('OAuthClientController delete error: ' . $e->getMessage());
+            $this->logger->error('OAuthClientController delete error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to delete OAuth client.';
             header('Location: /admin/oauth-clients');
             exit;
         }
     }
-
-    protected $db;
 
     /**
      * OAuthClientController constructor.
@@ -88,7 +91,7 @@ class OAuthClientController
             }
             include __DIR__ . '/../views/oauth_clients/edit.php';
         } catch (\Exception $e) {
-            error_log('OAuthClientController edit error: ' . $e->getMessage());
+            $this->logger->error('OAuthClientController edit error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to edit OAuth client.';
             header('Location: /admin/oauth-clients');
             exit;
@@ -105,7 +108,7 @@ class OAuthClientController
             $clients = $this->db->fetchAll("SELECT * FROM oauth_clients ORDER BY id DESC");
             include __DIR__ . '/../views/oauth_clients/list.php';
         } catch (\Exception $e) {
-            error_log('OAuthClientController index error: ' . $e->getMessage());
+            $this->logger->error('OAuthClientController index error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to load OAuth clients.';
             header('Location: /admin');
             exit;
@@ -134,7 +137,7 @@ class OAuthClientController
             }
             include __DIR__ . '/../views/oauth_clients/add.php';
         } catch (\Exception $e) {
-            error_log('OAuthClientController add error: ' . $e->getMessage());
+            $this->logger->error('OAuthClientController add error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to add OAuth client.';
             header('Location: /admin/oauth-clients');
             exit;

@@ -7,9 +7,12 @@ use App\DB;
  * Controller for managing OAuth clients.
  * Handles listing, adding, and error management for OAuth clients.
  */
+use App\Logger;
 class OAuthClientsController
 {
     protected $db;
+    protected $logger;
+
     /**
      * OAuthClientsController constructor.
      * Initializes DB connection from injected instance, global config, or config file.
@@ -19,38 +22,34 @@ class OAuthClientsController
      */
     public function __construct($db = null)
     {
+        $this->logger = Logger::getInstance();
         if ($db) {
             // Log usage of injected DB instance
-            error_log('OAuthClientsController: using injected DB instance');
+            
+            $this->logger->info('OAuthClientsController: using injected DB instance');
             $this->db = $db;
         } else {
             try {
                 // Try global $config first
                 global $config;
                 if (isset($config) && isset($config['db'])) {
-                    error_log('OAuthClientsController: using global $config');
+                    $this->logger->info('OAuthClientsController: using global $config');
                     $this->db = new DB($config);
                     return;
                 }
                 // fallback: load config from file
                 $configPath = dirname(__DIR__, 4) . '/app/config.php';
                 $configFile = file_exists($configPath) ? require $configPath : [];
-                error_log('OAuthClientsController: loaded config file!: ');
+                $this->logger->info('OAuthClientsController: loaded config file for DB initialization');
                 if (!isset($configFile['db'])) {
-                    error_log('Database config missing in OAuthClientsController');
+                    $this->logger->error('Database config missing in OAuthClientsController');
                     throw new \Exception('Database config missing');
                 }
                 $this->db = new DB($configFile);
             } catch (\Exception $e) {
-                error_log('Error initializing DB in OAuthClientsController: ' . $e->getMessage());
+                $this->logger->error('Error initializing DB in OAuthClientsController: ' . $e->getMessage());
                 throw $e;
             }
         }
     }
-
-    /**
-     * List all OAuth clients.
-     * Displays client list view.
-     */
-    // ...existing code...
 }

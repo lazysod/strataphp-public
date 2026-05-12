@@ -2,7 +2,7 @@
 namespace App\Modules\StrataCms;
 use App\Modules\StrataCms\Helpers\SiteHelper;
 use App\HtmlSanitizer;
-
+use App\Logger;
 /**
  * CMS Theme Manager
  *
@@ -14,6 +14,7 @@ class ThemeManager
     private $config;
     private $currentTheme;
     private $basePath;
+    private $logger;
     
     public function __construct()
     {
@@ -411,7 +412,8 @@ h1, h2, h3, h4, h5, h6 {
             global $config;
             // Load config and create database connection
             $localConfig = include dirname(__DIR__, 2) . '/app/config.php';
-            // error_log('DEBUG: ThemeManager.php DB config: ' . print_r($config['db'], true));
+            $logger = Logger::getInstance();
+            $logger->debug('ThemeManager.php DB config: ' . print_r($config['db'], true));
             $db = new \App\DB($config);
 
             // Get published pages for navigation (with parent_id) for current site
