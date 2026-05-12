@@ -30,9 +30,8 @@ class Version
     public static function get()
     {
         if (self::$version === null) {
-            self::$version = self::readFromComposer();
+            self::$version = self::readFromConfig();
         }
-        
         return self::$version;
     }
     
@@ -104,25 +103,22 @@ class Version
      *
      * @return string Version number or fallback
      */
-    private static function readFromComposer()
+    private static function readFromConfig()
     {
-        $composerPath = self::getComposerPath();
-        
-        if (!file_exists($composerPath)) {
+        // Try to load config.php and get the version
+        $configPath = __DIR__ . '/config.php';
+        if (!file_exists($configPath)) {
+            // Try parent directory (project root)
+            $configPath = dirname(__DIR__) . '/app/config.php';
+        }
+        if (!file_exists($configPath)) {
             return self::getFallbackVersion();
         }
-        
-        $composerContent = file_get_contents($composerPath);
-        if ($composerContent === false) {
-            return self::getFallbackVersion();
+        $config = include $configPath;
+        if (isset($config['version'])) {
+            return $config['version'];
         }
-        
-        $composerData = json_decode($composerContent, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return self::getFallbackVersion();
-        }
-        
-        return $composerData['version'] ?? self::getFallbackVersion();
+        return self::getFallbackVersion();
     }
     
     /**
