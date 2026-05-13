@@ -1,9 +1,9 @@
 <?php
 // Global logout: destroy session and redirect to main site
-session_destroy();
-
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/app/SessionManager.php';
+session_destroy();
+
 use App\SessionManager;
 use App\DB;
 // Instantiate SessionManager and revoke the session
