@@ -1,24 +1,19 @@
 <?php
 // Global logout: destroy session and redirect to main site
+session_destroy();
+
 require_once __DIR__ . '/bootstrap.php';
-$_SESSION = [];
-if (ini_get('session.use_cookies')) {
-    $params = session_get_cookie_params();
-    setcookie(
-        session_name(), '', time() - 42000,
-        $params['path'], $params['domain'],
-        $params['secure'], $params['httponly']
-    );
-}
+require_once __DIR__ . '/app/SessionManager.php';
+use App\SessionManager;
+use App\DB;
+// Instantiate SessionManager and revoke the session
+$db = new DB($config);
+$sessionManager = new SessionManager($db, $config);
+$sessionManager->destroySession();
 
-
-// Remove the new session management cookies
+// Remove the legacy remember me cookie (if still needed)
 $sessionPrefix = $config['session_prefix'] ?? '';
-setcookie($sessionPrefix . 'session_token', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
-setcookie($sessionPrefix . 'device_id', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
-// Remove the legacy remember me cookie
 setcookie($sessionPrefix . 'cookie_login', '', time() - 42000, '/', '', isset($_SERVER['HTTPS']), true);
 
-session_destroy();
 header('Location: /');
 exit;
