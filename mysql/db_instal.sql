@@ -95,7 +95,7 @@ CREATE TABLE `links` (
 INSERT INTO `links` (`id`, `title`, `url`, `icon`, `created_at`, `order`, `nsfw`) VALUES
 (1, 'Strata PHP Home Page', 'https://www.strataphp.org', 'fas fa-link', '2025-08-13 08:09:46', 2, 1),
 (3, 'B.Smith Home Page!', 'https://barrysmith.dev', 'fas fa-link', '2025-08-13 08:25:14', 1, 0),
-(4, 'Lazy Links 2.0', 'https://lazylinks.co.uk', 'fas fa-link', '2025-08-13 08:26:48', 4, 0);
+(4, 'Lazysod Home Page', 'https://lazysod.co.uk.co.uk', 'fas fa-link', '2025-08-13 08:26:48', 4, 0);
 
 -- Table structure for `google_analytics_settings`
 DROP TABLE IF EXISTS `google_analytics_settings`;
