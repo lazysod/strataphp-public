@@ -44,14 +44,25 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                         <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
                                         <td><?php echo htmlspecialchars($user['second_name'] ?? '') ?></td>
                                         <td><?php echo htmlspecialchars($user['email']) ?></td>
-                                        <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
+                                        <?php 
+                                            if($user['dead_switch'] === 0 && $user['active'] === 0){
+                                                $status = 'Inactive';
+                                            }else if($user['dead_switch'] === 1 && $user['active'] === 0){
+                                                $status = 'Suspended';
+                                            }else{
+                                                $status = 'Active';
+                                            }
+                                        ?>
+                                        <td><?php echo $status; ?></td>
                                         <td>
                                             <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
                                             <?php
-                                            if (isset($user['active']) && $user['active']) {
+                                            if ($user['dead_switch'] === 0 && $user['active'] === 1) {
                                                 echo '<a href="/admin/users/suspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
-                                            } else {
+                                            } else if ($user['dead_switch'] === 1 && $user['active'] === 0){
                                                 echo '<a href="/admin/users/unsuspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
+                                            }else{
+                                                echo '<a href="/admin/users/activate/' . $user['id'] . '" class="btn btn-sm btn-success">Activate</a>';
                                             }
                                             ?>
                                             <a href="/admin/users/delete/<?php echo $user['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</a>

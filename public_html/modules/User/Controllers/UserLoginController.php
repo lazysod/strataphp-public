@@ -57,6 +57,12 @@ class UserLoginController
             }
             $error = '';
             $success = '';
+            $sessionStatus = trim((string)($_GET['session'] ?? ''));
+            if ($sessionStatus === 'revoked') {
+                $error = 'Your session was revoked for security reasons. Please log in again.';
+            } elseif ($sessionStatus === 'expired') {
+                $error = 'Your session expired. Please log in again.';
+            }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {

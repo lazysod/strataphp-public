@@ -69,7 +69,7 @@ class UserModel
     public function updateUserProfile(int $userId, array $data): bool
     {
         try {
-            $allowedFields = ['first_name', 'verified', 'second_name', 'email', 'display_name'];
+            $allowedFields = ['first_name', 'verified', 'second_name', 'email', 'display_name', 'is_admin', 'active', 'dead_switch'];
             $updateFields = [];
             $values = [];
             

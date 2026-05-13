@@ -108,7 +108,8 @@ class UserAdminController
                 }
                 $is_admin = ($role === 'admin') ? 1 : 0;
                 $active = ($status === 'active') ? 1 : 0;
-                $dead_switch = ($active === 0) ? 1 : 0;
+                $dead_switch = (int)($_POST['dead_switch'] ?? (($active === 0) ? 1 : 0));
+                $dead_switch = ($dead_switch === 1) ? 1 : 0;
                 $updateData = [
                     'first_name' => trim($_POST['first_name'] ?? ''),
                     'second_name' => trim($_POST['second_name'] ?? ''),
@@ -195,6 +196,33 @@ class UserAdminController
         } catch (\Exception $e) {
             http_response_code(500);
             echo '<h1>Error unsuspending user</h1>';
+        }
+    }
+
+    /**
+     * Activate a user account
+     *
+     * @param string $id User ID
+     * @return void
+     */
+    public function activate($id)
+    {
+        try {
+            global $config;
+            $db = new DB($config);
+            $userModel = new User($db, $config);
+            $user = $userModel->getById($id);
+            if (!$user) {
+                http_response_code(404);
+                echo '<h1>User not found</h1>';
+                exit;
+            }
+            $userModel->activate($id);
+            header('Location: /admin/users');
+            exit;
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo '<h1>Error activating user</h1>';
         }
     }
 

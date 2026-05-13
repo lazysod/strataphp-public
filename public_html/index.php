@@ -4,6 +4,7 @@ use App\DB;
 use App\User;
 use App\Router;
 use App\Logger;
+use App\SessionManager;
 $config = $GLOBALS['config'];
 
 // Initialize the router
@@ -60,6 +61,7 @@ set_exception_handler(function($exception) use ($config) {
 
 $db = new DB($config);
 $user = new App\User($db, $config);
+$sessionManager = new SessionManager($db, $config);
 
 $method = $_SERVER['REQUEST_METHOD'];
 $requestPath = '/'. trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
@@ -68,10 +70,21 @@ if ($requestPath === '//') { $requestPath = '/'; }
 $isLoginPage = ($requestPath === '/user/login' || $requestPath === '/admin/admin_login.php');
 $isAdminRoute = (strpos($requestPath, '/admin') === 0);
 
+$sessionPrefix = $config['session_prefix'] ?? 'app_';
+$currentUserId = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
+
+// Validate the DB-backed session on each authenticated request.
+if (!empty($currentUserId)) {
+    $validatedUserId = $sessionManager->validateSession();
+    if (!$validatedUserId || (int)$validatedUserId !== (int)$currentUserId) {
+        $sessionManager->destroySession();
+        header('Location: /user/login?session=revoked');
+        exit;
+    }
+}
+
 // Only enforce auth for /admin routes
 if ($isAdminRoute &&!$isLoginPage) {
-    $sessionPrefix = $config['session_prefix']?? 'app_';
-
     if (empty($_SESSION[$sessionPrefix. 'user_id'])) {
         header('Location: /user/login?redirect='. urlencode($requestPath));
         exit;

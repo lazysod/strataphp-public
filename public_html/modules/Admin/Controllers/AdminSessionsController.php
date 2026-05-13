@@ -38,7 +38,7 @@ class AdminSessionsController
                 'SESSION' => $_SESSION,
                 'COOKIES' => $_COOKIE
             ]);
-            $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
+            $admin_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
             if (!$admin_id) {
                 $logger->warning('ADMIN SESSIONS INDEX: Not logged in, redirecting.', [
                     'SESSION' => $_SESSION
@@ -86,7 +86,7 @@ class AdminSessionsController
                 'SESSION' => $_SESSION,
                 'COOKIES' => $_COOKIE
             ]);
-            $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
+            $admin_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
             $session_id = $_POST['session_id'] ?? null;
             if (!$admin_id || !$session_id) {
                 $logger->warning('ADMIN SESSIONS REVOKE: Not logged in or missing session_id, redirecting.', [
@@ -134,7 +134,7 @@ class AdminSessionsController
                 'SESSION' => $_SESSION,
                 'COOKIES' => $_COOKIE
             ]);
-            $admin_id = $_SESSION[$sessionPrefix . 'admin'] ?? null;
+            $admin_id = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
             $session_id = $_POST['session_id'] ?? null;
             $device_info = trim($_POST['device_info'] ?? '');
             if (!$admin_id || !$session_id || $device_info === '') {

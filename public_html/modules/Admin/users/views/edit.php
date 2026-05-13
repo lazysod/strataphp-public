@@ -56,12 +56,23 @@ include __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status">
-                                <option value="active" <?php if (($user['status'] ?? '') === 'active') {
+                                <option value="active" <?php if (($user['active'] ?? '') === 1) {
                                     echo 'selected';
                                                        } ?>>Active</option>
-                                <option value="suspended" <?php if (($user['status'] ?? '') === 'suspended') {
+                                <option value="suspended" <?php if (($user['active'] ?? '') === 0) {
                                     echo 'selected';
-                                                          } ?>>Suspended</option>
+                                                          } ?>>Inactive</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dead_switch" class="form-label">Dead Switch</label>
+                            <select class="form-select" id="dead_switch" name="dead_switch">
+                                <option value="0" <?php if (($user['dead_switch'] ?? '') < 1) {
+                                    echo 'selected';
+                                                       } ?>>Inactive</option>
+                                <option value="1" <?php if (($user['dead_switch'] ?? '') > 0 ) {
+                                    echo 'selected';
+                                                          } ?>>Active</option>
                             </select>
                         </div>
                         <div class="mb-3">

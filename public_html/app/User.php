@@ -1,8 +1,10 @@
 <?php
+
 namespace App;
 
 use App\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
+
 class User
 {
     private $db;
@@ -16,9 +18,15 @@ class User
         return $this->db->query($sql, [(int)$id]);
     }
 
+    public function revoke_session($user_id)
+    {
+        $sql = "UPDATE user_sessions SET revoked = 1 WHERE user_id = ?";
+        return $this->db->query($sql, [(int)$user_id]);
+    }
     // suspend
     public function suspend($id)
     {
+        $this->revoke_session($id);
         $sql = "UPDATE users SET active = 0, dead_switch = 1 WHERE id = ?";
         return $this->db->query($sql, [(int)$id]);
     }
@@ -27,6 +35,13 @@ class User
     public function unsuspend($id)
     {
         $sql = "UPDATE users SET active = 1, dead_switch = 0 WHERE id = ?";
+        return $this->db->query($sql, [(int)$id]);
+    }
+
+    // activate (reactivate without changing dead_switch)
+    public function activate($id)
+    {
+        $sql = "UPDATE users SET active = 1 WHERE id = ?";
         return $this->db->query($sql, [(int)$id]);
     }
 
@@ -149,25 +164,25 @@ class User
         $_SESSION[$sessionPrefix . 'session'] = $session_array;
     }
 
-public function session_check()
-{
-    $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
-    if (isset($_SESSION[$sessionPrefix . 'session'])) {
-        $now = date('Y-m-d H:i:s');
-        if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
+    public function session_check()
+    {
+        $sessionPrefix = $this->config['session_prefix'] ?? 'app_';
+        if (isset($_SESSION[$sessionPrefix . 'session'])) {
+            $now = date('Y-m-d H:i:s');
+            if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
 
-            $_SESSION = []; // clear session instead of destroy
-            if (ini_get("session.use_cookies")) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                $_SESSION = []; // clear session instead of destroy
+                if (ini_get("session.use_cookies")) {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                }
+                session_destroy(); // this is ok AFTER bootstrap started it
+
+                header('location: ' . $this->config['base_url'] . '/user/login');
+                exit;
             }
-            session_destroy(); // this is ok AFTER bootstrap started it
-            
-            header('location: ' . $this->config['base_url'] . '/user/login');
-            exit;
         }
     }
-}
 
     public function cookie_check()
     {
@@ -408,16 +423,16 @@ public function session_check()
         $rows = $this->db->fetchAll($sql, [$user['email']]);
         if (count($rows) > 0) {
             foreach ($rows as $row) {
-                if (isset($row['active']) && $row['active'] == 0) {
-                    return [
-                        'status' => 'fail',
-                        'message' => 'Your account is not activated. Please check your email for the activation link.'
-                    ];
-                }
                 $db_pwd = $row['pwd'];
                 if (password_verify($user['pwd'], $db_pwd)) {
                     $rank = $this->get_rank($row['id']);
-                    if ($row['dead_switch'] > 0) {
+                    if (isset($row['active']) && $row['active'] == 0 && isset($row['dead_switch']) && $row['dead_switch'] == 0) {
+                        return [
+                            'status' => 'fail',
+                            'message' => 'Your account is not activated. Please check your email for the activation link.'
+                        ];
+                    }
+                    if (isset($row['dead_switch']) && $row['dead_switch'] > 0) {
                         return [
                             'status' => 'fail',
                             'message' => 'Your account was closed or is inaccessible.'

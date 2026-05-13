@@ -58,6 +58,7 @@ $router->get('/admin/users/edit/{id}', [\App\Modules\Admin\Controllers\UserAdmin
 $router->post('/admin/users/edit/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'edit']);
 $router->get('/admin/users/suspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'suspend']);
 $router->get('/admin/users/unsuspend/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'unsuspend']);
+$router->get('/admin/users/activate/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'activate']);
 $router->get('/admin/users/delete/{id}', [\App\Modules\Admin\Controllers\UserAdminController::class, 'delete']);
 
 
