@@ -119,7 +119,7 @@ public_html/
 
 - **Session Fixation Protection** — Sessions regenerate ID on login via `session_regenerate_id()`
 - **CSRF Hardening** — Token verification uses constant-time comparison, no user input in logs
-- **Cookie Security** — Device and session cookies use `HttpOnly` + `SameSite=Strict`
+- **Cookie Security** — Device and session cookies use `HttpOnly` + `SameSite=Lax`
 - **CSRF tokens**: Auto-generated and checked for all forms
 - **Session**: Started automatically in `app/start.php`. Device-tracked
 - **Password reset**: Secure tokens with expiry
@@ -380,7 +380,7 @@ See `public_html/app/SessionManager.php` and session dashboard controllers.
 **Security Hardened**
 - Session fixation protection via `session_regenerate_id()`
 - CSRF tokens with constant-time verification
-- Secure cookies: `HttpOnly` + `SameSite=Strict`
+- Secure cookies: `HttpOnly` + `SameSite=Lax`
 - PDO prepared statements only
 - Security/auth events logged
 

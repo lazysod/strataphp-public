@@ -16,8 +16,8 @@ if (file_exists($dotenvPath. '/.env')) {
 
 // 4. Load global config
 $configFile = __DIR__. '/app/config.php';
-$config = file_exists($configFile) ? require $configFile : [];
-global $config;
+$GLOBALS['config'] = file_exists($configFile) ? require $configFile : [];
+$config = $GLOBALS['config'];
 
 // 5. SESSION START - before any possible output
 $sessionName = $config['session_name']?? 'STRATASESSID';
@@ -29,7 +29,7 @@ session_set_cookie_params([
     'lifetime' => $config['session_lifetime'] ?? 86400,
     'path' => '/',
     'domain' => '',
-    'secure' => $config['cookie_secure'] ?? false,
+    'secure' => $sessionSecure || ($config['cookie_secure'] ?? false),
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
