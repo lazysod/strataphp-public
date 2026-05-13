@@ -25,7 +25,7 @@ class DB
             );
         } catch (PDOException $e) {
             // Log the error if Logger is available
-            if (class_exists('Logger')) {
+            if (class_exists('App\\Logger')) {
                 $logger = new Logger($config);
                 $logger->error('Database connection failed', ['error' => $e->getMessage()]);
             }
@@ -75,20 +75,26 @@ class DB
         try {
             $stmt = $this->pdo->prepare($sql);
             if (!$stmt) {
-                $logger = Logger::getInstance();
-                $logger->error('DB::query prepare failed', ['sql' => $sql]);
+                if (class_exists('App\\Logger')) {
+                    $logger = Logger::getInstance();
+                    $logger->error('DB::query prepare failed', ['sql' => $sql]);
+                }
                 return null;
             }
             $result = $stmt->execute($params);
             if (!$result) {
-                $logger = Logger::getInstance();
-                $logger->error('DB::query execute failed', ['sql' => $sql, 'params' => $params]);
+                if (class_exists('App\\Logger')) {
+                    $logger = Logger::getInstance();
+                    $logger->error('DB::query execute failed', ['sql' => $sql, 'params' => $params]);
+                }
                 return null;
             }
             return $stmt;
         } catch (PDOException $e) {
-            $logger = Logger::getInstance();
-            $logger->error('DB::query PDOException', ['message' => $e->getMessage(), 'sql' => $sql, 'params' => $params]);
+            if (class_exists('App\\Logger')) {
+                $logger = Logger::getInstance();
+                $logger->error('DB::query PDOException', ['message' => $e->getMessage(), 'sql' => $sql, 'params' => $params]);
+            }
             return null;
         }
     }

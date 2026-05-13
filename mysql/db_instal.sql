@@ -36,6 +36,7 @@ CREATE TABLE `migration_lock` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
+  `display_name` varchar(100) DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `second_name` varchar(50) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
