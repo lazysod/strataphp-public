@@ -39,7 +39,7 @@ return array (
     ),
     'Links' => 
     array (
-      'enabled' => false,
+      'enabled' => true,
       'suitable_as_default' => true,
     ),
     'User' => 

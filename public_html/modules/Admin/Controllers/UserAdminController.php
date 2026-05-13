@@ -4,6 +4,7 @@ require_once dirname(__DIR__, 4) . '/public_html/bootstrap.php';
 use App\DB;
 use App\User;
 use App\App;
+use App\TokenManager;
 
 /**
  * Admin User Management Controller
@@ -153,7 +154,27 @@ class UserAdminController
     {
         try {
             global $config;
-            // ...existing code...
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                $_SESSION['error'] = 'Invalid request method.';
+                header('Location: /admin/users');
+                exit;
+            }
+
+            $tm = new TokenManager($config);
+            $verify = $tm->verify($_POST['token'] ?? '');
+            if (($verify['status'] ?? 'fail') !== 'success') {
+                $_SESSION['error'] = 'Invalid CSRF token.';
+                header('Location: /admin/users');
+                exit;
+            }
+
+            $currentUserId = $this->resolveCurrentUserId($config);
+            if ($currentUserId !== null && $currentUserId === (int)$id) {
+                $_SESSION['error'] = 'You cannot suspend your own account.';
+                header('Location: /admin/users');
+                exit;
+            }
+
             $db = new DB($config);
             $userModel = new User($db, $config);
             $user = $userModel->getById($id);
@@ -236,11 +257,22 @@ class UserAdminController
     {
         try {
             global $config;
-            $sessionPrefix = $config['session_prefix'] ?? 'app_';
-            // Prevent user from deleting themselves
-            $currentUserId = $_SESSION[$sessionPrefix . 'admin']['id'] ?? null;
-            if ($currentUserId && $currentUserId == $id) {
-                // Optionally set a flash message or error
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                $_SESSION['error'] = 'Invalid request method.';
+                header('Location: /admin/users');
+                exit;
+            }
+
+            $tm = new TokenManager($config);
+            $verify = $tm->verify($_POST['token'] ?? '');
+            if (($verify['status'] ?? 'fail') !== 'success') {
+                $_SESSION['error'] = 'Invalid CSRF token.';
+                header('Location: /admin/users');
+                exit;
+            }
+
+            $currentUserId = $this->resolveCurrentUserId($config);
+            if ($currentUserId !== null && $currentUserId === (int)$id) {
                 $_SESSION['error'] = 'You cannot delete your own account.';
                 header('Location: /admin/users');
                 exit;
@@ -255,5 +287,25 @@ class UserAdminController
             http_response_code(500);
             echo '<h1>Error deleting user</h1>';
         }
+    }
+
+    /**
+     * Resolve currently authenticated admin user id from session.
+     *
+     * @param array $config
+     * @return int|null
+     */
+    private function resolveCurrentUserId(array $config)
+    {
+        $sessionPrefix = $config['session_prefix'] ?? 'app_';
+        if (!empty($_SESSION[$sessionPrefix . 'user_id'])) {
+            return (int)$_SESSION[$sessionPrefix . 'user_id'];
+        }
+
+        if (!empty($_SESSION[$sessionPrefix . 'user']['id'])) {
+            return (int)$_SESSION[$sessionPrefix . 'user']['id'];
+        }
+
+        return null;
     }
 }

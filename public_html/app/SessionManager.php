@@ -140,7 +140,9 @@ class SessionManager
             setcookie($prefix. 'session_token', '', $cookieOpts);
             setcookie($prefix. 'device_id', '', $cookieOpts);
         }
-        $_SESSION = [];
-        session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $_SESSION = [];
+            session_destroy();
+        }
     }
 }
