@@ -39,7 +39,9 @@ class SessionManager
         $logger = Logger::getInstance();
         $logger->debug('SessionManager: createSession called', ['user_id' => $user_id]);
         $logger->info('Session created!', ['session_id' => $session_id]);
-        $logger->error('DB insert failed', ['error' => json_encode($this->db->errorInfo())]);
+        if( !$session_id) {
+            $logger->error('DB insert failed', ['error' => json_encode($this->db->errorInfo())]);
+        }
 
         // Only set cookies if headers not sent. If they are, log it and skip.
         if (!headers_sent()) {

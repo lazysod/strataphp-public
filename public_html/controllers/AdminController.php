@@ -165,10 +165,11 @@ class AdminController
         $showNav = false;
         $config = include dirname(__DIR__) . '/app/config.php';
         $db = new DB($config);
-        $message = '';
+        $success = '';
+        $error = '';
         $token = $_GET['token'] ?? ($_POST['reset_token'] ?? ($_POST['token'] ?? ''));
         if (!$token) {
-            $message = 'Invalid or missing token.';
+            $error = 'Invalid or missing token.';
             include __DIR__ . '/../views/admin/admin_reset_form.php';
             return;
         }
@@ -177,14 +178,14 @@ class AdminController
         $sql = "SELECT r.user_id, r.expiry_date FROM reset r JOIN users u ON r.user_id = u.id WHERE r.activation_key = ? AND u.is_admin = 1";
         $rows = $db->fetchAll($sql, [$token]);
         if (count($rows) === 0) {
-            $message = 'Invalid or expired token.';
+            $error = 'Invalid or expired token.';
             include __DIR__ . '/../views/admin/admin_reset_form.php';
             return;
         }
         $userId = $rows[0]['user_id'];
         $expiry = $rows[0]['expiry_date'];
         if (strtotime($expiry) < time()) {
-            $message = 'This reset link has expired.';
+            $error = 'This reset link has expired.';
             include __DIR__ . '/../views/admin/admin_reset_form.php';
             return;
         }
@@ -192,9 +193,9 @@ class AdminController
             $password = $_POST['password'];
             $password_confirm = $_POST['password_confirm'];
             if ($password !== $password_confirm) {
-                $message = 'Passwords do not match.';
+                $error = 'Passwords do not match.';
             } elseif (strlen($password) < 8) {
-                $message = 'Password must be at least 8 characters.';
+                $error = 'Password must be at least 8 characters.';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
                 // Secure: parameterized query prevents SQL injection
@@ -202,7 +203,7 @@ class AdminController
                 // Invalidate the token using canonical schema columns.
                 // Secure: parameterized query prevents SQL injection
                 $db->query('DELETE FROM reset WHERE `activation_key` = ?', [$token]);
-                $message = 'Password reset successful. <a href="/admin">Login</a>';
+                $success = 'Password reset successful. <a href="/admin">Login</a>';
             }
         }
         include __DIR__ . '/../views/admin/admin_reset_form.php';

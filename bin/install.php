@@ -35,6 +35,17 @@ try {
     $sql = file_get_contents($schemaFile);
     $pdo->exec($sql);
     echo "Database schema imported successfully.\n";
+
+    $migrateCommand = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/migrate.php');
+    exec($migrateCommand . ' 2>&1', $migrationOutput, $migrationExitCode);
+
+    if ($migrationExitCode !== 0) {
+        echo "Error applying migrations after schema import:\n";
+        echo implode("\n", $migrationOutput) . "\n";
+        exit(1);
+    }
+
+    echo "Pending migrations applied successfully.\n";
 } catch (Exception $e) {
     echo "Error importing schema: " . $e->getMessage() . "\n";
     exit(1);

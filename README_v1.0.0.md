@@ -47,13 +47,13 @@ Edit `.env` with your database, mail, and other settings.
 ```sh
 php bin/install.php
 ```
-This creates essential tables only. No demo data.
+This imports the base schema and applies pending migrations automatically. No demo data.
 
-5. **Run migrations:**
+5. **Run migrations after future updates:**
 ```sh
 php bin/migrate.php
 ```
-Migrations ensure your schema matches the latest features. Always run after updating.
+Migrations ensure your schema matches the latest features after updates.
 
 6. **Create admin account:**
 ```sh

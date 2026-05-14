@@ -52,6 +52,14 @@ return [
             entry_date DATETIME NOT NULL,
             expiry_date DATETIME DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        // user_activation
+        $db->query("CREATE TABLE IF NOT EXISTS user_activation (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            activation_key VARCHAR(255) NOT NULL,
+            entry_date DATETIME NOT NULL,
+            expiry_date DATETIME DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         // cookie_login
         $db->query("CREATE TABLE IF NOT EXISTS cookie_login (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -69,6 +77,7 @@ return [
         $db->query("DROP TABLE IF EXISTS rank");
         $db->query("DROP TABLE IF EXISTS migration_lock");
         $db->query("DROP TABLE IF EXISTS reset");
+        $db->query("DROP TABLE IF EXISTS user_activation");
         $db->query("DROP TABLE IF EXISTS cookie_login");
         echo "✅ Core tables dropped\n";
     }
