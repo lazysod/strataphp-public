@@ -137,9 +137,29 @@ class User
             $userId = $rows[0]['id'];
             $token = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            // Insert or update token in reset table (user resets)
-            $this->db->query("INSERT INTO reset (user_id, `key`, expiry_date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `key` = VALUES(`key`), expiry_date = VALUES(expiry_date)", [$userId, $token, $expiry]);
-            $resetLink = $baseUrl . "/user/reset?token=$token";
+            $entryDate = date('Y-m-d H:i:s');
+
+            // Replace any existing reset rows for this user.
+            $this->db->query("DELETE FROM reset WHERE user_id = ?", [$userId]);
+
+            $stmt = $this->db->query(
+                "INSERT INTO reset (user_id, activation_key, entry_date, expiry_date) VALUES (?, ?, ?, ?)",
+                [$userId, $token, $entryDate, $expiry]
+            );
+            $saved = (bool)$stmt;
+
+            if (!$saved) {
+                $logger = new Logger($this->config);
+                $logger->error('Failed to save password reset token', ['user_id' => $userId, 'email' => $email]);
+                return [
+                    'status' => 'fail',
+                    'message' => 'Unable to create reset token at this time.'
+                ];
+            }
+
+            // Generate appropriate reset path based on user type
+            $resetPath = $adminOnly ? '/admin/reset-password' : '/user/reset';
+            $resetLink = $baseUrl . $resetPath . "?token=$token";
             // You can send the email here or return the link for the controller to handle
             return [
                 'status' => 'success',
@@ -354,7 +374,21 @@ class User
                     $mail->Body = "Thank you for registering. Please activate your account by clicking the link below:\n$activationLink\nIf you did not register, please ignore this email.";
                     $mail->send();
                 } catch (\Exception $e) {
-                    // Optionally log or handle email errors
+                    $logger = new Logger($this->config);
+                    $logger->error(
+                        'Activation email send failed during registration',
+                        [
+                            'email' => $email,
+                            'user_id' => $userId,
+                            'mail_error' => $mail->ErrorInfo,
+                            'exception' => $e->getMessage()
+                        ]
+                    );
+
+                    return [
+                        'status' => 'success',
+                        'message' => 'Registration completed, but we could not send the activation email right now. Please try requesting a new activation link shortly.',
+                    ];
                 }
             }
 

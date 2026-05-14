@@ -67,8 +67,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $requestPath = '/'. trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 if ($requestPath === '//') { $requestPath = '/'; }
 
-$isLoginPage = ($requestPath === '/user/login' || $requestPath === '/admin/admin_login.php');
 $isAdminRoute = (strpos($requestPath, '/admin') === 0);
+$adminPublicAuthRoutes = [
+    '/admin',
+    '/admin/admin_login.php',
+    '/admin/reset-request',
+    '/admin/reset-password',
+];
+$isAdminPublicAuthRoute = in_array($requestPath, $adminPublicAuthRoutes, true);
 
 $sessionPrefix = $config['session_prefix'] ?? 'app_';
 $currentUserId = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
@@ -78,15 +84,19 @@ if (!empty($currentUserId)) {
     $validatedUserId = $sessionManager->validateSession();
     if (!$validatedUserId || (int)$validatedUserId !== (int)$currentUserId) {
         $sessionManager->destroySession();
-        header('Location: /user/login?session=revoked');
+        if ($isAdminRoute) {
+            header('Location: /admin/admin_login.php?session=revoked');
+        } else {
+            header('Location: /user/login?session=revoked');
+        }
         exit;
     }
 }
 
 // Only enforce auth for /admin routes
-if ($isAdminRoute &&!$isLoginPage) {
+if ($isAdminRoute && !$isAdminPublicAuthRoute) {
     if (empty($_SESSION[$sessionPrefix. 'user_id'])) {
-        header('Location: /user/login?redirect='. urlencode($requestPath));
+        header('Location: /admin/admin_login.php?redirect='. urlencode($requestPath));
         exit;
     }
 

@@ -91,25 +91,6 @@ if (isset($modules['modules'])) {
                             }
                         }
                         ?>
-
-                            <?php if (!empty($_SESSION[$sessionPrefix . 'user_id'])) : ?>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION[$sessionPrefix . 'first_name'] ?? 'User'); ?>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        <?php $currentPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); ?>
-                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/dashboard/profile">Profile</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/admin/sessions">Device & Sessions</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>/logout.php">Logout</a></li>
-                                        <li><hr></li>
-                                        <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>">Front Page</a></li>
-                                    </ul>
-                                </li>
-                            <?php else: ?>
-                                <li class="nav-item"><a class="nav-link" href="/user/login">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/user/register">Register</a></li>
-                            <?php endif; ?>
                     </ul>
                 </div>
             </div>

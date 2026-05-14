@@ -23,7 +23,7 @@ class EmailTestController
      */
     public function index()
     {
-        require_once dirname(__DIR__, 3) . '/app/bootstrap.php';
+        require_once dirname(__DIR__, 3) . '/bootstrap.php';
         include_once dirname(__DIR__, 3) . '/vendor/autoload.php';
         global $config;
         $error = '';
@@ -51,9 +51,16 @@ class EmailTestController
                     $mail->send();
                     $success = 'Test email sent successfully!';
                 } catch (Exception $e) {
-                    $error = 'Email failed: ' . $mail->ErrorInfo;
-                    $logger = new Logger($config['log_path']);
-                    $logger->error('Email test failed: ' . $mail->ErrorInfo);
+                    $error = 'Email test failed. Check SMTP settings and logs.';
+                    $logger = new Logger($config);
+                    $logger->error(
+                        'Email test failed',
+                        [
+                            'to' => $to,
+                            'mail_error' => $mail->ErrorInfo,
+                            'exception' => $e->getMessage()
+                        ]
+                    );
                 }
             }
         }

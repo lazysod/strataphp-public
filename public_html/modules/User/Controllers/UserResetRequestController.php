@@ -62,33 +62,51 @@ class UserResetRequestController
                             $userId = $rows[0]['id'];
                             $token = bin2hex(random_bytes(32));
                             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
-                            $sql = "INSERT INTO `reset`(`user_id`, `key`, `date`) VALUES (?, ?, ?)";
-                            $stmt = $db->query($sql, [$userId, $token, $expiry]);
-                            if (!$stmt || $db->affectedRows($stmt) === 0) {
+                            $entryDate = date('Y-m-d H:i:s');
+                            $stmt = $db->query(
+                                "INSERT INTO `reset`(`user_id`, `activation_key`, `entry_date`, `expiry_date`) VALUES (?, ?, ?, ?)",
+                                [$userId, $token, $entryDate, $expiry]
+                            );
+                            $tokenSaved = (bool)$stmt;
+
+                            if (!$tokenSaved) {
                                 $error = 'Failed to generate reset token. Please try again.';
+                                $logger = new Logger($config);
+                                $logger->error('Failed to save reset token', ['user_id' => $userId, 'email' => $email]);
                             }
-                            $mail = new PHPMailer(true);
-                            try {
-                                $mail->isSMTP();
-                                $mail->Host = $config['mail']['host'];
-                                $mail->SMTPAuth = true;
-                                $mail->Username = $config['mail']['username'];
-                                $mail->Password = $config['mail']['password'];
-                                $mail->SMTPSecure = $config['mail']['encryption'];
-                                $mail->Port = $config['mail']['port'];
-                                $mail->setFrom($config['mail']['from_email'], $config['site_name']);
-                                $mail->addAddress($email);
-                                $mail->Subject = 'Password Reset Request';
-                                $resetLink = $config['base_url'] . "/user/reset?token=$token";
-                                $mail->Body = "Click the following link to reset your password: $resetLink\nIf you did not request this, please ignore.";
-                                $mail->send();
-                            } catch (Exception $e) {
-                                $error = 'Email failed: ' . $mail->ErrorInfo;
-                                $logger = new Logger($config['log_path']);
-                                $logger->error('Password reset email failed: ' . $mail->ErrorInfo);
+                            if ($tokenSaved && empty($error)) {
+                                $mail = new PHPMailer(true);
+                                try {
+                                    $mail->isSMTP();
+                                    $mail->Host = $config['mail']['host'];
+                                    $mail->SMTPAuth = true;
+                                    $mail->Username = $config['mail']['username'];
+                                    $mail->Password = $config['mail']['password'];
+                                    $mail->SMTPSecure = $config['mail']['encryption'];
+                                    $mail->Port = $config['mail']['port'];
+                                    $mail->setFrom($config['mail']['from_email'], $config['site_name']);
+                                    $mail->addAddress($email);
+                                    $mail->Subject = 'Password Reset Request';
+                                    $resetLink = $config['base_url'] . "/user/reset?token=$token";
+                                    $mail->Body = "Click the following link to reset your password: $resetLink\nIf you did not request this, please ignore.";
+                                    $mail->send();
+                                } catch (Exception $e) {
+                                    $error = 'Unable to send reset email right now. Please try again later.';
+                                    $logger = new Logger($config);
+                                    $logger->error(
+                                        'Password reset email failed',
+                                        [
+                                            'email' => $email,
+                                            'mail_error' => $mail->ErrorInfo,
+                                            'exception' => $e->getMessage()
+                                        ]
+                                    );
+                                }
                             }
                         }
-                        $success = 'If your email is registered, a reset link has been sent.';
+                        if (empty($error)) {
+                            $success = 'If your email is registered, a reset link has been sent.';
+                        }
                     }
                 }
             }
