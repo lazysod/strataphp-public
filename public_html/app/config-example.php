@@ -18,7 +18,7 @@ $modulesConfig['bad_words'] = $badWords;
   Production: 'log_level' => 'WARNING' - WARNING, ERROR only
 */
 return array(
-        // Number of days before a session expires (used for expires_at in user_sessions)
+    // Number of days before a session expires (used for expires_at in user_sessions)
     'session_expiry_days' => 1,
     'log_level' => 'DEBUG', // <-- add this, defaults to INFO otherwise
     'cookie_secure' => false,
@@ -31,6 +31,10 @@ return array(
     'base_url' => 'http://localhost:8888',
     'dashboard_url' => '/admin/dashboard',
     'logo_small' => '/assets/images/logo_small.png',
+    'users' => array(
+        'registration_enabled' => true,
+        'require_email_verify' => false, // v1 default
+    ),
     'db' => array(
         'host' => getenv('DB_HOST') ?: 'localhost',
         'username' => getenv('DB_USERNAME') ?: 'root',
