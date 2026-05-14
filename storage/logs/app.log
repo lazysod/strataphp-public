@@ -1,0 +1,7 @@
+Welcome to StrataPHP Logging System
+---------------------------------
+This logging systemn uses Levels: 
+         Dev: 'log_level' => 'DEBUG' - DEBUG, INFO, WARNING, ERROR
+     Staging: 'log_level' => 'INFO' - INFO, WARNING, ERROR
+  Production: 'log_level' => 'WARNING' - WARNING, ERROR only
+See Config for more details on how to set log levels and configure logging.

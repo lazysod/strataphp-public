@@ -1,5 +1,8 @@
 <?php
 // modules/Admin/views/profile.php
+require_once dirname(__DIR__, 3) . '/bootstrap.php';
+global $config;
+$config = is_array($config ?? null) ? $config : ($GLOBALS['config'] ?? []);
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
 $adminId = $_SESSION[$sessionPrefix . 'admin'] ?? null;
 $success = $success ?? '';
