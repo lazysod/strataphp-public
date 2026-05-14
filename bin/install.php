@@ -3,30 +3,47 @@
 
 // Initial install script for StrataPHP Framework
 
-$projectRoot = dirname(__DIR__); // /Users/barry/myapp - THIS IS THE FIX
-
+$projectRoot = dirname(__DIR__);
 $envFile = $projectRoot . '/.env';
 $envExample = $projectRoot . '/env.example';
 $configFile = $projectRoot . '/public_html/app/config.php';
+$configExample = $projectRoot . '/public_html/app/config-example.php';
 $schemaFile = $projectRoot . '/mysql/db_instal.sql';
 $migrationsDir = $projectRoot . '/migrations';
 
-// Auto-create .env if missing
+// 1. Create .env from example
 if (!file_exists($envFile)) {
     if (file_exists($envExample)) {
         copy($envExample, $envFile);
         echo "✓ Created .env from env.example\n";
-        echo "⚠  Edit .env with your database credentials, then re-run this installer:\n";
-        echo "   php bin/install.php\n";
-        exit(1);
     }
-    echo "ERROR: .env not found and no env.example. Re-run composer install.\n";
+}
+
+// 2. Create config.php from example
+if (!file_exists($configFile)) {
+    if (file_exists($configExample)) {
+        copy($configExample, $configFile);
+        echo "✓ Created config.php from config-example.php\n";
+    }
+}
+
+// 3. Load .env BEFORE loading config.php
+require_once $projectRoot . '/vendor/autoload.php';
+Dotenv\Dotenv::createImmutable($projectRoot)->safeLoad();
+
+// 4. Now load config.php - getenv() will work
+if (!file_exists($configFile)) {
+    echo "ERROR: config.php not found at: $configFile\n";
     exit(1);
 }
 
-if (!file_exists($configFile)) {
-    echo "ERROR: config.php not found at: $configFile\n";
-    echo "Make sure you ran: composer create-project lazysod/strataphp myapp\n";
+$config = require $configFile;
+$dbConfig = $config['db'];
+
+// 5. Check if .env has been edited by checking actual values
+if ($dbConfig['database'] === 'db_name' || $dbConfig['password'] === 'root') {
+    echo "⚠  Edit .env with your database credentials, then re-run:\n";
+    echo "   php bin/install.php\n";
     exit(1);
 }
 
@@ -34,10 +51,6 @@ if (!file_exists($schemaFile)) {
     echo "Schema file not found: $schemaFile\n";
     exit(1);
 }
-
-require_once $configFile;
-$config = $config ?? require $configFile;
-$dbConfig = $config['db'];
 
 /**
  * Record migrations already represented by mysql/db_instal.sql so migrate.php
