@@ -1,4 +1,8 @@
 <?php
+if (file_exists(dirname(__DIR__, 2) . '/vendor/autoload.php')) {
+    require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+    Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2))->safeLoad();
+}
 if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__, 2));
 }
