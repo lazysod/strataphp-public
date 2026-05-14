@@ -2,19 +2,32 @@
 <?php
 
 // Initial install script for StrataPHP Framework
-// Usage: php bin/install.php
 
-$envFile = __DIR__ . '/../.env';
-$configFile = __DIR__ . '/../public_html/app/config.php';
-$schemaFile = __DIR__ . '/../mysql/db_instal.sql';
+$projectRoot = dirname(__DIR__, 4); // /Users/barry/myapp
+$vendorPath = dirname(__DIR__);    // /Users/barry/myapp/vendor/lazysod/strataphp
 
+$envFile = $projectRoot . '/.env';
+$envExample = $vendorPath . '/env.example';
+$configFile = $projectRoot . '/public_html/app/config.php';
+$schemaFile = $vendorPath . '/mysql/db_instal.sql';
+$migrationsDir = $vendorPath . '/migrations';
+
+// Auto-create .env if missing
 if (!file_exists($envFile)) {
-    echo "ERROR: .env file not found. Please copy .env.example to .env and configure your settings.\n";
+    if (file_exists($envExample)) {
+        copy($envExample, $envFile);
+        echo "✓ Created .env from env.example\n";
+        echo "⚠  Edit .env with your database credentials, then re-run this installer:\n";
+        echo "   php vendor/lazysod/strataphp/bin/install.php\n";
+        exit(1);
+    }
+    echo "ERROR: .env not found and no env.example in vendor package. Re-run composer install.\n";
     exit(1);
 }
 
 if (!file_exists($configFile)) {
-    echo "ERROR: config.php file not found in public_html/app/. Please ensure your configuration exists.\n";
+    echo "ERROR: config.php not found at: $configFile\n";
+    echo "Make sure you ran: composer create-project lazysod/strataphp myapp\n";
     exit(1);
 }
 
@@ -76,10 +89,10 @@ try {
 
     $sql = file_get_contents($schemaFile);
     $pdo->exec($sql);
-    echo "Database schema imported successfully.\n";
+    echo "✓ Database schema imported successfully.\n";
 
-    syncSchemaBackedMigrations($pdo, __DIR__ . '/../migrations');
-    echo "Schema-backed migrations registered successfully.\n";
+    syncSchemaBackedMigrations($pdo, $migrationsDir);
+    echo "✓ Schema-backed migrations registered successfully.\n";
 
     $migrateCommand = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/migrate.php');
     exec($migrateCommand . ' 2>&1', $migrationOutput, $migrationExitCode);
@@ -90,11 +103,12 @@ try {
         exit(1);
     }
 
-    echo "Pending migrations applied successfully.\n";
+    echo "✓ Pending migrations applied successfully.\n";
 } catch (Exception $e) {
     echo "Error importing schema: " . $e->getMessage() . "\n";
     exit(1);
 }
 
-echo "\nNext step: Run the create_admin script to set up your admin account.\n";
-echo "php bin/create_admin.php\n";
+echo "\n✓ StrataPHP installed successfully!\n";
+echo "Next step: Create your admin account:\n";
+echo "php vendor/lazysod/strataphp/bin/create_admin.php\n";
