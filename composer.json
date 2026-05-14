@@ -56,6 +56,11 @@
         }
     },
     "scripts": {
+        "post-create-project-cmd": [
+            "php -r \"copy('vendor/lazysod/strataphp/env.example', '.env');\"",
+            "php -r \"if(is_dir('vendor/lazysod/strataphp/public_html') && !is_dir('public_html')) { rename('vendor/lazysod/strataphp/public_html', 'public_html'); }\"",
+            "@php vendor/lazysod/strataphp/bin/install.php"
+        ],
         "post-autoload-dump": [
             "@php -r \"echo 'Autoloader updated successfully.\\n';\""
         ],
