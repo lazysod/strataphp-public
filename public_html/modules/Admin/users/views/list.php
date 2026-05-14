@@ -105,13 +105,14 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
         </div>
         <!-- Contact cards-->
         <a href="/admin/users/add" class="btn btn-primary">Add User</a>
+        <a href="/admin/users/settings" class="btn btn-outline-primary">User Settings</a>
 
         <!-- Pagination Controls -->
         <?php if (isset($totalPages) && $totalPages > 1) : ?>
             <nav aria-label="User pagination">
                 <ul class="pagination mt-3 justify-content-center">
                     <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                        <li class="page-item<?php echo $i == $page ? ' active' : '' ?>">
+                        <li class="page-item<?php echo $i == ($page ?? 1) ? ' active' : '' ?>">
                             <a class="page-link" href="?page=<?php echo $i ?>"><?php echo $i ?></a>
                         </li>
                     <?php endfor; ?>
