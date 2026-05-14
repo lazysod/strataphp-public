@@ -61,6 +61,15 @@ CREATE TABLE `reset` (
     `expiry_date` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `user_activation`;
+CREATE TABLE `user_activation` (
+    `id` int(255) NOT NULL AUTO_INCREMENT,
+    `user_id` int(255) NOT NULL,
+    `activation_key` varchar(255) NOT NULL,
+    `entry_date` datetime NOT NULL,
+    `expiry_date` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `user_sessions`;
 CREATE TABLE `user_sessions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
