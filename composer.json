@@ -2,7 +2,7 @@
     "name": "lazysod/strataphp",
     "description": "A lightweight, modular PHP framework with automatic module discovery, PSR-4 autoloading, and comprehensive CLI tools.",
     "type": "project",
-    "version": "1.2.0",
+    "version": "1.0.0",
     "keywords": [
         "php",
         "framework",
@@ -32,8 +32,6 @@
             "App\\Modules\\": "public_html/modules/",
             "App\\Modules\\Api\\Controllers\\": "public_html/modules/api/Controllers/Api/",
             "App\\Modules\\Api\\Tests\\": "public_html/modules/api/Tests/",
-            "App\\Modules\\OAuthClients\\Controllers\\": "public_html/modules/OAuthClients/controllers/",
-            "App\\Modules\\OAuthClients\\Models\\": "public_html/modules/OAuthClients/models/",
             "App\\Modules\\StrataCms\\Controllers\\": "public_html/modules/StrataCms/Controllers/",
             "App\\Modules\\StrataCms\\Models\\": "public_html/modules/StrataCms/Models/",
             "App\\Modules\\ModuleDirectory\\Controllers\\": "public_html/modules/module_directory/controllers/",
@@ -43,7 +41,7 @@
         }
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "phpmailer/phpmailer": "^7.0",
         "twig/twig": "^3.21",
         "vlucas/phpdotenv": "^5.6"

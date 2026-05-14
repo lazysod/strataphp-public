@@ -24,9 +24,8 @@ class UserResetController
     public function index()
     {
         try {
-                require_once dirname(__DIR__, 4) . '/bootstrap.php';
-                global $config;
-            $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
+            $config = require dirname(__DIR__, 3) . '/app/config.php';
             
             // Check if user is already logged in
             $prefix = $config['session_prefix'] ?? 'app_';
@@ -49,13 +48,12 @@ class UserResetController
             if (empty($token)) {
                 $error = 'Invalid or missing token.';
             } else {
-                $sql = "SELECT `id`, `user_id`, `key`, `date` FROM `reset` WHERE `key` = ?";
-                $rows = $db->fetchAll($sql, [$token]);
+                $rows = $this->findResetRows($db, $token);
                 if (count($rows) === 0) {
                     $error = 'Invalid or expired token.';
                 } else {
                     $userId = $rows[0]['user_id'];
-                    $expiry = $rows[0]['date'];
+                    $expiry = $rows[0]['token_expiry'] ?? null;
                     if (strtotime($expiry) < time()) {
                         $error = 'This reset link has expired.';
                     } else {
@@ -78,8 +76,7 @@ class UserResetController
                                     $sql = "UPDATE users SET pwd = ? WHERE id = ?";
                                     $db->query($sql, [$hashedPwd, $userId]);
                                     // Invalidate the token
-                                    $sql = "DELETE FROM reset WHERE `key` = ?";
-                                    $db->query($sql, [$token]);
+                                    $this->deleteResetToken($db, $token);
                                 }
                             }
                         }
@@ -94,5 +91,33 @@ class UserResetController
             $viewPath = CmsHelper::getViewPath('user/reset.php', __DIR__ . '/../views/reset.php');
             include $viewPath;
         }
+    }
+
+    /**
+     * Read a reset token using canonical schema columns.
+     * Only returns tokens for non-admin users.
+     *
+     * @param DB $db
+     * @param string $token
+     * @return array
+     */
+    private function findResetRows(DB $db, $token)
+    {
+        return $db->fetchAll(
+            "SELECT r.`id`, r.`user_id`, r.`expiry_date` AS `token_expiry` FROM `reset` r JOIN users u ON r.user_id = u.id WHERE r.`activation_key` = ? AND (u.`is_admin` = 0 OR u.`is_admin` IS NULL)",
+            [$token]
+        );
+    }
+
+    /**
+     * Delete a reset token using canonical schema columns.
+     *
+     * @param DB $db
+     * @param string $token
+     * @return void
+     */
+    private function deleteResetToken(DB $db, $token)
+    {
+        $db->query("DELETE FROM reset WHERE `activation_key` = ?", [$token]);
     }
 }

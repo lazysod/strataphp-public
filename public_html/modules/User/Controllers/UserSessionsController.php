@@ -158,7 +158,7 @@ class UserSessionsController
             exit;
         }
         $this_user = $_SESSION[$sessionPrefix . 'user_id'] ?? null;
-        $sql = "SELECT us.*, u.display_name, u.first_name, u.second_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE us.revoked = 0 AND (us.expires_at IS NULL OR us.expires_at > NOW()) AND us.user_id != ? ORDER BY us.last_seen DESC";
+        $sql = "SELECT us.*, COALESCE(NULLIF(TRIM(u.display_name), ''), TRIM(CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.second_name, '')))) AS display_name, u.first_name, u.second_name, u.email FROM user_sessions us JOIN users u ON us.user_id = u.id WHERE us.revoked = 0 AND (us.expires_at IS NULL OR us.expires_at > NOW()) AND us.user_id != ? ORDER BY us.last_seen DESC";
         $sessions = $db->fetchAll($sql, [$this_user]);
         include __DIR__ . '/../views/admin_sessions.php';
     }

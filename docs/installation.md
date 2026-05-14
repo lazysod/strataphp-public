@@ -25,11 +25,12 @@ Welcome to StrataPHP—a modular PHP framework designed for rapid development, c
    - Edit `.env` with your database, mail, and other settings.
 4. **Set up your web server:**
    - Point your document root to `public_html/`.
-5. **Import the database schema:**
+5. **Install the database schema:**
    ```sh
    php bin/install.php
    ```
-6. **Run migrations:**
+   This imports the base schema and applies pending migrations automatically.
+6. **Run migrations later when updating the app:**
    ```sh
    php bin/migrate.php
    ```

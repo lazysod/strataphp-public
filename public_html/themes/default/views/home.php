@@ -1,13 +1,11 @@
-<?php // DEBUG: THEME HOME VIEW START 
-?>
 <?php
 
 use App\App;
 use App\Version;
 
 require_once dirname(__DIR__, 3) . '/bootstrap.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/app/Version.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
+require_once dirname(__DIR__, 3) . '/app/Version.php';
+require dirname(__DIR__, 3) . '/views/partials/header.php';
 ?>
 <!-- SECTION START -->
 <header class="bg-dark py-5 ">
@@ -15,7 +13,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/header.php';
         <div class="row gx-5 align-items-center justify-content-center">
             <div class="col-lg-8 col-xl-7 col-xxl-6">
                 <div class="my-5 text-center text-xl-start">
-                    <h1 class="display-5 fw-bolder text-white mb-2">Welcome! to <?php echo App::config('site_name'); ?></h1>
+                    <h1 class="display-5 fw-bolder text-white mb-2">Welcome to <?php echo App::config('site_name'); ?></h1>
                     <p class="lead fw-normal text-white-50 mb-4">A modern PHP framework for building web applications.</p>
                     <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
                         <a class="btn btn-primary btn-lg px-4 me-sm-3" href="#features">Get Started</a>

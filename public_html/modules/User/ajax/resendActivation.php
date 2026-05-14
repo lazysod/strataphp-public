@@ -11,6 +11,7 @@ session_start();
 require_once dirname(__DIR__, 3) . '/bootstrap.php';
 use App\DB;
 use App\User;
+use App\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 
 // CSRF protection
@@ -59,6 +60,16 @@ if (class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
         $mail->Body = "You requested a new activation link. Please activate your account by clicking the link below:\n$activationLink\nIf you did not register, please ignore this email.";
         $mail->send();
     } catch (\Exception $e) {
+        $logger = new Logger($config);
+        $logger->error(
+            'Resend activation email failed',
+            [
+                'email' => $email,
+                'user_id' => $userId,
+                'mail_error' => $mail->ErrorInfo,
+                'exception' => $e->getMessage()
+            ]
+        );
         echo json_encode(['status' => 'fail', 'message' => 'Failed to send activation email.']);
         exit;
     }

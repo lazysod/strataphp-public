@@ -4,12 +4,15 @@ use App\DB;
 use App\User;
 use App\Logger;
 use App\TokenManager;
+
 $tm = new TokenManager($config);
 $sessionPrefix = $config['session_prefix'] ?? ($config['prefix'] ?? 'framework');
+
 if (isset($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
     header('Location: /admin/dashboard');
     exit;
 }
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $verify = $tm->verify($_POST['token'] ?? '');
@@ -23,38 +26,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = new User($db, $config);
             $loginResult = $user->login(['email' => $email, 'pwd' => $password]);
             
-            // Only allow admin login if user is admin
-            if ($loginResult['status'] === 'success' && !empty($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
-                // Set admin session variable to user_id for consistency
-                $_SESSION[$sessionPrefix . 'admin'] = $_SESSION[$sessionPrefix . 'user_id'];
-                // Create session in user_sessions for admin
-                require_once __DIR__ . '/../app/SessionManager.php';
-                $db = new DB($config);
-                $sessionManager = new App\SessionManager($db, $config);
-                $sessionManager->createSession($_SESSION[$sessionPrefix . 'user_id'], false);
-                header('Location: /admin/dashboard');
-                exit;
-            } else {
-                $error = 'Invalid admin credentials.';
-                // Unset only user-related session variables, preserve CSRF token
-                $userSessionKeys = [
-                    $sessionPrefix . 'admin',
-                    $sessionPrefix . 'email',
-                    $sessionPrefix . 'user_id',
-                    $sessionPrefix . 'sec_hash',
-                    $sessionPrefix . 'first_name',
-                    $sessionPrefix . 'second_name',
-                    $sessionPrefix . 'last_log',
-                    $sessionPrefix . 'avatar',
-                    $sessionPrefix . 'user',
-                    $sessionPrefix . 'rank_title',
-                    $sessionPrefix . 'rank_level'
-                ];
-                foreach ($userSessionKeys as $key) {
-                    if (isset($_SESSION[$key])) {
-                        unset($_SESSION[$key]);
+            // Check login success AND admin rank AFTER login() runs
+            if ($loginResult['status'] === 'success') {
+                // User->login() already set app_admin, app_user_id, etc
+                // Check if they're actually admin
+                if (!empty($_SESSION[$sessionPrefix . 'admin']) && $_SESSION[$sessionPrefix . 'admin'] > 0) {
+                    $userId = $_SESSION[$sessionPrefix . 'user_id'];
+                    
+                    // Create DB session row + set app_session_token cookie
+                    require_once __DIR__ . '/../app/SessionManager.php';
+                    $sessionManager = new App\SessionManager($db, $config);
+                    $sessionManager->createSession($userId, false);
+                    
+                    // No need to repopulate - User->login() already did it
+                    header('Location: /admin/dashboard');
+                    exit;
+                } else {
+                    $error = 'Your account does not have admin access.';
+                    // Unset only user-related session variables, preserve CSRF token
+                    $userSessionKeys = [
+                        $sessionPrefix . 'admin',
+                        $sessionPrefix . 'email',
+                        $sessionPrefix . 'user_id',
+                        $sessionPrefix . 'sec_hash',
+                        $sessionPrefix . 'first_name',
+                        $sessionPrefix . 'second_name',
+                        $sessionPrefix . 'last_log',
+                        $sessionPrefix . 'avatar',
+                        $sessionPrefix . 'user',
+                        $sessionPrefix . 'rank_title',
+                        $sessionPrefix . 'rank_level'
+                    ];
+                    foreach ($userSessionKeys as $key) {
+                        if (isset($_SESSION[$key])) {
+                            unset($_SESSION[$key]);
+                        }
                     }
                 }
+            } else {
+                $error = 'Invalid credentials.';
                 $logger = new Logger($config);
                 $logger->warning(
                     'Failed admin login',
@@ -83,10 +93,8 @@ require __DIR__ . '/../views/partials/admin_header.php';
                         <h1 class="fw-bolder">Admin Login</h1>
                     </div>
                     <?php if (!empty($error)): ?>
-
                         <div class="alert alert-danger text-center"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
-
                     <form method="post">
                         <input type="hidden" name="token" value="<?= htmlspecialchars($tm->generate()) ?>">
                         <div class="mb-3">
@@ -105,7 +113,6 @@ require __DIR__ . '/../views/partials/admin_header.php';
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 <?php require __DIR__ . '/../views/partials/footer.php'; ?>

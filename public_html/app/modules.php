@@ -63,9 +63,9 @@ return array (
       'version' => '1.0.0',
       'author' => 'lazysod',
       'license' => 'MIT',
-      'homepage' => 'https://github.com/lazysod/strataphp-public',
+      'homepage' => 'https://strataphp.org',
       'module_type' => 'core',
-      'framework_version' => '2.0.0',
+      'framework_version' => '1.0.0',
       'repository' => 'https://github.com/lazysod/strataphp-public',
     ),
     'OAuthClients' => 

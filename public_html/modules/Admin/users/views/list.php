@@ -1,6 +1,7 @@
 <?php
 $localConfig = include dirname(__DIR__, 4) . '/app/config.php';
-$sessionPrefix = $config['session_prefix'] ?? 'app_';
+$sessionPrefix = $localConfig['session_prefix'] ?? 'app_';
+$csrfToken = \App\TokenManager::csrf();
 if (empty($_SESSION[$sessionPrefix . 'admin'])) {
     header('Location: /admin');
     exit;
@@ -8,6 +9,12 @@ if (empty($_SESSION[$sessionPrefix . 'admin'])) {
 require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
 <section class="py-5">
     <div class="container px-5">
+        <?php if (!empty($_SESSION['error'])) : ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($_SESSION['error']); ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
         <!-- Breadcrumbs -->
         <div class="row">
             <div class="col">
@@ -44,17 +51,45 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
                                         <td><?php echo htmlspecialchars($user['first_name'] ?? '') ?></td>
                                         <td><?php echo htmlspecialchars($user['second_name'] ?? '') ?></td>
                                         <td><?php echo htmlspecialchars($user['email']) ?></td>
-                                        <td><?php echo isset($user['active']) && $user['active'] ? 'Active' : 'Inactive' ?></td>
+                                        <?php 
+                                            if($user['dead_switch'] === 0 && $user['active'] === 0){
+                                                $status = 'Inactive';
+                                            }else if($user['dead_switch'] === 1 && $user['active'] === 0){
+                                                $status = 'Suspended';
+                                            }else{
+                                                $status = 'Active';
+                                            }
+                                        ?>
+                                        <td><?php echo $status; ?></td>
                                         <td>
                                             <a href="/admin/users/edit/<?php echo $user['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
                                             <?php
-                                            if (isset($user['active']) && $user['active']) {
-                                                echo '<a href="/admin/users/suspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Suspend</a>';
-                                            } else {
+                                            $currentUserId = $_SESSION[$sessionPrefix . 'user_id'] ?? ($_SESSION[$sessionPrefix . 'user']['id'] ?? null);
+                                            $isSelf = $currentUserId !== null && (int)$currentUserId === (int)$user['id'];
+
+                                            if ($user['dead_switch'] === 0 && $user['active'] === 1) {
+                                                if ($isSelf) {
+                                                    echo '<button type="button" class="btn btn-sm btn-secondary" disabled title="You cannot suspend your own account">Suspend</button>';
+                                                } else {
+                                                    echo '<form method="post" action="/admin/users/suspend/' . $user['id'] . '" class="d-inline" onsubmit="return confirm(\'Suspend this user?\')">';
+                                                    echo '<input type="hidden" name="token" value="' . htmlspecialchars($csrfToken) . '">';
+                                                    echo '<button type="submit" class="btn btn-sm btn-secondary">Suspend</button>';
+                                                    echo '</form>';
+                                                }
+                                            } else if ($user['dead_switch'] === 1 && $user['active'] === 0){
                                                 echo '<a href="/admin/users/unsuspend/' . $user['id'] . '" class="btn btn-sm btn-secondary">Unsuspend</a>';
+                                            }else{
+                                                echo '<a href="/admin/users/activate/' . $user['id'] . '" class="btn btn-sm btn-success">Activate</a>';
                                             }
                                             ?>
-                                            <a href="/admin/users/delete/<?php echo $user['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</a>
+                                            <?php if ($isSelf) : ?>
+                                                <button type="button" class="btn btn-sm btn-danger" disabled title="You cannot delete your own account">Delete</button>
+                                            <?php else : ?>
+                                                <form method="post" action="/admin/users/delete/<?php echo $user['id'] ?>" class="d-inline" onsubmit="return confirm('Delete this user?')">
+                                                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($csrfToken); ?>">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -70,13 +105,14 @@ require __DIR__ . '/../../../../views/partials/admin_header.php'; ?>
         </div>
         <!-- Contact cards-->
         <a href="/admin/users/add" class="btn btn-primary">Add User</a>
+        <a href="/admin/users/settings" class="btn btn-outline-primary">User Settings</a>
 
         <!-- Pagination Controls -->
         <?php if (isset($totalPages) && $totalPages > 1) : ?>
             <nav aria-label="User pagination">
                 <ul class="pagination mt-3 justify-content-center">
                     <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                        <li class="page-item<?php echo $i == $page ? ' active' : '' ?>">
+                        <li class="page-item<?php echo $i == ($page ?? 1) ? ' active' : '' ?>">
                             <a class="page-link" href="?page=<?php echo $i ?>"><?php echo $i ?></a>
                         </li>
                     <?php endfor; ?>

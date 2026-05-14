@@ -2,7 +2,7 @@
 namespace App\Modules\User\Controllers;
 
 use App\DB;
-
+use App\Logger;
 /**
  * SSO Controller
  *
@@ -14,6 +14,7 @@ class SSOController
     protected $db;
     protected $config;
     protected $sessionPrefix;
+    protected $logger;
 
     public function __construct()
     {
@@ -21,6 +22,7 @@ class SSOController
         $this->config = $config;
         $this->db = new DB($config);
         $this->sessionPrefix = $config['session_prefix'] ?? 'app_';
+        $this->logger = Logger::getInstance();
     }
 
     /**
@@ -45,7 +47,7 @@ class SSOController
             $ssos = $this->db->fetchAll('SELECT a.*, c.name AS client_name, c.client_id, c.status AS client_status FROM oauth_user_approvals a JOIN oauth_clients c ON a.client_id = c.id WHERE a.user_id = ?', [$user_id]);
             include __DIR__ . '/../views/sso.php';
         } catch (\Throwable $e) {
-            error_log('SSOController error: ' . $e->getMessage());
+            $this->logger->error('SSOController error: ' . $e->getMessage());
             http_response_code(500);
             echo '<h1>SSO Error</h1>';
         }
@@ -73,7 +75,7 @@ class SSOController
             header('Location: /user/sso');
             exit;
         } catch (\Throwable $e) {
-            error_log('SSOController revoke error: ' . $e->getMessage());
+            $this->logger->error('SSOController revoke error: ' . $e->getMessage());
             http_response_code(500);
             echo '<h1>SSO Revoke Error</h1>';
         }

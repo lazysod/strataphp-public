@@ -3,7 +3,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+use App\DB;
+use App\Logger;
 // Admin session check and initialization
 $baseDir = dirname(__FILE__, 4); // Points to public_html/
 require_once $baseDir . '/app/config.php';
@@ -223,10 +224,10 @@ $invalidModules = $totalModules - $validModules;
                                                         $metaContent = file_get_contents($metaFile);
                                                         $meta = json_decode($metaContent, true);
                                                     } else {
-                                                        error_log('Meta file not readable: ' . $metaFile);
+                                                        $this->logger->warning('Meta file not readable: ' . $metaFile);
                                                     }
                                                 } catch (\Exception $e) {
-                                                    error_log('Error reading meta file: ' . $e->getMessage());
+                                                    $this->logger->error('Error reading meta file: ' . $e->getMessage());
                                                 }
                                                 if (!empty($meta['admin_url'])) {
                                                     echo '<a href="' . htmlspecialchars($meta['admin_url']) . '" class="btn btn-outline-success btn-sm" title="Open Module"><i class="fas fa-external-link-alt"></i></a>';

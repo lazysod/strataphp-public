@@ -27,6 +27,11 @@ return [
                 'label' => 'Add User',
                 'url' => '/admin/users/add',
                 'show' => true
+            ],
+            'settings' => [
+                'label' => 'User Settings',
+                'url' => '/admin/users/settings',
+                'show' => true
             ]
         ]
     ],

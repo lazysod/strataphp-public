@@ -65,6 +65,22 @@ require $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
             </div>
         </div>
         <?php endif; ?>
+
+        <div class="row gx-5 mb-5">
+            <div class="col-lg-12">
+                <h2 class="fw-bolder mb-4">User Management</h2>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="fs-4 mb-3"><i class="bi bi-gear-fill"></i></div>
+                        <h5 class="card-title">User Settings</h5>
+                        <p class="card-text">Control registration and email verification options.</p>
+                        <a href="/admin/users/settings" class="btn btn-outline-primary">Open Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Contact cards-->
 

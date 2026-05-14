@@ -3,10 +3,12 @@ namespace App\Modules\Admin\Controllers;
 
 use App\DB;
 use App\User;
+use App\Logger;
 
 class OAuthUserInfoController
 {
     protected $db;
+    protected $logger;
     /**
      * OAuthUserInfoController constructor.
      * Initializes the database connection.
@@ -16,6 +18,7 @@ class OAuthUserInfoController
     {
         global $config;
         $this->db = new DB($config);
+        $this->logger = Logger::getInstance();
     }
 
     /**
@@ -92,7 +95,7 @@ class OAuthUserInfoController
             header('Access-Control-Allow-Methods: GET, OPTIONS');
             header('Content-Type: application/json');
             http_response_code(500);
-            error_log('OAuth userinfo error: ' . $e->getMessage());
+            $this->logger->error('OAuth userinfo error: ' . $e->getMessage());
             echo json_encode(['error' => 'server_error', 'error_description' => 'Internal server error']);
         }
     }

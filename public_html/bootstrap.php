@@ -1,33 +1,48 @@
 <?php
-// 1. Composer autoloader
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+// 1. Error handling: log only, never echo
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 
-// 2. Load environment variables (if using vlucas/phpdotenv)
+// 2. Composer autoloader
+require_once dirname(__DIR__). '/vendor/autoload.php';
+
+// 3. Load .env
 $dotenvPath = dirname(__DIR__);
-if (file_exists($dotenvPath . '/.env')) {
+if (file_exists($dotenvPath. '/.env')) {
     $dotenv = Dotenv\Dotenv::createImmutable($dotenvPath);
     $dotenv->load();
 }
 
-// 3. Load global config
-$configFile = __DIR__ . '/app/config.php';
-$config = file_exists($configFile) ? require $configFile : [];
+// 4. Load global config
+$configFile = __DIR__. '/app/config.php';
+$GLOBALS['config'] = file_exists($configFile) ? require $configFile : [];
+$config = $GLOBALS['config'];
 
-// 4. Set up error/exception handling (simple example)
-set_error_handler(function ($severity, $message, $file, $line) {
-    throw new ErrorException($message, 0, $severity, $file, $line);
-});
-set_exception_handler(function ($exception) {
-    http_response_code(500);
-    echo '<h1>Application Error</h1>';
-    echo '<pre>' . htmlspecialchars($exception) . '</pre>';
-    // Optionally log error here
-});
+// 5. SESSION START - before any possible output
+$sessionName = $config['session_name']?? 'STRATASESSID';
+$sessionSecure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 
-// 5. Start session (if needed)
+// SET ALL SESSION PARAMS BEFORE session_start()
+session_name($config['session_name'] ?? 'STRATASESSID');
+session_set_cookie_params([
+    'lifetime' => $config['session_lifetime'] ?? 86400,
+    'path' => '/',
+    'domain' => '',
+    'secure' => $sessionSecure || ($config['cookie_secure'] ?? false),
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+// ADD THIS BLOCK
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 6. Make config available globally (optional)
-global $config;
+// 6. CSRF token for all requests
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// 7. define logger instance globally
+$logger = App\Logger::getInstance($config); // instantiates once

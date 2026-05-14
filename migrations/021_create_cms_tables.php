@@ -136,4 +136,5 @@ return function($db) {
         INSERT IGNORE INTO cms_pages (title, slug, content, status, published_at) 
         VALUES ('Welcome to StrataPHP', 'home', '<h1>Welcome to StrataPHP</h1><p>This is your homepage. Edit this page through the CMS admin panel.</p>', 'published', NOW())
     ");
+    echo "✅ Created CMS tables: cms_pages, cms_posts, cms_categories, cms_menus, cms_menu_items, cms_content_revisions and inserted default data\n";
 };

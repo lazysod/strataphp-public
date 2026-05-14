@@ -21,6 +21,9 @@ class Links
     /** @var array Configuration array */
     protected $config;
 
+    /** @var bool|null Cache for links.order column existence */
+    protected $hasOrderColumn = null;
+
     /**
      * Constructor
      *
@@ -44,11 +47,15 @@ class Links
     public function swapOrder($id1, $id2)
     {
         try {
+            if (!$this->hasOrderColumn()) {
+                return;
+            }
+
             $link1 = $this->getById($id1);
             $link2 = $this->getById($id2);
             if ($link1 && $link2) {
-                $order1 = $link1['order'];
-                $order2 = $link2['order'];
+                $order1 = (int)($link1['order'] ?? 0);
+                $order2 = (int)($link2['order'] ?? 0);
                 $this->db->query('UPDATE links SET `order` = ? WHERE id = ?', [$order2, $id1]);
                 $this->db->query('UPDATE links SET `order` = ? WHERE id = ?', [$order1, $id2]);
             }
@@ -66,7 +73,11 @@ class Links
     public function getAll()
     {
         try {
-            return $this->db->fetchAll('SELECT * FROM links ORDER BY `order` ASC');
+            if ($this->hasOrderColumn()) {
+                return $this->db->fetchAll('SELECT * FROM links ORDER BY `order` ASC, id ASC');
+            }
+
+            return $this->db->fetchAll('SELECT * FROM links ORDER BY created_at ASC, id ASC');
         } catch (Exception $e) {
             throw new Exception('Failed to retrieve links: ' . $e->getMessage());
         }
@@ -104,10 +115,33 @@ class Links
             if ($icon === '') {
                 $icon = $this->detectIcon($url);
             }
-            $this->db->query('INSERT INTO links (title, url, icon, nsfw) VALUES (?, ?, ?, ?)', [$title, $url, $icon, $nsfw]);
+
+            if ($this->hasOrderColumn()) {
+                $row = $this->db->fetch('SELECT COALESCE(MAX(`order`), 0) AS max_order FROM links');
+                $nextOrder = ((int)($row['max_order'] ?? 0)) + 1;
+                $this->db->query('INSERT INTO links (title, url, icon, nsfw, `order`) VALUES (?, ?, ?, ?, ?)', [$title, $url, $icon, $nsfw, $nextOrder]);
+            } else {
+                $this->db->query('INSERT INTO links (title, url, icon, nsfw) VALUES (?, ?, ?, ?)', [$title, $url, $icon, $nsfw]);
+            }
         } catch (Exception $e) {
             throw new Exception('Failed to add link: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Determine whether the links table has an `order` column.
+     *
+     * @return bool
+     */
+    protected function hasOrderColumn()
+    {
+        if ($this->hasOrderColumn !== null) {
+            return $this->hasOrderColumn;
+        }
+
+        $row = $this->db->fetch("SHOW COLUMNS FROM links LIKE 'order'");
+        $this->hasOrderColumn = !empty($row);
+        return $this->hasOrderColumn;
     }
     
     /**

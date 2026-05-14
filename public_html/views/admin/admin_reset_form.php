@@ -9,7 +9,7 @@ if (file_exists($bootstrapPath)) {
     include_once $bootstrapPath;
 }
 // Only allow access if a valid token is present
-$token = $_GET['token'] ?? ($_POST['reset_token'] ?? '');
+$token = $token ?? ($_GET['token'] ?? ($_POST['reset_token'] ?? ($_POST['token'] ?? '')));
 if (!$token) {
     header('Location: /admin/reset-request');
     exit;
@@ -29,6 +29,12 @@ require __DIR__ . '/../partials/admin_header.php';
                 <?php if (!empty($error)) : ?>
                     <div class="alert alert-danger text-center alert-dismissible fade show" role="alert">
                         <?php echo $error ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if (empty($success) && empty($error) && !empty($message)) : ?>
+                    <div class="alert alert-info text-center alert-dismissible fade show" role="alert">
+                        <?php echo $message ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>

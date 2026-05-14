@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use App\Logger;
@@ -17,9 +18,15 @@ class User
         return $this->db->query($sql, [(int)$id]);
     }
 
+    public function revoke_session($user_id)
+    {
+        $sql = "UPDATE user_sessions SET revoked = 1 WHERE user_id = ?";
+        return $this->db->query($sql, [(int)$user_id]);
+    }
     // suspend
     public function suspend($id)
     {
+        $this->revoke_session($id);
         $sql = "UPDATE users SET active = 0, dead_switch = 1 WHERE id = ?";
         return $this->db->query($sql, [(int)$id]);
     }
@@ -28,6 +35,13 @@ class User
     public function unsuspend($id)
     {
         $sql = "UPDATE users SET active = 1, dead_switch = 0 WHERE id = ?";
+        return $this->db->query($sql, [(int)$id]);
+    }
+
+    // activate (reactivate without changing dead_switch)
+    public function activate($id)
+    {
+        $sql = "UPDATE users SET active = 1 WHERE id = ?";
         return $this->db->query($sql, [(int)$id]);
     }
 
@@ -56,7 +70,8 @@ class User
     public function updateUser($id, $data)
     {
         if (empty($data) || !$id) {
-            error_log('updateUser: No data or invalid ID');
+            $logger = Logger::getInstance();
+            $logger->error('updateUser: No data or invalid ID');
             return false;
         }
         $fields = [];
@@ -67,11 +82,7 @@ class User
         }
         $params[] = (int)$id;
         $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
-        error_log('data:' . print_r($data, true));
-        error_log('updateUser SQL: ' . $sql);
-        error_log('updateUser Params: ' . print_r($params, true));
         $result = $this->db->query($sql, $params);
-        error_log('updateUser Result: ' . print_r($result, true));
         return $result;
     }
     // Fetch a user by ID
@@ -126,9 +137,29 @@ class User
             $userId = $rows[0]['id'];
             $token = bin2hex(random_bytes(32));
             $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            // Insert or update token in reset table (user resets)
-            $this->db->query("INSERT INTO reset (user_id, `key`, expiry_date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `key` = VALUES(`key`), expiry_date = VALUES(expiry_date)", [$userId, $token, $expiry]);
-            $resetLink = $baseUrl . "/user/reset?token=$token";
+            $entryDate = date('Y-m-d H:i:s');
+
+            // Replace any existing reset rows for this user.
+            $this->db->query("DELETE FROM reset WHERE user_id = ?", [$userId]);
+
+            $stmt = $this->db->query(
+                "INSERT INTO reset (user_id, activation_key, entry_date, expiry_date) VALUES (?, ?, ?, ?)",
+                [$userId, $token, $entryDate, $expiry]
+            );
+            $saved = (bool)$stmt;
+
+            if (!$saved) {
+                $logger = new Logger($this->config);
+                $logger->error('Failed to save password reset token', ['user_id' => $userId, 'email' => $email]);
+                return [
+                    'status' => 'fail',
+                    'message' => 'Unable to create reset token at this time.'
+                ];
+            }
+
+            // Generate appropriate reset path based on user type
+            $resetPath = $adminOnly ? '/admin/reset-password' : '/user/reset';
+            $resetLink = $baseUrl . $resetPath . "?token=$token";
             // You can send the email here or return the link for the controller to handle
             return [
                 'status' => 'success',
@@ -159,11 +190,14 @@ class User
         if (isset($_SESSION[$sessionPrefix . 'session'])) {
             $now = date('Y-m-d H:i:s');
             if ($now >= $_SESSION[$sessionPrefix . 'session']['session_expire']) {
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
+
+                $_SESSION = []; // clear session instead of destroy
+                if (ini_get("session.use_cookies")) {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
                 }
-                session_destroy();
-                unset($_COOKIE[$sessionPrefix . 'cookie_login']);
+                session_destroy(); // this is ok AFTER bootstrap started it
+
                 header('location: ' . $this->config['base_url'] . '/user/login');
                 exit;
             }
@@ -262,6 +296,8 @@ class User
     public function register($userInfo)
     {
         $dbCost = array('cost' => 12);
+        $requireEmailVerify = $this->config['users']['require_email_verify']
+            ?? ($this->config['require_email_verify'] ?? false);
 
         $email = $userInfo['email'];
         $pass = $userInfo['pwd'];
@@ -290,16 +326,20 @@ class User
                 'status' => 'fail',
                 'message' => 'That email is currently in use. Please use another email address.',
             ];
+        }
+
+        $activeOnCreate = $requireEmailVerify ? 0 : 1;
+        if ($displayName !== null) {
+            $sql = "INSERT INTO users (id, display_name, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [$displayName, $fName, $sName, $email, $pwdEncrypted, $hash, $activeOnCreate]);
         } else {
-            // Insert user with active=0
-            if ($displayName !== null) {
-                $sql = "INSERT INTO users (id, display_name, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, 0)";
-                $this->db->query($sql, [$displayName, $fName, $sName, $email, $pwdEncrypted, $hash]);
-            } else {
-                $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, 0)";
-                $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);
-            }
-            $userId = $this->db->insertId();
+            $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash, $activeOnCreate]);
+        }
+
+        $userId = $this->db->insertId();
+
+        if ($requireEmailVerify) {
             // Generate activation key and expiry (24h)
             $activationKey = bin2hex(random_bytes(32));
             $entryDate = date('Y-m-d H:i:s');
@@ -314,9 +354,10 @@ class User
                 ]
             );
             $this->db->query("INSERT INTO user_activation (user_id, activation_key, entry_date, expiry_date) VALUES (?, ?, ?, ?)", [$userId, $activationKey, $entryDate, $expiryDate]);
+
             // Send activation email
             $activationLink = $this->config['base_url'] . "/user/activate?key=$activationKey";
-            if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+            if (class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
                 $mail = new PHPMailer(true);
                 try {
                     $mail->isSMTP();
@@ -333,14 +374,34 @@ class User
                     $mail->Body = "Thank you for registering. Please activate your account by clicking the link below:\n$activationLink\nIf you did not register, please ignore this email.";
                     $mail->send();
                 } catch (\Exception $e) {
-                    // Optionally log or handle email errors
+                    $logger = new Logger($this->config);
+                    $logger->error(
+                        'Activation email send failed during registration',
+                        [
+                            'email' => $email,
+                            'user_id' => $userId,
+                            'mail_error' => $mail->ErrorInfo,
+                            'exception' => $e->getMessage()
+                        ]
+                    );
+
+                    return [
+                        'status' => 'success',
+                        'message' => 'Registration completed, but we could not send the activation email right now. Please try requesting a new activation link shortly.',
+                    ];
                 }
             }
+
             return [
                 'status' => 'success',
                 'message' => 'Registration successful!<br><strong>Please check your email</strong> to activate your account.',
             ];
         }
+
+        return [
+            'status' => 'success',
+            'message' => 'Registration successful! You can now log in.',
+        ];
     }
 
     public function update($userInfo)
@@ -405,20 +466,22 @@ class User
 
     public function login($user)
     {
+        $requireEmailVerify = $this->config['users']['require_email_verify']
+            ?? ($this->config['require_email_verify'] ?? false);
         $sql = "SELECT * FROM users WHERE email = ?";
         $rows = $this->db->fetchAll($sql, [$user['email']]);
         if (count($rows) > 0) {
             foreach ($rows as $row) {
-                if (isset($row['active']) && $row['active'] == 0) {
-                    return [
-                        'status' => 'fail',
-                        'message' => 'Your account is not activated. Please check your email for the activation link.'
-                    ];
-                }
                 $db_pwd = $row['pwd'];
                 if (password_verify($user['pwd'], $db_pwd)) {
                     $rank = $this->get_rank($row['id']);
-                    if ($row['dead_switch'] > 0) {
+                    if ($requireEmailVerify && isset($row['active']) && $row['active'] == 0 && isset($row['dead_switch']) && $row['dead_switch'] == 0) {
+                        return [
+                            'status' => 'fail',
+                            'message' => 'Your account is not activated. Please check your email for the activation link.'
+                        ];
+                    }
+                    if (isset($row['dead_switch']) && $row['dead_switch'] > 0) {
                         return [
                             'status' => 'fail',
                             'message' => 'Your account was closed or is inaccessible.'
@@ -448,12 +511,6 @@ class User
                     $now = date('Y-m-d H:i:s');
                     $update = "UPDATE users SET last_access = ? WHERE id = ?";
                     $this->db->query($update, [$now, $_SESSION[$sessionPrefix . 'user_id']]);
-
-                    // New session management
-                    require_once __DIR__ . '/SessionManager.php';
-                    $sessionManager = new SessionManager($this->db, $this->config);
-                    $persistent = (isset($user['remember']) && $user['remember'] > 0) ? true : false;
-                    $sessionManager->createSession($row['id'], $persistent);
 
                     return [
                         'status' => 'success',

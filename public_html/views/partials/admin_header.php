@@ -57,23 +57,23 @@ if (isset($modules['modules'])) {
                                 // Only show admin menu if logged in as admin
                                 echo '<li class="nav-item"><a class="nav-link" href="/admin/admin_login.php">Admin Login</a></li>';
                             } else {
-                                foreach ($navConfig as $key => $config) {
+                                foreach ($navConfig as $key => $navItem) {
                                     if (isset($modules[$key]) && array_key_exists('enabled', $modules[$key]) && $modules[$key]['enabled'] === false) {
                                         echo '<!-- Module ' . htmlspecialchars($key) . ' is disabled, skipping nav item -->';
                                         continue;
                                     }
-                                    if (!($config['show'] ?? true)) { continue; }
-                                    $label = $config['label'] ?? $key;
-                                    $url = $config['url'] ?? ('/' . strtolower($key));
+                                    if (!($navItem['show'] ?? true)) { continue; }
+                                    $label = $navItem['label'] ?? $key;
+                                    $url = $navItem['url'] ?? ('/' . strtolower($key));
                                     $currentPath = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
                                     if ($currentPath === '/') { $currentPath = '/'; }
-                                    if (!empty($config['children'])) {
+                                    if (!empty($navItem['children'])) {
                                         $active = ($url === $currentPath) ? ' class="active nav-item dropdown"' : ' class=" nav-item dropdown"';
                                         echo '<li' . $active . '>';
                                         $slug = App::stripSpaces($label);
                                         echo '<a class="nav-link dropdown-toggle" href="' . $url . '" id="navbarDropdown' . $slug . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . $label . '</a>';
                                         echo '<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown' . $slug . '">';
-                                        foreach ($config['children'] as $childKey => $child) {
+                                        foreach ($navItem['children'] as $childKey => $child) {
                                             if (!($child['show'] ?? true)) { continue; }
                                             $childLabel = $child['label'] ?? $childKey;
                                             $childUrl = $child['url'] ?? ($url . '/' . strtolower($childKey));
@@ -91,7 +91,6 @@ if (isset($modules['modules'])) {
                             }
                         }
                         ?>
-
                             <?php if (!empty($_SESSION[$sessionPrefix . 'user_id'])) : ?>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -106,9 +105,6 @@ if (isset($modules['modules'])) {
                                         <li><a class="dropdown-item" href="<?php echo App::config('base_url'); ?>">Front Page</a></li>
                                     </ul>
                                 </li>
-                            <?php else: ?>
-                                <li class="nav-item"><a class="nav-link" href="/user/login">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/user/register">Register</a></li>
                             <?php endif; ?>
                     </ul>
                 </div>

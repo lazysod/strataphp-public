@@ -19,13 +19,19 @@ StrataPHP makes module development fast and flexible. Follow these steps and bes
    - Name, version, description, dependencies
 
 ## PSR-4 Autoloading
-- All classes should use namespaces matching their folder structure.
-- Example:
-  ```php
-  namespace App\Modules\MyModule\Controllers;
-  class ExampleController {}
-  ```
-- Composer will autoload these classes automatically.
+All classes should use namespaces matching their folder structure.
+Example (old style):
+```php
+namespace App\Modules\MyModule\Controllers;
+class ExampleController {}
+```
+
+If you have moved to the new StrataPHP\Modules namespace convention:
+```php
+namespace StrataPHP\Modules\MyModule\Controllers;
+class ExampleController {}
+```
+Composer will autoload these classes automatically.
 
 ## Module Structure Example
 ```
@@ -47,6 +53,13 @@ MyModule/
   php bin/install-module.php MyModule
   ```
 - Or copy the module folder to `public_html/modules/`.
+
+## Validating Modules
+
+Check if a module meets StrataPHP standards before enabling:
+
+```sh
+php bin/create-module.php --validate blog
 
 ### Installing from a Git Repository
 - Clone the module repository directly into your modules folder:
@@ -78,6 +91,25 @@ Refer to the module’s README for any additional setup steps.
 - Check module metadata for errors
 - Use CLI tools for validation
 - Review logs in `storage/logs/`
+
+## Module Validation
+
+StrataPHP provides tools and guidelines to help you validate your modules:
+
+- **CLI Validation:**
+  Use the CLI tool to validate a module:
+  ```sh
+  php bin/create-module.php --validate MyModule
+  ```
+  This checks for required metadata, structure, and common issues.
+
+- **Manual Checks:**
+  - Ensure `index.php` contains valid metadata (name, version, dependencies).
+  - Confirm PSR-4 namespaces match the folder structure.
+  - Check for missing or extra files in controllers, models, views, etc.
+  - Run unit tests in the `tests/` directory if available.
+
+Validation helps ensure modules are compatible, secure, and easy to maintain.
 
 ## Logging in Modules
 StrataPHP provides a built-in Logger class for writing log messages to `storage/logs/app.log` (or the path set in your config). Use this for error, info, or warning messages in your modules.

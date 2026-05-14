@@ -2,7 +2,7 @@
 namespace App\Modules\Admin\Controllers;
 
 use App\DB;
-
+use App\Logger;
 class AdminController
 {
     /**
@@ -16,7 +16,8 @@ class AdminController
             global $config;
             include __DIR__ . '/../views/admin_dashboard.php';
         } catch (\Exception $e) {
-            error_log('AdminController dashboard error: ' . $e->getMessage());
+            $logger = Logger::getInstance();
+            $logger->error('AdminController dashboard error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to load dashboard.';
             include __DIR__ . '/../views/admin_dashboard.php';
         }
@@ -29,7 +30,8 @@ class AdminController
         try {
             include dirname(__DIR__, 3) . '/views/admin/admin_login.php';
         } catch (\Exception $e) {
-            error_log('AdminController index error: ' . $e->getMessage());
+            $logger = Logger::getInstance();
+            $logger->error('AdminController index error: ' . $e->getMessage());
             $_SESSION['error'] = 'Failed to load admin login.';
         }
     }
