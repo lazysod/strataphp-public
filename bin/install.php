@@ -41,7 +41,7 @@ $config = require $configFile;
 $dbConfig = $config['db'];
 
 // 5. Check if .env has been edited by checking actual values
-if ($dbConfig['database'] === 'db_name' || $dbConfig['password'] === 'root') {
+if ($dbConfig['database'] === 'db_name') {
     echo "⚠  Edit .env with your database credentials, then re-run:\n";
     echo "   php bin/install.php\n";
     exit(1);
@@ -95,7 +95,8 @@ function syncSchemaBackedMigrations(PDO $pdo, string $migrationsDir): void
 }
 
 try {
-    $dsn = "mysql:host={$dbConfig['host']};dbname={$dbConfig['database']};charset=utf8mb4";
+    $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['database']};charset=utf8mb4";
+
     $pdo = new PDO($dsn, $dbConfig['username'], $dbConfig['password']);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
