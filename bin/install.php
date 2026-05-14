@@ -2,7 +2,6 @@
 <?php
 
 // Initial install script for StrataPHP Framework
-// Usage: php vendor/lazysod/strataphp/bin/install.php
 
 $projectRoot = dirname(__DIR__, 4); // /Users/barry/myapp
 $vendorPath = dirname(__DIR__);    // /Users/barry/myapp/vendor/lazysod/strataphp
