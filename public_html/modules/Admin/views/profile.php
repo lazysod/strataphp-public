@@ -28,7 +28,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/views/partials/admin_header.php';
                     <label for="avatar" class="form-label">Avatar</label><br>
                     <?php if (!empty($user['avatar'])) : ?>
                         <div class="p-3 text-center">
-                            <img src="<?= htmlspecialchars($user['avatar']) ?>" alt="Avatar" style="max-width:80px;max-height:80px;" class="rounded-circle mb-2">
+                            <img src="<?php echo $config['base_url'] . '/' . htmlspecialchars($user['avatar']) ?>" alt="Avatar" style="max-width:80px;max-height:80px;" class="rounded-circle mb-2">
                         </div>
                     <?php endif; ?>
                     <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">

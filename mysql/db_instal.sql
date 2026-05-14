@@ -26,12 +26,11 @@ CREATE TABLE `rank` (
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `migration_lock` (
-    `id` int(255) NOT NULL AUTO_INCREMENT,
-    `user_id` int(255) NOT NULL,
-    `key` varchar(255) NOT NULL,
-    `created_date` timestamp NULL DEFAULT NULL,
-    `expiry_date` datetime DEFAULT NULL,
-    PRIMARY KEY (`id`)
+  `id` int(11) NOT NULL DEFAULT '1',
+  `locked` tinyint(1) NOT NULL DEFAULT '0',
+  `locked_at` timestamp NULL DEFAULT NULL,
+  `locked_by` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -225,10 +224,11 @@ CREATE TABLE `cms_pages` (
 DROP TABLE IF EXISTS `cms_menus`;
 CREATE TABLE `cms_menus` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(255) NOT NULL,
-  `description` TEXT,
+  `name` VARCHAR(100) NOT NULL,
+  `location` VARCHAR(50) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `unique_location` (`location`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- CMS Menu Items table
@@ -236,14 +236,18 @@ DROP TABLE IF EXISTS `cms_menu_items`;
 CREATE TABLE `cms_menu_items` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `menu_id` INT NOT NULL,
-  `label` VARCHAR(255) NOT NULL,
-  `url` VARCHAR(255) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255),
+  `page_id` INT DEFAULT NULL,
   `parent_id` INT DEFAULT NULL,
-  `order` INT DEFAULT 0,
+  `menu_order` INT DEFAULT 0,
+  `target` VARCHAR(20) DEFAULT '_self',
+  `css_class` VARCHAR(100),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`menu_id`) REFERENCES `cms_menus`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`parent_id`) REFERENCES `cms_menu_items`(`id`) ON DELETE SET NULL
+  INDEX `idx_menu` (`menu_id`),
+  INDEX `idx_parent` (`parent_id`),
+  INDEX `idx_order` (`menu_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

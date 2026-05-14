@@ -38,11 +38,10 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         // migration_lock
         $db->query("CREATE TABLE IF NOT EXISTS migration_lock (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            `key` VARCHAR(255) NOT NULL,
-            created_date TIMESTAMP NULL DEFAULT NULL,
-            expiry_date DATETIME DEFAULT NULL
+            id INT PRIMARY KEY DEFAULT 1,
+            locked TINYINT(1) NOT NULL DEFAULT 0,
+            locked_at TIMESTAMP NULL DEFAULT NULL,
+            locked_by VARCHAR(255) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         // reset
         $db->query("CREATE TABLE IF NOT EXISTS reset (
