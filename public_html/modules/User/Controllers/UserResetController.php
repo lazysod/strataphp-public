@@ -24,9 +24,8 @@ class UserResetController
     public function index()
     {
         try {
-                require_once dirname(__DIR__, 4) . '/bootstrap.php';
-                global $config;
-            $localConfig = include dirname(__DIR__, 3) . '/app/config.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
+            $config = require dirname(__DIR__, 3) . '/app/config.php';
             
             // Check if user is already logged in
             $prefix = $config['session_prefix'] ?? 'app_';

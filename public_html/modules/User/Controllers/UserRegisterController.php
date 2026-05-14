@@ -42,7 +42,9 @@ class UserRegisterController
                 header('Location: ' . $redirect);
                 exit;
             }
-            if (isset($config['registration_enabled']) && !$config['registration_enabled']) {
+            $registrationEnabled = $config['users']['registration_enabled']
+                ?? ($config['registration_enabled'] ?? true);
+            if (!$registrationEnabled) {
                 $error = 'User registration is currently disabled.';
                 $success = '';
                 // Use CMS-themed registration page

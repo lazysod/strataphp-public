@@ -3,7 +3,7 @@ namespace App\Modules\User\Controllers;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
+use App\Logger;
 /**
  * Email Test Controller
  *
@@ -52,6 +52,8 @@ class EmailTestController
                     $success = 'Test email sent successfully!';
                 } catch (Exception $e) {
                     $error = 'Email failed: ' . $mail->ErrorInfo;
+                    $logger = new Logger($config['log_path']);
+                    $logger->error('Email test failed: ' . $mail->ErrorInfo);
                 }
             }
         }

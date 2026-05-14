@@ -276,6 +276,8 @@ class User
     public function register($userInfo)
     {
         $dbCost = array('cost' => 12);
+        $requireEmailVerify = $this->config['users']['require_email_verify']
+            ?? ($this->config['require_email_verify'] ?? false);
 
         $email = $userInfo['email'];
         $pass = $userInfo['pwd'];
@@ -304,16 +306,20 @@ class User
                 'status' => 'fail',
                 'message' => 'That email is currently in use. Please use another email address.',
             ];
+        }
+
+        $activeOnCreate = $requireEmailVerify ? 0 : 1;
+        if ($displayName !== null) {
+            $sql = "INSERT INTO users (id, display_name, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [$displayName, $fName, $sName, $email, $pwdEncrypted, $hash, $activeOnCreate]);
         } else {
-            // Insert user with active=0
-            if ($displayName !== null) {
-                $sql = "INSERT INTO users (id, display_name, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?, 0)";
-                $this->db->query($sql, [$displayName, $fName, $sName, $email, $pwdEncrypted, $hash]);
-            } else {
-                $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, 0)";
-                $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash]);
-            }
-            $userId = $this->db->insertId();
+            $sql = "INSERT INTO users (id, first_name, second_name, email, pwd, security_hash, active) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+            $this->db->query($sql, [$fName, $sName, $email, $pwdEncrypted, $hash, $activeOnCreate]);
+        }
+
+        $userId = $this->db->insertId();
+
+        if ($requireEmailVerify) {
             // Generate activation key and expiry (24h)
             $activationKey = bin2hex(random_bytes(32));
             $entryDate = date('Y-m-d H:i:s');
@@ -328,9 +334,10 @@ class User
                 ]
             );
             $this->db->query("INSERT INTO user_activation (user_id, activation_key, entry_date, expiry_date) VALUES (?, ?, ?, ?)", [$userId, $activationKey, $entryDate, $expiryDate]);
+
             // Send activation email
             $activationLink = $this->config['base_url'] . "/user/activate?key=$activationKey";
-            if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+            if (class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
                 $mail = new PHPMailer(true);
                 try {
                     $mail->isSMTP();
@@ -350,11 +357,17 @@ class User
                     // Optionally log or handle email errors
                 }
             }
+
             return [
                 'status' => 'success',
                 'message' => 'Registration successful!<br><strong>Please check your email</strong> to activate your account.',
             ];
         }
+
+        return [
+            'status' => 'success',
+            'message' => 'Registration successful! You can now log in.',
+        ];
     }
 
     public function update($userInfo)
@@ -419,6 +432,8 @@ class User
 
     public function login($user)
     {
+        $requireEmailVerify = $this->config['users']['require_email_verify']
+            ?? ($this->config['require_email_verify'] ?? false);
         $sql = "SELECT * FROM users WHERE email = ?";
         $rows = $this->db->fetchAll($sql, [$user['email']]);
         if (count($rows) > 0) {
@@ -426,7 +441,7 @@ class User
                 $db_pwd = $row['pwd'];
                 if (password_verify($user['pwd'], $db_pwd)) {
                     $rank = $this->get_rank($row['id']);
-                    if (isset($row['active']) && $row['active'] == 0 && isset($row['dead_switch']) && $row['dead_switch'] == 0) {
+                    if ($requireEmailVerify && isset($row['active']) && $row['active'] == 0 && isset($row['dead_switch']) && $row['dead_switch'] == 0) {
                         return [
                             'status' => 'fail',
                             'message' => 'Your account is not activated. Please check your email for the activation link.'

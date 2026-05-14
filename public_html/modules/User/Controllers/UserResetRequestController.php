@@ -6,7 +6,7 @@ use PHPMailer\PHPMailer\Exception;
 use App\TokenManager;
 use App\DB;
 use App\Modules\User\Helpers\CmsHelper;
-
+use App\Logger;
 /**
  * User Password Reset Request Controller
  *
@@ -27,7 +27,8 @@ class UserResetRequestController
     public function index()
     {
         try {
-            require_once dirname(__DIR__, 4) . '/bootstrap.php';
+            require_once dirname(__DIR__, 3) . '/bootstrap.php';
+            $config = require dirname(__DIR__, 3) . '/app/config.php';
             global $config;
             // Check if user is already logged in
             $prefix = $config['session_prefix'] ?? 'app_';
@@ -83,6 +84,8 @@ class UserResetRequestController
                                 $mail->send();
                             } catch (Exception $e) {
                                 $error = 'Email failed: ' . $mail->ErrorInfo;
+                                $logger = new Logger($config['log_path']);
+                                $logger->error('Password reset email failed: ' . $mail->ErrorInfo);
                             }
                         }
                         $success = 'If your email is registered, a reset link has been sent.';

@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\DB;
 use App\User;
 use PHPMailer\PHPMailer\PHPMailer;
-
+use App\Logger;
 class AdminController
 {
     /**
@@ -136,6 +136,8 @@ class AdminController
                         $success = 'If your email is registered as an admin, a reset link has been sent.';
                     } catch (\Exception $e) {
                         $error = 'Email failed: ' . $mail->ErrorInfo;
+                        $logger = new Logger($config['log_path']);
+                        $logger->error('Admin password reset email failed: ' . $mail->ErrorInfo);
                     }
                 } else {
                     $error = $result['message'];
