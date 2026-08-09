@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace App;
 
 use PDO;
@@ -7,28 +9,37 @@ use App\Logger;
 
 class DB
 {
-    protected $pdo;
-    protected $config;
+    protected ?PDO $pdo = null;
+    protected array $config;
+    protected ?Logger $logger = null;
 
-    public function __construct($config)
+    public function __construct(array $config, ?Logger $logger = null)
     {
-        if (!is_array($config)) {
-            throw new \InvalidArgumentException('DB configuration must be an array.');
-        }
-
         $this->config = $config;
+        $this->logger = $logger;
+
+        // Fallback for legacy bootstrap
+        if ($this->logger === null && class_exists('App\\Logger')) {
+            $this->logger = new Logger($config);
+        }
 
         $db = isset($config['db']) && is_array($config['db']) ? $config['db'] : $config;
         $host = $db['host'] ?? 'localhost';
         $database = $db['database'] ?? $db['name'] ?? '';
         $username = $db['username'] ?? '';
         $password = $db['password'] ?? '';
+        $charset = $db['charset'] ?? 'utf8mb4';
 
-        $dsn = "mysql:host={$host};dbname={$database};charset=utf8mb4";
+        if ($database === '') {
+            throw new \InvalidArgumentException('DB config must contain a database name.');
+        }
+
+        $dsn = "mysql:host={$host};dbname={$database};charset={$charset}";
         if (!empty($db['port'])) {
-            $dsn .= ";port={$db['port']}";
-        } elseif (!empty($db['unix_socket'])) {
-            $dsn .= ";unix_socket={$db['unix_socket']}";
+            $dsn .= ';port=' . (int) $db['port'];
+        }
+        if (!empty($db['unix_socket'])) {
+            $dsn .= ';unix_socket=' . $db['unix_socket'];
         }
 
         try {
@@ -37,194 +48,94 @@ class DB
                 $username,
                 $password,
                 [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_STRINGIFY_FETCHES => false,
                 ]
             );
         } catch (PDOException $e) {
-            // Log the error if Logger is available
-            if (class_exists('App\\Logger')) {
-                $logger = new Logger($this->config);
-                $logger->error('Database connection failed', ['error' => $e->getMessage()]);
-            }
-            // Show 500 error page if it exists
-            // If running in CLI, do not include web error views
-            if (php_sapi_name() === 'cli') {
-                fwrite(STDERR, "Database connection failed: " . $e->getMessage() . "\n");
-                // ...existing code...
-            }
-            $errorPage = __DIR__ . '/../../views/errors/500.php';
-            if (file_exists($errorPage)) {
-                http_response_code(500);
-                include $errorPage;
-                exit;
-            } else {
-                // Fallback: plain error
-                http_response_code(500);
-                // ...existing code...
-            }
+            $this->logError('Database connection failed', ['error' => $e->getMessage(), 'host' => $host]);
+            throw $e;
         }
     }
 
-    public function getPdo()
+    protected function logError(string $message, array $context = []): void
     {
+        if ($this->logger && method_exists($this->logger, 'error')) {
+            $this->logger->error($message, $context);
+        }
+    }
+
+    public function getPdo(): PDO
+    {
+        if (!$this->pdo) {
+            throw new \RuntimeException('Database connection is not established.');
+        }
         return $this->pdo;
     }
 
-    public function query($sql, $params = [])
+    /**
+     * @throws \RuntimeException|\PDOException
+     */
+    public function query(string $sql, array $params = []): \PDOStatement
     {
         if (!$this->pdo) {
-            // Log the error if Logger is available
-            if (class_exists('App\\Logger')) {
-                $logger = new Logger($this->config ?? []);
-                $logger->error('Database connection is not established.');
-            }
-            $errorPage = __DIR__ . '/../../views/errors/500.php';
-            if (file_exists($errorPage)) {
-                http_response_code(500);
-                include $errorPage;
-                exit;
-            } else {
-                http_response_code(500);
-                echo 'Database connection is not established.';
-                exit;
-            }
+            throw new \RuntimeException('Database connection is not established.');
         }
+
         try {
             $stmt = $this->pdo->prepare($sql);
-            if (!$stmt) {
-                if (class_exists('App\\Logger')) {
-                    $logger = Logger::getInstance();
-                    $logger->error('DB::query prepare failed', ['sql' => $sql]);
-                }
-                return null;
-            }
-            $result = $stmt->execute($params);
-            if (!$result) {
-                if (class_exists('App\\Logger')) {
-                    $logger = Logger::getInstance();
-                    $logger->error('DB::query execute failed', ['sql' => $sql, 'params' => $params]);
-                }
-                return null;
-            }
+            $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            if (class_exists('App\\Logger')) {
-                $logger = Logger::getInstance();
-                $logger->error('DB::query PDOException', ['message' => $e->getMessage(), 'sql' => $sql, 'params' => $params]);
-            }
-            return null;
+            $this->logError('DB::query failed', [
+                'message' => $e->getMessage(),
+                'sql' => $sql,
+                'params' => $params
+            ]);
+            throw $e;
         }
     }
 
-    public function fetchAll($sql, $params = [])
+    public function fetchAll(string $sql, array $params = []): array
     {
-        if (!$this->pdo) {
-            if (class_exists('App\\Logger')) {
-                $logger = new Logger($this->config ?? []);
-                $logger->error('Database connection is not established.');
-            }
-            $errorPage = __DIR__ . '/../../views/errors/500.php';
-            if (file_exists($errorPage)) {
-                http_response_code(500);
-                include $errorPage;
-                exit;
-            } else {
-                http_response_code(500);
-                echo 'Database connection is not established.';
-                exit;
-            }
-        }
-        $stmt = $this->query($sql, $params);
-        if (!$stmt) {
-            return [];
-        }
-        return $stmt->fetchAll();
+        return $this->query($sql, $params)->fetchAll();
     }
 
-    public function fetch($sql, $params = [])
+    public function fetch(string $sql, array $params = []): array|false
     {
-        if (!$this->pdo) {
-            if (class_exists('App\\Logger')) {
-                $logger = new Logger($this->config ?? []);
-                $logger->error('Database connection is not established.');
-            }
-            $errorPage = __DIR__ . '/../../views/errors/500.php';
-            if (file_exists($errorPage)) {
-                http_response_code(500);
-                include $errorPage;
-                exit;
-            } else {
-                http_response_code(500);
-                echo 'Database connection is not established.';
-                exit;
-            }
-        }
-        $stmt = $this->query($sql, $params);
-        return $stmt ? $stmt->fetch() : false;
+        return $this->query($sql, $params)->fetch();
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->beginTransaction();
+        return $this->getPdo()->beginTransaction();
     }
 
-    public function commit()
+    public function commit(): bool
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->commit();
+        return $this->getPdo()->commit();
     }
 
-    public function rollBack()
+    public function rollBack(): bool
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->rollBack();
+        return $this->getPdo()->rollBack();
     }
 
-    public function insertId()
+    public function insertId(): string
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->lastInsertId();
+        return $this->getPdo()->lastInsertId();
     }
 
-    public function affectedRows($stmt)
+    public function rowCount(\PDOStatement $stmt): int
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
         return $stmt->rowCount();
     }
 
-    public function escapeString($str)
+    // Backwards compat - prefer rowCount()
+    public function affectedRows(\PDOStatement $stmt): int
     {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return substr($this->pdo->quote($str), 1, -1);
-    }
-
-    public function errorInfo()
-    {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->errorInfo();
-    }
-
-    public function errorCode()
-    {
-        if (!$this->pdo) {
-            throw new \RuntimeException('Database connection is not established.');
-        }
-        return $this->pdo->errorCode();
+        return $this->rowCount($stmt);
     }
 }

@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__. '/bootstrap.php';
+ $config = require __DIR__. '/bootstrap.php';
 use App\DB;
 use App\User;
 use App\Router;
 use App\Logger;
 use App\SessionManager;
-$config = $GLOBALS['config'];
+$config = is_array($config) ? $config : ($GLOBALS['config'] ?? []);
 
 // Initialize the router
 $router = new Router();
