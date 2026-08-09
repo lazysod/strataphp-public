@@ -8,16 +8,34 @@ use App\Logger;
 class DB
 {
     protected $pdo;
+    protected $config;
 
     public function __construct($config)
     {
-        $db = $config['db'];
-        $dsn = "mysql:host={$db['host']};dbname={$db['database']};charset=utf8mb4";
+        if (!is_array($config)) {
+            throw new \InvalidArgumentException('DB configuration must be an array.');
+        }
+
+        $this->config = $config;
+
+        $db = isset($config['db']) && is_array($config['db']) ? $config['db'] : $config;
+        $host = $db['host'] ?? 'localhost';
+        $database = $db['database'] ?? $db['name'] ?? '';
+        $username = $db['username'] ?? '';
+        $password = $db['password'] ?? '';
+
+        $dsn = "mysql:host={$host};dbname={$database};charset=utf8mb4";
+        if (!empty($db['port'])) {
+            $dsn .= ";port={$db['port']}";
+        } elseif (!empty($db['unix_socket'])) {
+            $dsn .= ";unix_socket={$db['unix_socket']}";
+        }
+
         try {
             $this->pdo = new PDO(
                 $dsn,
-                $db['username'],
-                $db['password'],
+                $username,
+                $password,
                 [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -26,7 +44,7 @@ class DB
         } catch (PDOException $e) {
             // Log the error if Logger is available
             if (class_exists('App\\Logger')) {
-                $logger = new Logger($config);
+                $logger = new Logger($this->config);
                 $logger->error('Database connection failed', ['error' => $e->getMessage()]);
             }
             // Show 500 error page if it exists
@@ -58,7 +76,7 @@ class DB
         if (!$this->pdo) {
             // Log the error if Logger is available
             if (class_exists('App\\Logger')) {
-                $logger = new Logger($config ?? []);
+                $logger = new Logger($this->config ?? []);
                 $logger->error('Database connection is not established.');
             }
             $errorPage = __DIR__ . '/../../views/errors/500.php';
@@ -103,7 +121,7 @@ class DB
     {
         if (!$this->pdo) {
             if (class_exists('App\\Logger')) {
-                $logger = new Logger($config ?? []);
+                $logger = new Logger($this->config ?? []);
                 $logger->error('Database connection is not established.');
             }
             $errorPage = __DIR__ . '/../../views/errors/500.php';
@@ -128,7 +146,7 @@ class DB
     {
         if (!$this->pdo) {
             if (class_exists('App\\Logger')) {
-                $logger = new Logger($config ?? []);
+                $logger = new Logger($this->config ?? []);
                 $logger->error('Database connection is not established.');
             }
             $errorPage = __DIR__ . '/../../views/errors/500.php';
